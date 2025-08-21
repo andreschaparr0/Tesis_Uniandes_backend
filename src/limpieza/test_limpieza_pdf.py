@@ -19,7 +19,8 @@ print("\n--- Texto limpio (ejemplo) ---\n")
 print(clean_text(ejemplo))
 
 # 2. Prueba con PDF
-pdf_path = os.path.join("images", "example.pdf")
+pdf_path = os.path.join("../images", "example.pdf")
+
 if pdf_path:
     try:
         texto = extract_text_from_pdf(pdf_path)

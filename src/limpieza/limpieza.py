@@ -33,21 +33,21 @@ def clean_text(text):
     text = text.translate(str.maketrans("", "", string.punctuation))
 
     # Eliminar números
-    text = re.sub(r'\d+', '', text)
+    #text = re.sub(r'\d+', '', text)
 
     # Eliminar espacios extra
-    text = " ".join(text.split())
+    #text = " ".join(text.split())
 
     # Convertir a minúsculas
     text = text.lower()
 
     # Eliminar stopwords
-    stop_words = set(stopwords.words('english'))
-    text = " ".join(word for word in text.split() if word not in stop_words)
+    #stop_words = set(stopwords.words('english'))
+    #text = " ".join(word for word in text.split() if word not in stop_words)
 
     # Stemming
-    ps = PorterStemmer()
-    text = " ".join(ps.stem(word) for word in text.split())
+    #ps = PorterStemmer()
+    #text = " ".join(ps.stem(word) for word in text.split())
 
     return text
 
