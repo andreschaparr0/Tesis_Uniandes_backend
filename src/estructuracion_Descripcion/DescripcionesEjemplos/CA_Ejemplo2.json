@@ -1,0 +1,42 @@
+{
+  "job_title": "Analista de Seguridad de la Información",
+  "company_name": "CredibanCo",
+  "location": "Bogotá",
+  "work_modality": "Híbrida",
+  "contract_type": "Indefinido",
+  "salary": "Competitivo",
+  "summary": "Responsable de Monitorear, Alertar y Gestionar escenarios de riesgo, eventos e incidentes que afecten los principios de Confidencialidad, Integridad, Disponibilidad y Confiabilidad de la información e infraestructura.",
+  "responsibilities": [
+    "Monitorear escenarios de riesgo, eventos e incidentes que afecten la confidencialidad, integridad, disponibilidad y confiabilidad de la información e infraestructura.",
+    "Alertar sobre incidentes de seguridad de la información.",
+    "Gestionar incidentes de seguridad de la información.",
+    "Actualizar políticas de seguridad de la información.",
+    "Monitorear logs de seguridad y gestionar alarmas.",
+    "Comprender y aplicar estándares y marcos normativos relacionados con la seguridad de la información."
+  ],
+  "qualifications": {
+    "requisitos_y_calificaciones": {
+      "educacion": "Profesional en Ingeniería de sistemas, electrónica, telecomunicaciones o afines.",
+      "experiencia": "Experiencia mínima de un año en cargos asociados a seguridad de la información o seguridad informática.",
+      "habilidades_tecnicas": [
+        "Seguridad de la información y ciberseguridad",
+        "Gestión y actualización de políticas de seguridad",
+        "Monitoreo de logs de seguridad y gestión de alarmas",
+        "Comprensión de estándares y marcos normativos como PCI DSS y Circulares de la Superintendencia Financiera de Colombia (SFC)",
+        "Excel avanzado",
+        "Conocimientos en automatización de tareas",
+        "Manejo de Power BI para visualización de datos",
+        "Gestión de boletines de seguridad"
+      ],
+      "habilidades_blandas": [],
+      "certificaciones": [],
+      "idiomas": []
+    }
+  },
+  "benefits": [
+    "Tipo de contrato Indefinido",
+    "Modalidad Hibrida de Trabajo",
+    "Salario Competitivo",
+    "Beneficios extralegales"
+  ]
+}
