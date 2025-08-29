@@ -1,0 +1,72 @@
+{
+  "personal": {
+    "nombre": "CARLOS DANIEL SANTOYO SÁNCHEZ",
+    "email": "csantoyo2011@gmail.com",
+    "telefono": "315-395-4077",
+    "ubicacion": "Calle 97#70 – 90 Int.6 Apto 1101, Bogotá D.C"
+  },
+  "educacion": {
+    "educacion": [
+      {
+        "titulo": "Ingeniería de Sistemas y Computación",
+        "institucion": "Universidad de los Andes",
+        "anio": 2023
+      },
+      {
+        "titulo": "Bachiller Académico",
+        "institucion": "Colegio Bilingüe Lisa Meitner",
+        "anio": 2018
+      }
+    ]
+  },
+  "experiencia_laboral": {
+    "experiencia_laboral": [
+      {
+        "cargo": "Analista de Monitoreo red SOC-NOC",
+        "empresa": "Adsum ST",
+        "duracion": "2020 - 2021"
+      },
+      {
+        "cargo": "Asesor de servicio al cliente en seguro de salud",
+        "empresa": "Concentrix",
+        "duracion": "Bilingüe 100%"
+      },
+      {
+        "cargo": "Asesor de servicio a cliente y especializado en ventas",
+        "empresa": "Asurion",
+        "duracion": "Bilingüe 100%"
+      }
+    ]
+  },
+  "skills": {
+    "habilidades_tecnicas": [
+      "Programación Java CC",
+      "Programación Java",
+      "HTML5",
+      "HTML",
+      "Análisis de malware y gestión de equipos de redes",
+      "Base de datos Diseño soluciones para el desarrollo de Sistemas",
+      "Word",
+      "Excel",
+      "Power Point"
+    ],
+    "habilidades_blandas": [
+      "Trabajo en equipo",
+      "Liderazgo",
+      "Creatividad",
+      "Responsable",
+      "Puntual",
+      "Analítico",
+      "Dinámico",
+      "Pensamiento conceptual",
+      "Planeación",
+      "Ejecución",
+      "Evaluación",
+      "Control",
+      "Comprometido",
+      "Organizado",
+      "Alta capacidad de trabajar en equipo",
+      "Vocación de continuo aprendizaje"
+    ]
+  }
+}

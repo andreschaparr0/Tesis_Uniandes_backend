@@ -1,0 +1,67 @@
+{
+  "personal": {
+    "nombre": "ANDRES CHAPARRO",
+    "email": "andresfelipechaparro050764@gmail.com",
+    "telefono": "+57 311 4548999",
+    "ubicacion": "Bogota, Colombia"
+  },
+  "educacion": {
+    "educacion": [
+      {
+        "titulo": "Industrial Engineering",
+        "institucion": "Universidad de los Andes",
+        "anio": "2024"
+      },
+      {
+        "titulo": "Systems Engineering",
+        "institucion": "Universidad de los Andes",
+        "anio": "2024"
+      },
+      {
+        "titulo": "High School Diploma",
+        "institucion": "Colegio SummerHill School",
+        "anio": "Graduado con honores"
+      }
+    ]
+  },
+  "experiencia_laboral": {
+    "experiencia_laboral": [
+      {
+        "cargo": "University Monitor",
+        "empresa": "Universidad de los Andes",
+        "duracion": "2024"
+      },
+      {
+        "cargo": "Customer Service",
+        "empresa": "Oh-k dog",
+        "duracion": "March 2023 – Jul 2023"
+      },
+      {
+        "cargo": "Cook",
+        "empresa": "Cook out",
+        "duracion": "March 2024 – Jul 2024"
+      }
+    ]
+  },
+  "skills": {
+    "habilidades_tecnicas": [
+      "GIT",
+      "PYTHON",
+      "SQL",
+      "NOSQL",
+      "JAVA",
+      "JAVASCRIPT",
+      "R",
+      "EXCEL"
+    ],
+    "habilidades_blandas": [
+      "Trabajo en equipo",
+      "Liderazgo",
+      "Resolución de problemas",
+      "Pensamiento crítico",
+      "Adaptabilidad",
+      "Proactividad",
+      "Comunicación efectiva"
+    ]
+  }
+}

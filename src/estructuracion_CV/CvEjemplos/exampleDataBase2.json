@@ -1,0 +1,43 @@
+{
+  "personal": {
+    "nombre": "",
+    "email": "",
+    "telefono": "",
+    "ubicacion": "City, State"
+  },
+  "educacion": {
+    "educational_background": []
+  },
+  "experiencia_laboral": {
+    "experiencia_laboral": [
+      {
+        "cargo": "HR Manager/Generalist",
+        "empresa": "Company Name",
+        "duracion": "02/2012 to Current"
+      },
+      {
+        "cargo": "HR Manager",
+        "empresa": "Company Name",
+        "duracion": "07/2008 to 02/2012"
+      }
+    ]
+  },
+  "skills": {
+    "habilidades_tecnicas": [
+      "Proficiente en Excel",
+      "Proficiente en Word",
+      "Proficiente en Powerpoint",
+      "Experiencia con Ceridian HRIS",
+      "Experiencia con Paychex",
+      "Experiencia con ADP payroll systems"
+    ],
+    "habilidades_blandas": [
+      "Capacidad para trabajar efectivamente con todos los niveles de empleados y gestión",
+      "Mantenimiento de integridad, profesionalismo y confidencialidad",
+      "Desarrollo de relaciones laborales positivas",
+      "Asistencia a la gestión en el manejo de problemas de relaciones laborales",
+      "Implementación de programas de seguridad",
+      "Facilitación de capacitación"
+    ]
+  }
+}

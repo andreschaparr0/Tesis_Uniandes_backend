@@ -1,0 +1,64 @@
+{
+  "personal": {
+    "nombre": "No disponible",
+    "email": "No disponible",
+    "telefono": "No disponible",
+    "ubicacion": "City, State"
+  },
+  "educacion": {
+    "educational_background": [
+      {
+        "degree": "Bachelor's Degree in Information Technology",
+        "institution": "University Name",
+        "year": "2011"
+      },
+      {
+        "degree": "Master's Degree in Business Administration",
+        "institution": "University Name",
+        "year": "2013"
+      }
+    ]
+  },
+  "experiencia_laboral": {
+    "experiencia_laboral": [
+      {
+        "cargo": "Information Technology Manager",
+        "empresa": "Company Name",
+        "duracion": "03/2013 to Current"
+      },
+      {
+        "cargo": "IT Administrator",
+        "empresa": "Company Name",
+        "duracion": "06/2011 to 03/2013"
+      }
+    ]
+  },
+  "skills": {
+    "habilidades_tecnicas": [
+      "Operations management",
+      "Project tracking",
+      "Performance criteria tracking",
+      "Waterfall framework",
+      "Scrum methodology",
+      "Enterprise platforms",
+      "Salary structure/compensation analysis",
+      "Compensation/benefits administration",
+      "Staff development",
+      "Client communication",
+      "IT Infrastructure management",
+      "Client/Server management",
+      "Data center management",
+      "Disaster recovery applications",
+      "VMware architecture"
+    ],
+    "habilidades_blandas": [
+      "Calm under pressure",
+      "Effective communication",
+      "Team leadership",
+      "Problem-solving",
+      "Collaboration",
+      "Goal setting",
+      "Deadline enforcement"
+    ]
+  }
+}

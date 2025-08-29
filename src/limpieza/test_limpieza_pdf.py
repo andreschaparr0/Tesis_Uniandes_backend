@@ -1,5 +1,5 @@
-from pdf_text_extractor import extract_text_from_pdf
-from limpieza import clean_text
+from .pdf_text_extractor import extract_text_from_pdf
+from .limpieza import clean_text
 import os
 
 
@@ -13,13 +13,13 @@ Experience: Developed web applications using Python and JavaScript. 2020-2023
 Education: BSc in Computer Science
 Skills: Python, JavaScript, Machine Learning, Data Analysis
 """
-print("--- Texto de ejemplo ---\n")
-print(ejemplo)
-print("\n--- Texto limpio (ejemplo) ---\n")
-print(clean_text(ejemplo))
+# print("--- Texto de ejemplo ---\n")
+# print(ejemplo)
+# print("\n--- Texto limpio (ejemplo) ---\n")
+# print(clean_text(ejemplo))
 
 # 2. Prueba con PDF
-pdf_path = os.path.join("../images", "example.pdf")
+pdf_path = os.path.join("src/images", "exampleDataBase2.pdf")
 
 if pdf_path:
     try:

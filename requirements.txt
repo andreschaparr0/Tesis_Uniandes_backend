@@ -1,0 +1,26 @@
+# Dependencias para el proyecto de tesis
+# Procesamiento de PDFs
+PyMuPDF==1.23.14
+
+# Procesamiento de lenguaje natural
+nltk==3.8.1
+
+# Azure OpenAI
+openai==1.3.7
+
+# LangChain
+langchain==0.1.0
+langchain-openai==0.0.5
+langchain-core==0.1.0
+
+# Variables de entorno
+python-dotenv==1.0.0
+
+# Análisis de datos (para futuras funcionalidades)
+pandas==2.1.4
+numpy==1.24.3
+scikit-learn==1.3.2
+
+# Visualización (opcional)
+matplotlib==3.8.2
+seaborn==0.13.0
