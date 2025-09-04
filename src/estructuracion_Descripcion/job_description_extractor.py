@@ -115,7 +115,7 @@ class JobDescriptionExtractor:
             prompts = {
                 "basic": "Extrae únicamente la información básica del trabajo (título, empresa, ubicación, modalidad, tipo de contrato, salario, resumen) del siguiente texto. Responde en formato JSON.",
                 "responsibilities": "Extrae únicamente las responsabilidades y funciones del cargo del siguiente texto. Responde en formato JSON con una lista llamada 'responsibilities'.",
-                "qualifications": "Extrae únicamente los requisitos y calificaciones (educación, experiencia, habilidades técnicas y blandas, certificaciones, idiomas) del siguiente texto. Responde en formato JSON.",
+                "qualifications": "Extrae únicamente los requisitos y calificaciones (educación, experiencia, habilidades técnicas y blandas, certificaciones, idiomas) del siguiente texto. Responde en formato JSON y pon las llaves en ingles.",
                 "benefits": "Extrae únicamente los beneficios ofrecidos del siguiente texto. Responde en formato JSON con una lista llamada 'benefits'."
             }
             

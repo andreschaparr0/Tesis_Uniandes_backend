@@ -56,17 +56,22 @@ class SimpleCVExtractor:
         """
         return {
             "personal": {
-                "nombre": "",
+                "name": "",
                 "email": "",
-                "telefono": "",
-                "ubicacion": ""
+                "phone": "",
+                "location": ""
             },
-            "educacion": [],
-            "experiencia_laboral": [],
+            "education": [],
+            "experience": [],
+            "languages": [],
             "skills": {
-                "habilidades_tecnicas": [],
-                "habilidades_blandas": [],
+                "technical": [],
+                "methodologies_and_practices": [],
+                "standards_and_frameworks": [],
+                "soft_skills": [],
+                "certifications": []
             }
+            
         }
     
     def save_to_json(self, cv_data: dict, output_path: str) -> None:
@@ -99,10 +104,11 @@ class SimpleCVExtractor:
         try:
             # Definir prompts según el tipo
             prompts = {
-                "personal": "Extrae únicamente la información personal básica (nombre, email, teléfono, ubicación) del siguiente CV. Responde en formato JSON.",
-                "education": "Extrae únicamente la información educativa (títulos, instituciones, años) del siguiente CV. Responde en formato JSON.",
-                "experience": "Extrae únicamente la experiencia laboral (cargos, empresas, duración) del siguiente CV. Responde en formato JSON.",
-                "skills": "Extrae únicamente las habilidades técnicas y blandas del siguiente CV. Responde en formato JSON."
+                "personal": "Extrae únicamente la información personal básica (nombre, email, teléfono, ubicación) del siguiente CV. Responde en formato JSON (pon las llaves en ingles).",
+                "education": "Extrae únicamente la información educativa (títulos, instituciones, años) del siguiente CV. Responde en formato JSON (pon las llaves en ingles).",
+                "experience": "Extrae únicamente la experiencia laboral (cargos, empresas, duración) del siguiente CV. Responde en formato JSON (pon las llaves en ingles).",
+                "languages": "Extrae únicamente los idiomas (idioma, nivel) del siguiente CV. Responde en formato JSON donde la llave es el lenguaje y el valor el nivel (pon las llaves en ingles).",
+                "skills": "Extrae únicamente las skills (technical habilities, methodologies_and_practices, standards_and_frameworks, soft_skills y certifications) del siguiente CV. Responde en formato JSON (pon las llaves en ingles)."
             }
             
             # Crear el prompt
@@ -151,86 +157,16 @@ class SimpleCVExtractor:
         # Extraer habilidades
         skills = self.extract_with_simple_chain(text, "skills")
         
+        # Extraer idiomas
+        languages = self.extract_with_simple_chain(text, "languages")
+        
         # Crear estructura final
         cv_final = {
             "personal": personal_info,
-            "educacion": education,
-            "experiencia_laboral": experience,
+            "education": education,
+            "experience": experience,
+            "languages": languages,
             "skills": skills
         }
         
         return cv_final
-
-# ===== EJEMPLO DE USO =====
-if __name__ == "__main__":
-    # Texto de ejemplo de un CV
-    sample_cv_text = """
-    Juan Pérez
-    juan.perez@email.com
-    +57 300 123 4567
-    Bogotá, Colombia
-    
-    EXPERIENCIA PROFESIONAL
-    Desarrollador Full Stack - TechCorp (2022-2024)
-    - Desarrollo de aplicaciones web con React y Node.js
-    - Manejo de bases de datos PostgreSQL y MongoDB
-    
-    Desarrollador Junior - StartupXYZ (2020-2022)
-    - Desarrollo frontend con JavaScript y CSS
-    - Colaboración en equipo ágil
-    
-    EDUCACIÓN
-    Ingeniería de Sistemas - Universidad de los Andes (2016-2020)
-    Bachillerato - Colegio San Patricio (2010-2016)
-    
-    HABILIDADES
-    Lenguajes: Python, JavaScript, Java, SQL
-    Frameworks: React, Node.js, Django, Spring Boot
-    Bases de datos: PostgreSQL, MongoDB, MySQL
-    Habilidades blandas: Trabajo en equipo, Comunicación, Liderazgo
-    
-    IDIOMAS
-    Español (nativo), Inglés (avanzado), Francés (básico)
-    """
-    
-    # Crear instancia del extractor
-    extractor = SimpleCVExtractor()
-    
-    print("=== EJEMPLO DE USO DEL EXTRACTOR DE CV ===\n")
-    
-    # 1. Método original (OpenAI directo)
-    print("1. EXTRACCIÓN CON OPENAI DIRECTO:")
-    personal_info_original = extractor.extract_personal_info(sample_cv_text)
-    print(f"Información personal: {personal_info_original}\n")
-    
-    # 2. Método con LangChain + Pydantic (información personal)
-    print("2. EXTRACCIÓN CON LANGCHAIN + PYDANTIC (Personal):")
-    personal_info_langchain = extractor.extract_personal_info_langchain(sample_cv_text)
-    print(f"Información personal: {personal_info_langchain}\n")
-    
-    # 3. Método con LangChain + Pydantic (CV completo)
-    print("3. EXTRACCIÓN CON LANGCHAIN + PYDANTIC (CV Completo):")
-    full_cv_langchain = extractor.extract_full_cv_langchain(sample_cv_text)
-    print(f"CV completo extraído:")
-    print(f"- Nombre: {full_cv_langchain.personal_info.name}")
-    print(f"- Email: {full_cv_langchain.personal_info.email}")
-    print(f"- Experiencias: {len(full_cv_langchain.experience)}")
-    print(f"- Educación: {len(full_cv_langchain.education)}")
-    print(f"- Habilidades técnicas: {len(full_cv_langchain.skills.programming_languages)}")
-    print()
-    
-    # 4. Método simple con LangChain (sin Pydantic)
-    print("4. EXTRACCIÓN SIMPLE CON LANGCHAIN:")
-    simple_personal = extractor.extract_with_simple_chain(sample_cv_text, "personal")
-    print(f"Información personal simple: {simple_personal}\n")
-    
-    simple_skills = extractor.extract_with_simple_chain(sample_cv_text, "skills")
-    print(f"Habilidades extraídas: {simple_skills}\n")
-    
-    # 5. Guardar resultado en JSON
-    print("5. GUARDANDO RESULTADO EN JSON:")
-    cv_structure = extractor.create_cv_structure()
-    cv_structure["personal_info"] = personal_info_original
-    extractor.save_to_json(cv_structure, "cv_extracted.json")
-    
-    print("\n=== FIN DEL EJEMPLO ===")

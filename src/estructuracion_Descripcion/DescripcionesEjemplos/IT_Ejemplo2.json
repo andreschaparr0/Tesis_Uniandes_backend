@@ -1,96 +1,47 @@
 {
-  "job_title": "Especialista en Sistemas Windows y Linux",
+  "job_title": "Gestor de Sistemas Windows y Linux",
   "company_name": "Ausum Cloud",
   "location": "Remoto",
   "work_modality": "100% remoto",
   "contract_type": "No especificado",
   "salary": "No especificado",
-  "summary": "Buscamos perfiles con experiencia mínima de 10 años gestionando sistemas Windows y/o Linux, soporte nivel 3, y con conocimientos avanzados en BBDD SQL y NoSQL, servidores web y de aplicaciones. Se valorará experiencia en AWS, Azure, Docker, Kubernetes y Terraform.",
+  "summary": "Buscamos perfiles con experiencia mínima de 10 años gestionando sistemas Windows y/o Linux, soporte nivel 3, y con conocimientos avanzados en BBDD SQL y NoSQL, servidores web y de aplicaciones. Se valorará experiencia en AWS, Azure, Docker, Kubernetes y Terraform. Ofrecemos flexibilidad horaria y formación retribuida.",
   "responsibilities": [
     "Gestionar sistemas Windows y/o Linux",
     "Proporcionar soporte nivel 3",
-    "Trabajar con bases de datos SQL (MySQL, PostgreSQL, SQL Server)",
-    "Trabajar con bases de datos NoSQL (elasticsearch, mongodb)",
-    "Administrar servidores web (iis, apache, nginx, tomcat)",
-    "Administrar servidores de aplicaciones (jboss, websphere)",
+    "Administrar bases de datos SQL (MySQL, PostgreSQL, SQL Server)",
+    "Administrar bases de datos NoSQL (elasticsearch, mongodb)",
+    "Gestionar servidores web (iis, apache, nginx, tomcat)",
+    "Gestionar servidores de aplicaciones (jboss, websphere)",
     "Implementar y gestionar soluciones en AWS (EC2, RDS, Cloudformation, Cloudfront, ELB, BeanStalk, ACM, IAM, CloudWatch)",
     "Implementar y gestionar soluciones en Azure (VMs, Virtual Networks, Storage Accounts, App Services, Azure SQL, Policies, Monitor, DNS, Gateways)",
     "Utilizar Docker, Kubernetes y Terraform"
   ],
   "qualifications": {
-    "requisitos_y_calificaciones": {
-      "educacion": null,
-      "experiencia": {
-        "años": 10,
-        "áreas": [
-          "gestión de sistemas Windows",
-          "gestión de sistemas Linux",
-          "soporte nivel 3"
-        ]
-      },
-      "habilidades_tecnicas": {
-        "BBDD_SQL": [
-          "MySQL",
-          "PostgreSQL",
-          "SQL Server"
-        ],
-        "BBDD_NoSQL": [
-          "elasticsearch",
-          "mongodb"
-        ],
-        "servidores_web": [
-          "iis",
-          "apache",
-          "nginx",
-          "tomcat"
-        ],
-        "servidores_aplicaciones": [
-          "jboss",
-          "websphere"
-        ],
-        "plataformas_cloud": [
-          {
-            "nombre": "AWS",
-            "servicios": [
-              "EC2",
-              "RDS",
-              "Cloudformation",
-              "Cloudfront",
-              "ELB",
-              "BeanStalk",
-              "ACM",
-              "IAM",
-              "CloudWatch"
-            ]
-          },
-          {
-            "nombre": "Azure",
-            "servicios": [
-              "VMs",
-              "Virtual Networks",
-              "Storage Accounts",
-              "App Services",
-              "Azure SQL",
-              "Policies",
-              "Monitor",
-              "DNS",
-              "Gateways"
-            ]
-          }
-        ],
-        "contenedores": [
-          "Docker",
-          "Kubernetes",
-          "Terraform"
-        ]
-      },
-      "habilidades_blandas": null,
-      "certificaciones": [
+    "requirements": {
+      "education": null,
+      "experience": "Minimum 10 years managing Windows and/or Linux systems, level 3 support",
+      "technical_skills": [
+        "SQL Databases (MySQL, PostgreSQL, SQL Server)",
+        "NoSQL Databases (elasticsearch, mongodb)",
+        "Web servers (iis, apache, nginx, tomcat)",
+        "Application servers (jboss, websphere)",
+        "AWS (EC2, RDS, Cloudformation, Cloudfront, ELB, BeanStalk, ACM, IAM, CloudWatch)",
+        "Azure (VMs, Virtual Networks, Storage Accounts, App Services, Azure SQL, Policies, Monitor, DNS, Gateways)",
+        "Docker",
+        "Kubernetes",
+        "Terraform"
+      ],
+      "soft_skills": null,
+      "certifications": [
         "AWS",
         "AZURE",
         "GCP"
       ],
-      "idiomas": null
+      "languages": {
+        "English": "B2 Minimum",
+        "French": "B1"
+      }
     }
   },
   "benefits": [

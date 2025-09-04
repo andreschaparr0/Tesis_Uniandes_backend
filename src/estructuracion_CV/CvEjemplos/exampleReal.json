@@ -1,67 +1,66 @@
 {
   "personal": {
-    "nombre": "ANDRES CHAPARRO",
+    "name": "ANDRES CHAPARRO",
     "email": "andresfelipechaparro050764@gmail.com",
-    "telefono": "+57 311 4548999",
-    "ubicacion": "Bogota, Colombia"
+    "phone": "+57 311 4548999",
+    "location": "Bogota, Colombia"
   },
-  "educacion": {
-    "educacion": [
+  "education": {
+    "education": [
       {
-        "titulo": "Industrial Engineering",
-        "institucion": "Universidad de los Andes",
-        "anio": "2024"
-      },
-      {
-        "titulo": "Systems Engineering",
-        "institucion": "Universidad de los Andes",
-        "anio": "2024"
-      },
-      {
-        "titulo": "High School Diploma",
-        "institucion": "Colegio SummerHill School",
-        "anio": "Graduado con honores"
+        "degree": "Industrial Engineering and Systems Engineering",
+        "institution": "Universidad de los Andes",
+        "year": "2024"
       }
     ]
   },
-  "experiencia_laboral": {
-    "experiencia_laboral": [
+  "experience": {
+    "experience": [
       {
-        "cargo": "University Monitor",
-        "empresa": "Universidad de los Andes",
-        "duracion": "2024"
+        "position": "University Monitor",
+        "company": "Universidad de los Andes",
+        "duration": "2024"
       },
       {
-        "cargo": "Customer Service",
-        "empresa": "Oh-k dog",
-        "duracion": "March 2023 – Jul 2023"
+        "position": "Customer Service",
+        "company": "Oh-k dog",
+        "duration": "March 2023 – Jul 2023"
       },
       {
-        "cargo": "Cook",
-        "empresa": "Cook out",
-        "duracion": "March 2024 – Jul 2024"
+        "position": "Cook",
+        "company": "Cook out",
+        "duration": "March 2024 – Jul 2024"
       }
     ]
+  },
+  "languages": {
+    "English": "B2",
+    "Spanish": "Native"
   },
   "skills": {
-    "habilidades_tecnicas": [
-      "GIT",
-      "PYTHON",
-      "SQL",
-      "NOSQL",
-      "JAVA",
-      "JAVASCRIPT",
-      "R",
-      "EXCEL"
-    ],
-    "habilidades_blandas": [
-      "Trabajo en equipo",
-      "Liderazgo",
-      "Resolución de problemas",
-      "Pensamiento crítico",
-      "Adaptabilidad",
-      "Proactividad",
-      "Comunicación efectiva"
-    ]
+    "skills": {
+      "technical_habilities": [
+        "GitHub",
+        "Python",
+        "SQL",
+        "NoSQL",
+        "Java",
+        "JavaScript",
+        "R",
+        "Excel"
+      ],
+      "methodologies_and_practices": [],
+      "standards_and_frameworks": [],
+      "soft_skills": [
+        "Teamwork",
+        "Leadership",
+        "Problem-Solving",
+        "Critical Thinking",
+        "Adaptability",
+        "Proactivity",
+        "Effective Communication"
+      ],
+      "certifications": []
+    }
   }
 }
