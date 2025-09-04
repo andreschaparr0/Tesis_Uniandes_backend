@@ -1,0 +1,71 @@
+{
+  "personal": {
+    "personal_information": {
+      "name": "Not Provided",
+      "email": "Not Provided",
+      "phone": "Not Provided",
+      "location": "City, State"
+    }
+  },
+  "education": {
+    "education": [
+      {
+        "degree": "Bachelor's Degree in Information Technology",
+        "institution": "University of Technology",
+        "year": "2011"
+      },
+      {
+        "degree": "Master's Degree in Business Administration",
+        "institution": "Business School of Management",
+        "year": "2013"
+      }
+    ]
+  },
+  "experience": {
+    "work_experience": [
+      {
+        "position": "Information Technology Manager",
+        "company": "Current Company Name",
+        "duration": "03/2013 to Current"
+      },
+      {
+        "position": "IT Administrator",
+        "company": "Current Company Name",
+        "duration": "06/2011 to 03/2013"
+      }
+    ]
+  },
+  "languages": {
+    "English": "Fluent",
+    "Spanish": "Intermediate",
+    "French": "Basic"
+  },
+  "skills": {
+    "skills": {
+      "technical_habilities": [
+        "Operations management",
+        "Project tracking",
+        "Performance criteria tracking",
+        "Enterprise platforms",
+        "SaaS management",
+        "Client/Server management",
+        "VMware architecture",
+        "Security strategies",
+        "Backup strategies",
+        "Redundancy strategies"
+      ],
+      "methodologies_and_practices": [
+        "Waterfall framework",
+        "Scrum methodology",
+        "Proof of concept implementations"
+      ],
+      "standards_and_frameworks": [],
+      "soft_skills": [
+        "Calm under pressure",
+        "Staff development",
+        "Client communication"
+      ],
+      "certifications": []
+    }
+  }
+}

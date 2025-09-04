@@ -1,0 +1,75 @@
+{
+  "personal": {
+    "personal_information": {
+      "name": "HR MANAGER/GENERALIST",
+      "email": null,
+      "phone": null,
+      "location": "City, State"
+    }
+  },
+  "education": {
+    "education": [
+      {
+        "degree": "HR MANAGER/GENERALIST",
+        "institution": "Company Name",
+        "year": "2012"
+      },
+      {
+        "degree": "HR Manager",
+        "institution": "Company Name",
+        "year": "2008"
+      }
+    ]
+  },
+  "experience": {
+    "work_experience": [
+      {
+        "position": "HR Manager/Generalist",
+        "company": "Company Name",
+        "duration": "02/2012 to Current"
+      },
+      {
+        "position": "HR Manager",
+        "company": "Company Name",
+        "duration": "07/2008 to 02/2012"
+      }
+    ]
+  },
+  "languages": {
+    "English": "Proficient"
+  },
+  "skills": {
+    "skills": {
+      "technical_habilities": [
+        "Proficient in Excel",
+        "Proficient in Word",
+        "Proficient in Powerpoint",
+        "Experience with Ceridian HRIS",
+        "Experience with Paychex",
+        "Experience with ADP payroll systems"
+      ],
+      "methodologies_and_practices": [
+        "Recruiting efforts",
+        "New hire orientation",
+        "Employee relations management",
+        "Wage surveys",
+        "Job description writing",
+        "Org chart maintenance",
+        "Safety programs implementation",
+        "Wellness program coordination"
+      ],
+      "standards_and_frameworks": [
+        "ISO regulated environments",
+        "FDA regulated environments",
+        "State and Federal employment laws"
+      ],
+      "soft_skills": [
+        "Integrity",
+        "Professionalism",
+        "Confidentiality",
+        "Relationship building"
+      ],
+      "certifications": []
+    }
+  }
+}

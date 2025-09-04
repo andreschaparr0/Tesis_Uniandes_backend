@@ -129,7 +129,7 @@ class JobDescriptionExtractor:
             chain = prompt | self.llm
             
             # Ejecutar la cadena
-            response = chain.invoke({"text": text[:2000]})
+            response = chain.invoke({"text": text})
             
             # Parsear el JSON
             try:

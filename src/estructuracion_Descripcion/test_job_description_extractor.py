@@ -1,10 +1,10 @@
 from .job_description_extractor import JobDescriptionExtractor
 import json
 import os
-
+from ..limpieza.limpieza import clean_text
 # Variables Globales
-txt_path = "src/descripciones/descripciones_ejemplos/IT_Ejemplo2"
-nombreJson = "IT_Ejemplo2.json"
+txt_path = "src/descripciones/descripciones_ejemplos/CA_Ejemplo1"
+nombreJson = "CA_Ejemplo1.json"
 
 def test_job_description_extraction():
     """
@@ -37,7 +37,9 @@ def test_job_description_extraction():
             print(f"Texto leído ({len(raw_text)} caracteres)")
 
             print("PRUEBA: EXTRACCIÓN DE DESCRIPCIÓN DE TRABAJO")
-
+            
+            #Limpieza de texto
+            raw_text = clean_text(raw_text)
             # Extraer toda la descripción
             job_structure = extractor.extract_full_job_description(raw_text)
             
