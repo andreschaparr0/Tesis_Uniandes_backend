@@ -38,8 +38,8 @@ def compare_language_levels(cv_level: str, required_level: str) -> dict:
     """
     try:
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "Eres un experto en evaluar compatibilidad de niveles de idioma. Responde ÚNICAMENTE con JSON válido que contenga: 'compatible' (boolean), 'score' (0-100), 'reason' (string)."),
-            ("human", f"Compara estos niveles de idioma y determina si el nivel del CV cumple con el requerido:\nCV: {cv_level}\nRequerido: {required_level}\n\nResponde en formato JSON.")
+            ("system", "Eres un experto en evaluar compatibilidad de niveles de idioma. Responde ÚNICAMENTE con JSON válido que contenga: 'compatible' (boolean), 'score' (0-1), 'reason' (string)."),
+            ("human", f"Compara estos niveles de idioma y determina si el nivel del CV cumple con el requerido:\nCV: {cv_level}\nRequerido: {required_level}\n\nSi el CV cumple o supera el requerido, score debe ser 1.0. Si no cumple, score debe ser 0.0. Responde en formato JSON.")
         ])
         
         chain = prompt | llm
@@ -54,15 +54,16 @@ def compare_language_levels(cv_level: str, required_level: str) -> dict:
             }
         except json.JSONDecodeError:
             # Fallback simple
+            compatible = cv_level.upper() >= required_level.upper() if cv_level and required_level else False
             return {
-                "compatible": cv_level.upper() >= required_level.upper() if cv_level and required_level else False,
-                "score": 50 if cv_level and required_level else 0,
+                "compatible": compatible,
+                "score": 1.0 if compatible else 0.0,
                 "reason": "Comparación simple por texto"
             }
             
     except Exception as e:
         print(f"Error en comparación: {e}")
-        return {"compatible": False, "score": 0, "reason": "Error en comparación"}
+        return {"compatible": False, "score": 0.0, "reason": "Error en comparación"}
 
 def compare_languages(cv_languages: dict, job_languages: dict) -> dict:
     """
@@ -76,10 +77,10 @@ def compare_languages(cv_languages: dict, job_languages: dict) -> dict:
         dict: Resultado de la comparación
     """
     if not job_languages:
-        return {"score": 100, "matched": [], "missing": []}
+        return {"score": 1.0, "matched": [], "missing": []}
     
     if not cv_languages:
-        return {"score": 0, "matched": [], "missing": list(job_languages.keys())}
+        return {"score": 0.0, "matched": [], "missing": list(job_languages.keys())}
     
     matched_languages = []
     missing_languages = []
@@ -118,6 +119,6 @@ def get_language_score(comparison_result: dict) -> float:
         comparison_result (dict): Resultado de compare_languages
         
     Returns:
-        float: Puntaje entre 0 y 100
+        float: Puntaje entre 0 y 1
     """
-    return comparison_result.get("score", 0)
+    return comparison_result.get("score", 0.0)
