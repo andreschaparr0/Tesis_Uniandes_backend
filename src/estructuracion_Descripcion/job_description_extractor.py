@@ -50,38 +50,25 @@ class JobDescriptionExtractor:
             dict: Estructura JSON inicial vacía
         """
         return {
-            "job_title": "",
-            "company_name": "",
-            "location": "",
-            "work_modality": "",
-            "contract_type": "",
-            "salary": {
-                "currency": "",
-                "min_amount": 0,
-                "max_amount": 0,
-                "details": ""
-            },
-            "summary": "",
-            "responsibilities": [],
-            "qualifications": {
-                "education": "",
-                "experience_years": {
-                    "minimum": 0,
-                    "description": ""
-                },
-                "skills": {
-                    "technical": [],
-                    "methodologies_and_practices": [],
-                    "standards_and_frameworks": [],
-                    "soft_skills": []
-                },
-                "certifications": {
-                    "required": [],
-                    "desirable": []
-                },
-                "languages": []
-            },
-            "benefits": []
+        "job_title": "",
+        "company_name": "",
+        "location": "",
+        "work_modality": "",
+        "contract_type": "",
+        "salary": "",
+        "summary": "",
+        "responsibilities": [],
+        "qualifications": {
+            "requirements": {
+            "education": "",
+            "experience": "",
+            "technical_skills": [],
+            "soft_skills": [],
+            "certifications": "",
+            "languages": {}
+            }
+        },
+        "benefits": []
         }
     
     def save_to_json(self, job_data: dict, output_path: str) -> None:
@@ -115,7 +102,7 @@ class JobDescriptionExtractor:
             prompts = {
                 "basic": "Extrae únicamente la información básica del trabajo (título, empresa, ubicación, modalidad, tipo de contrato, salario, resumen) del siguiente texto. Responde en formato JSON.",
                 "responsibilities": "Extrae únicamente las responsabilidades y funciones del cargo del siguiente texto. Responde en formato JSON con una lista llamada 'responsibilities'.",
-                "qualifications": "Extrae únicamente los requisitos y calificaciones (educación, experiencia, habilidades técnicas y blandas, certificaciones, idiomas) del siguiente texto. Responde en formato JSON y pon las llaves en ingles.",
+                "qualifications": "Extrae únicamente los requisitos y calificaciones (educación, experiencia, habilidades técnicas y blandas, certificaciones y idiomas) del siguiente texto. Responde en formato JSON y pon las llaves en ingles.",
                 "benefits": "Extrae únicamente los beneficios ofrecidos del siguiente texto. Responde en formato JSON con una lista llamada 'benefits'."
             }
             

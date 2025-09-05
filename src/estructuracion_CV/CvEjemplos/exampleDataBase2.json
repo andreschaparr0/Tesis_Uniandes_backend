@@ -1,16 +1,14 @@
 {
   "personal": {
-    "personal_information": {
-      "name": "HR MANAGER/GENERALIST",
-      "email": null,
-      "phone": null,
-      "location": "City, State"
-    }
+    "name": "Not Provided",
+    "email": "Not Provided",
+    "phone": "Not Provided",
+    "location": "City, State"
   },
   "education": {
     "education": [
       {
-        "degree": "HR MANAGER/GENERALIST",
+        "degree": "HR Manager/Generalist",
         "institution": "Company Name",
         "year": "2012"
       },
@@ -40,34 +38,22 @@
   },
   "skills": {
     "skills": {
-      "technical_habilities": [
-        "Proficient in Excel",
-        "Proficient in Word",
-        "Proficient in Powerpoint",
-        "Experience with Ceridian HRIS",
-        "Experience with Paychex",
-        "Experience with ADP payroll systems"
-      ],
-      "methodologies_and_practices": [
-        "Recruiting efforts",
-        "New hire orientation",
-        "Employee relations management",
-        "Wage surveys",
-        "Job description writing",
-        "Org chart maintenance",
-        "Safety programs implementation",
-        "Wellness program coordination"
-      ],
-      "standards_and_frameworks": [
-        "ISO regulated environments",
-        "FDA regulated environments",
-        "State and Federal employment laws"
+      "technical_skills": [
+        "Excel",
+        "Word",
+        "Powerpoint",
+        "Ceridian HRIS",
+        "Paychex",
+        "ADP payroll systems"
       ],
       "soft_skills": [
         "Integrity",
         "Professionalism",
         "Confidentiality",
-        "Relationship building"
+        "Relationship building",
+        "Employee relations",
+        "Safety program implementation",
+        "Training facilitation"
       ],
       "certifications": []
     }

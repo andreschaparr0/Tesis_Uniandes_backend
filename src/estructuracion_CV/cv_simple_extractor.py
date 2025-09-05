@@ -65,9 +65,7 @@ class SimpleCVExtractor:
             "experience": [],
             "languages": [],
             "skills": {
-                "technical": [],
-                "methodologies_and_practices": [],
-                "standards_and_frameworks": [],
+                "technical_skills": [],
                 "soft_skills": [],
                 "certifications": []
             }
@@ -108,7 +106,7 @@ class SimpleCVExtractor:
                 "education": "Extrae únicamente la información educativa (títulos, instituciones, años) del siguiente CV. Responde en formato JSON (pon las llaves en ingles).",
                 "experience": "Extrae únicamente la experiencia laboral (cargos, empresas, duración) del siguiente CV. Responde en formato JSON (pon las llaves en ingles).",
                 "languages": "Extrae únicamente los idiomas (idioma, nivel) del siguiente CV. Responde en formato JSON donde la llave es el lenguaje y el valor el nivel (pon las llaves en ingles).",
-                "skills": "Extrae únicamente las skills (technical habilities, methodologies_and_practices, standards_and_frameworks, soft_skills y certifications) del siguiente CV. Responde en formato JSON (pon las llaves en ingles)."
+                "skills": "Extrae únicamente las skills (technical skills, soft_skills y certifications) del siguiente CV. Responde en formato JSON (pon las llaves en ingles)."
             }
             
             # Crear el prompt

@@ -1,0 +1,51 @@
+{
+  "job_title": "Gestor de Conocimiento",
+  "company_name": "Plaza Claro",
+  "location": "Bogotá",
+  "work_modality": "Lunes a viernes",
+  "contract_type": "Indefinido",
+  "salary": "35m a 45m",
+  "summary": "Se busca profesional en ingeniería de sistemas, ingeniería industrial, administración de empresas o afines con experiencia en gestión de información y documentación técnica.",
+  "responsibilities": [
+    "identificar y documentar buenas prácticas lecciones aprendidas procesos y procedimientos instructivos manuales y documentos operativos",
+    "gestionar repositorios de conocimiento wikis bases de datos etc",
+    "coordinar capacitaciones internas",
+    "facilitar el acceso a información relevante para la prestación del servicio",
+    "promover la cultura de gestión del conocimiento"
+  ],
+  "qualifications": {
+    "requirements": {
+      "education": [
+        "profesional en ingeniería de sistemas",
+        "ingeniería industrial",
+        "administración de empresas",
+        "afines"
+      ],
+      "experience": {
+        "years": {
+          "related_roles": 2,
+          "knowledge_management_tools": 1
+        }
+      },
+      "technical_skills": [
+        "herramientas ofimáticas",
+        "office 365",
+        "metodologías ágiles",
+        "scrum",
+        "kanban",
+        "sql",
+        "power bi",
+        "documentación técnica",
+        "análisis de procesos",
+        "gestión de proyectos"
+      ],
+      "soft_skills": [
+        "comunicación organizacional",
+        "ofimática"
+      ],
+      "certifications": [],
+      "languages": []
+    }
+  },
+  "benefits": []
+}

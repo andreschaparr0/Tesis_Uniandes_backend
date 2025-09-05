@@ -39,7 +39,7 @@
   },
   "skills": {
     "skills": {
-      "technical_habilities": [
+      "technical_skills": [
         "GitHub",
         "Python",
         "SQL",
@@ -49,8 +49,6 @@
         "R",
         "Excel"
       ],
-      "methodologies_and_practices": [],
-      "standards_and_frameworks": [],
       "soft_skills": [
         "Teamwork",
         "Leadership",
