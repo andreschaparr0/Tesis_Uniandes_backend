@@ -155,15 +155,10 @@ class SimpleCVExtractor:
                 ]
                 Si no hay certificaciones, devuelve un array vacío [].""",
                 
-                "languages": """Extrae únicamente los idiomas del siguiente CV.
-                Responde en formato JSON como un array de objetos con esta estructura:
-                [
-                    {{
-                        "language": "nombre del idioma",
-                        "level": "nivel (básico, intermedio, avanzado, nativo)"
-                    }}
-                ]
-                Si no hay idiomas, devuelve un array vacío []."""
+                "languages": """Extrae únicamente los idiomas del siguiente texto.
+                Responde en formato JSON como un objeto donde las llaves son los idiomas y los valores son los niveles:
+                {{"idioma1": "nivel1", "idioma2": "nivel2"}}
+                Si no hay idiomas, devuelve un objeto vacío {{}}."""
             }
             
             # Crear el prompt
@@ -244,14 +239,16 @@ class SimpleCVExtractor:
         
         # Extraer habilidades técnicas
         technical_skills = self.extract_with_simple_chain(text, "technical_skills")
+        
         # Extraer habilidades blandas
         soft_skills = self.extract_with_simple_chain(text, "soft_skills")
+        
         # Extraer certificaciones
         certifications = self.extract_with_simple_chain(text, "certifications")
         
         # Extraer idiomas
         languages = self.extract_with_simple_chain(text, "languages")
-        
+
         # Crear estructura final según la estructura definida en create_cv_structure
         cv_final = {
             "personal": personal_info if personal_info else {
@@ -313,10 +310,14 @@ class SimpleCVExtractor:
             cv_data["personal"] = expected_structure["personal"]
 
         # Validar que las listas sean realmente listas
-        list_fields = ["education", "experience", "certifications", "languages"]
+        list_fields = ["education", "experience", "certifications"]
         for field in list_fields:
             if not isinstance(cv_data.get(field), list):
                 cv_data[field] = []
+        
+        # Validar que languages sea un diccionario
+        if not isinstance(cv_data.get("languages"), dict):
+            cv_data["languages"] = {}
         
         return cv_data
     

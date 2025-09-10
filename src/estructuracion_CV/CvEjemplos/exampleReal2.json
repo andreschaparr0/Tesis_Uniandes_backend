@@ -24,7 +24,7 @@
       "position": "analista de monitoreo red socnoc",
       "company": "adsum st",
       "duration": "2020 – 2021",
-      "description": "Monitoreo y análisis de la red en el SOC/NOC."
+      "description": "Monitoreo y análisis de la red en el centro de operaciones de seguridad."
     },
     {
       "position": "asesor de servicio al cliente",
@@ -78,10 +78,8 @@
       "year": "2023"
     }
   ],
-  "languages": [
-    {
-      "language": "inglés",
-      "level": "avanzado"
-    }
-  ]
+  "languages": {
+    "inglés": "95",
+    "bilingüe": "100"
+  }
 }

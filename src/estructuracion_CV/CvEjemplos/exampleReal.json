@@ -52,14 +52,8 @@
     "effective communication"
   ],
   "certifications": [],
-  "languages": [
-    {
-      "language": "english",
-      "level": "b2"
-    },
-    {
-      "language": "spanish",
-      "level": "native"
-    }
-  ]
+  "languages": {
+    "english": "b2",
+    "spanish": "native"
+  }
 }

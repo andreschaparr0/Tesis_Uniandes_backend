@@ -25,7 +25,7 @@
       "field": "bachillerato"
     },
     {
-      "degree": "diplomado en liderazgo builders transform",
+      "degree": "diplomado en liderazgo",
       "institution": "colegio de estudios superiores de administración",
       "year": "2019",
       "field": "liderazgo"
@@ -36,7 +36,7 @@
       "position": "monitor",
       "company": "universidad de los andes",
       "duration": "enero 2025 – mayo 2025",
-      "description": "realización de monitorías personalizadas para ayudar a los estudiantes a comprender los temas del curso y resolver dudas específicas; apoyo en la evaluación de tareas, talleres y proyectos asegurando una calificación justa y coherente"
+      "description": "realización de monitorías personalizadas para ayudar a los estudiantes a comprender los temas del curso y resolver dudas específicas; apoyo en la evaluación de tareas, talleres y proyectos asegurando una calificación justa y coherente."
     }
   ],
   "technical_skills": [
@@ -83,14 +83,8 @@
       "year": "2019"
     }
   ],
-  "languages": [
-    {
-      "language": "español",
-      "level": "nativo"
-    },
-    {
-      "language": "inglés",
-      "level": "intermedio"
-    }
-  ]
+  "languages": {
+    "español": "nativo",
+    "inglés": "intermedio b2"
+  }
 }
