@@ -1,10 +1,11 @@
 from .cv_simple_extractor import SimpleCVExtractor
+from ..limpieza.limpieza import clean_text
 import json
 import os
 
 #Variables Globales
-pdf_path = "src/images/exampleDataBase2.pdf"
-nombreJson = "exampleDataBase2.json"
+pdf_path = "src/images/exampleReal.pdf"
+nombreJson = "exampleReal.json"
 
 def test_langchain_extraction():
     """
@@ -38,7 +39,8 @@ def test_langchain_extraction():
             # Extraer texto del PDF
             raw_text = extract_text_from_pdf(pdf_path)
             print(f"Texto extraído del PDF ({len(raw_text)} caracteres)")
-
+            raw_text = clean_text(raw_text)
+            #print(raw_text)
             print("PRUEBA: LANGCHAIN")
 
             cv_structure = extractor.extract_full_cv_simple(raw_text)
@@ -46,14 +48,14 @@ def test_langchain_extraction():
             
             output_path = "src/estructuracion_CV/CvEjemplos/" + nombreJson
             extractor.save_to_json(cv_structure, output_path)
-            print(f"✅ Archivo guardado en: {output_path}")
+            print(f"Archivo guardado en: {output_path}")
             
         except Exception as e:
-            print(f"❌ Error procesando PDF: {e}")
+            print(f"rror procesando PDF: {e}")
         
 \
     except Exception as e:
-        print(f"❌ Error general: {e}")
+        print(f"Error general: {e}")
         print("Verifica que tu API key esté configurada correctamente en el archivo .env")
 
 if __name__ == "__main__":

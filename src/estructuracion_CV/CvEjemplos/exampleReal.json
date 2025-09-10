@@ -1,64 +1,71 @@
 {
   "personal": {
-    "name": "ANDRES CHAPARRO",
-    "email": "andresfelipechaparro050764@gmail.com",
-    "phone": "+57 311 4548999",
-    "location": "Bogota, Colombia"
+    "name": "andres chaparro",
+    "email": "andresfelipechaparro050764gmailcom",
+    "phone": "57 311 4548999",
+    "location": "bogota colombia"
   },
-  "education": {
-    "education": [
-      {
-        "degree": "Industrial Engineering and Systems Engineering",
-        "institution": "Universidad de los Andes",
-        "year": "2024"
-      }
-    ]
-  },
-  "experience": {
-    "experience": [
-      {
-        "position": "University Monitor",
-        "company": "Universidad de los Andes",
-        "duration": "2024"
-      },
-      {
-        "position": "Customer Service",
-        "company": "Oh-k dog",
-        "duration": "March 2023 – Jul 2023"
-      },
-      {
-        "position": "Cook",
-        "company": "Cook out",
-        "duration": "March 2024 – Jul 2024"
-      }
-    ]
-  },
-  "languages": {
-    "English": "B2",
-    "Spanish": "Native"
-  },
-  "skills": {
-    "skills": {
-      "technical_skills": [
-        "GitHub",
-        "Python",
-        "SQL",
-        "NoSQL",
-        "Java",
-        "JavaScript",
-        "R",
-        "Excel"
-      ],
-      "soft_skills": [
-        "Teamwork",
-        "Leadership",
-        "Problem-Solving",
-        "Critical Thinking",
-        "Adaptability",
-        "Proactivity",
-        "Effective Communication"
-      ],
-      "certifications": []
+  "education": [
+    {
+      "degree": "Industrial Engineering",
+      "institution": "Universidad de los Andes",
+      "year": "2024",
+      "field": "Industrial Engineering and Systems Engineering"
+    },
+    {
+      "degree": "Systems Engineering",
+      "institution": "Universidad de los Andes",
+      "year": "2024",
+      "field": "Industrial Engineering and Systems Engineering"
     }
-  }
+  ],
+  "experience": [
+    {
+      "position": "university monitor",
+      "company": "universidad de los andes",
+      "duration": "three terms",
+      "description": "supported students in understanding academic topics and resolving doubts, designed and conducted review sessions, evaluated and provided feedback on assignments and exams"
+    },
+    {
+      "position": "cook",
+      "company": "cook out",
+      "duration": "march 2024 – jul 2024",
+      "description": "prepared food according to quality and efficiency standards, worked in a team in a high-demand environment, provided customer service in English"
+    },
+    {
+      "position": "customer service",
+      "company": "ohk dog",
+      "duration": "march 2023 – jul 2023",
+      "description": "provided customer service in a high-demand environment"
+    }
+  ],
+  "technical_skills": [
+    "python",
+    "sql",
+    "nosql",
+    "java",
+    "javascript",
+    "r",
+    "excel"
+  ],
+  "soft_skills": [
+    "teamwork",
+    "leadership",
+    "problem solving",
+    "critical thinking",
+    "adaptability",
+    "proactivity",
+    "effective communication"
+  ],
+  "certifications": [],
+  "languages": [
+    {
+      "language": "english",
+      "level": "b2"
+    },
+    {
+      "language": "spanish",
+      "level": "native"
+    }
+  ]
 }
