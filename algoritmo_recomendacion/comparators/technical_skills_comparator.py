@@ -25,49 +25,10 @@ llm = AzureChatOpenAI(
     max_tokens=500
 )
 
-def compare_technical_skill(cv_skill: str, required_skill: str) -> dict:
-    """
-    Compara una habilidad técnica del CV con una requerida usando IA.
-    
-    Args:
-        cv_skill (str): Habilidad técnica del CV
-        required_skill (str): Habilidad técnica requerida
-        
-    Returns:
-        dict: Resultado de la comparación
-    """
-    try:
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", "Eres un experto en evaluar compatibilidad de habilidades técnicas. Responde ÚNICAMENTE con JSON válido que contenga: 'compatible' (boolean), 'score' (0-1), 'reason' (string)."),
-            ("human", f"Compara estas habilidades técnicas y determina si la habilidad del CV cumple con la requerida:\nCV: {cv_skill}\nRequerida: {required_skill}\n\nSi el CV cumple o supera el requerido, score debe ser 1.0. Si no cumple, score debe ser 0.0. Responde en formato JSON.")
-        ])
-        
-        chain = prompt | llm
-        response = chain.invoke({"cv_skill": cv_skill, "required_skill": required_skill})
-        
-        try:
-            result = json.loads(response.content)
-            return {
-                "compatible": result.get("compatible", False),
-                "score": result.get("score", 0),
-                "reason": result.get("reason", "")
-            }
-        except json.JSONDecodeError:
-            # Fallback simple
-            compatible = cv_skill.lower() in required_skill.lower() if cv_skill and required_skill else False
-            return {
-                "compatible": compatible,
-                "score": 1.0 if compatible else 0.0,
-                "reason": "Comparación simple por texto"
-            }
-            
-    except Exception as e:
-        print(f"Error en comparación: {e}")
-        return {"compatible": False, "score": 0.0, "reason": "Error en comparación"}
-
 def compare_technical_skills(cv_skills: list, job_skills: list) -> dict:
     """
     Compara las habilidades técnicas del CV con las requeridas en la descripción de trabajo.
+    Optimizado para hacer toda la comparación en un solo prompt de IA.
     
     Args:
         cv_skills (list): Lista de habilidades técnicas del CV
@@ -82,28 +43,101 @@ def compare_technical_skills(cv_skills: list, job_skills: list) -> dict:
     if not cv_skills:
         return {"score": 0.0, "matched": [], "missing": job_skills}
     
+    try:
+        # Crear el prompt para comparar todas las habilidades de una vez
+        cv_skills_str = "\n".join([f"- {skill}" for skill in cv_skills])
+        job_skills_str = "\n".join([f"- {skill}" for skill in job_skills])
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", """Eres un experto en evaluar compatibilidad de habilidades técnicas. 
+            Analiza las habilidades del CV y determina cuáles cumplen con los requerimientos del trabajo.
+            No Descartes de una analiza si tienen relacion, no tienen que ser exactamente igual para que se relacionen.
+            
+            Responde ÚNICAMENTE con JSON válido que contenga:
+            - "matches": array de objetos con "cv_skill", "required_skill", "score" (0-1), "reason"
+            - "missing": array de habilidades requeridas que no tienen coincidencia
+            - "total_score": puntaje promedio (0-1)"""),
+            
+            ("human", f"""Compara estas habilidades técnicas:
+
+HABILIDADES DEL CV:
+{cv_skills_str}
+
+HABILIDADES REQUERIDAS:
+{job_skills_str}
+
+Para cada habilidad requerida, encuentra la mejor coincidencia en el CV (si existe).
+Score debe ser 1.0 para coincidencias exactas, 0.8-0.9 para muy relacionadas, 0.3-0.7 para parcialmente relacionadas.
+Si no hay coincidencia (Trata de que siempre allá una relacion), inclúyela en "missing".
+
+Responde en formato JSON. sin bloques de código markdown (```json).""")
+        ])
+        
+        chain = prompt | llm
+        response = chain.invoke({
+            "cv_skills": cv_skills_str, 
+            "job_skills": job_skills_str
+        })
+        try:
+            result = json.loads(response.content)
+            
+            # Procesar los resultados
+            matched_skills = result.get("matches", [])
+            missing_skills = result.get("missing", [])
+            total_score = result.get("total_score", 0)
+            
+            return {
+                "score": round(total_score, 2),
+                "matched": matched_skills,
+                "missing": missing_skills
+            }
+            
+        except json.JSONDecodeError:
+            print("Error al parsear JSON de IA, usando fallback simple")
+            return _fallback_comparison(cv_skills, job_skills)
+            
+    except Exception as e:
+        print(f"Error en comparación con IA: {e}")
+        return _fallback_comparison(cv_skills, job_skills)
+
+def _fallback_comparison(cv_skills: list, job_skills: list) -> dict:
+    """
+    Comparación simple de fallback cuando falla la IA.
+    """
     matched_skills = []
     missing_skills = []
     total_score = 0
     
-    # Comparar cada habilidad requerida
     for required_skill in job_skills:
-        found_match = False
+        best_match = None
+        best_score = 0
         
         for cv_skill in cv_skills:
-            # Comparar habilidades usando IA
-            comparison = compare_technical_skill(cv_skill, required_skill)
+            cv_lower = cv_skill.lower().strip()
+            required_lower = required_skill.lower().strip()
             
-            if comparison["compatible"]:
-                matched_skills.append(required_skill)
-                total_score += comparison["score"]
-                found_match = True
-                break
+            # Comparación simple por texto
+            if cv_lower == required_lower:
+                score = 1.0
+            elif cv_lower in required_lower or required_lower in cv_lower:
+                score = 0.7
+            else:
+                score = 0.0
+            
+            if score > best_score:
+                best_score = score
+                best_match = {
+                    "cv_skill": cv_skill,
+                    "required_skill": required_skill,
+                    "score": score,
+                    "reason": "Comparación simple por texto"
+                }
         
-        if not found_match:
+        if best_match and best_match["score"] > 0.5:
+            matched_skills.append(best_match)
+            total_score += best_match["score"]
+        else:
             missing_skills.append(required_skill)
     
-    # Calcular puntaje promedio
     avg_score = total_score / len(job_skills) if job_skills else 0
     
     return {
@@ -111,15 +145,3 @@ def compare_technical_skills(cv_skills: list, job_skills: list) -> dict:
         "matched": matched_skills,
         "missing": missing_skills
     }
-
-def get_technical_skills_score(comparison_result: dict) -> float:
-    """
-    Calcula un puntaje numérico basado en los resultados de la comparación.
-    
-    Args:
-        comparison_result (dict): Resultado de compare_technical_skills
-        
-    Returns:
-        float: Puntaje entre 0 y 1
-    """
-    return comparison_result.get("score", 0.0)
