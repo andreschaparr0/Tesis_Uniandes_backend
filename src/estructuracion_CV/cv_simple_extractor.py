@@ -135,12 +135,12 @@ class SimpleCVExtractor:
                 Si no hay experiencia laboral, devuelve un array vacío [].""",
                 
                 "technical_skills": """Extrae únicamente las habilidades técnicas (technical_skills) del siguiente CV.
-                Responde en formato JSON como un array de strings:
+                Responde en formato array [] de strings:
                 ["habilidad1", "habilidad2", "habilidad3"]
                 Si no hay habilidades técnicas, devuelve un array con un array vacío [].""",
                 
                 "soft_skills": """Extrae únicamente las habilidades blandas (soft_skills) del siguiente CV.
-                Responde en formato JSON como un array de strings:
+                Responde en formato array [] de strings:
                 ["habilidad1", "habilidad2", "habilidad3"]
                 Si no hay habilidades blandas, devuelve un array con un array vacío [].""",
                 
@@ -168,7 +168,7 @@ class SimpleCVExtractor:
             
             # Crear el prompt
             prompt = ChatPromptTemplate.from_messages([
-                ("system", "Eres un experto en extraer información estructurada de hojas de vida. IMPORTANTE: Responde ÚNICAMENTE con JSON válido, sin texto adicional, sin explicaciones, sin bloques de código markdown (```json). Solo el JSON puro."),
+                ("system", "Eres un experto en extraer información estructurada de hojas de vida. IMPORTANTE: Responde ÚNICAMENTE con la estructura que se te pide, sin texto adicional, sin explicaciones, sin bloques de código markdown (```json)."),
                 ("human", f"{prompts.get(extraction_type)}, Texto del CV:{{text}}")
             ])
             
@@ -262,8 +262,8 @@ class SimpleCVExtractor:
             },
             "education": education if education else [],
             "experience": experience if experience else [],
-            "technical_skills": technical_skills["technical_skills"] if technical_skills else [],
-            "soft_skills": soft_skills["soft_skills"] if soft_skills else [],
+            "technical_skills": technical_skills if technical_skills else [],
+            "soft_skills": soft_skills if soft_skills else [],
             "certifications": certifications if certifications else [],
             "languages": languages if languages else []
         }

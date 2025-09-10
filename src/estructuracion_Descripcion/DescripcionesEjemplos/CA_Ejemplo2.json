@@ -1,0 +1,42 @@
+{
+  "basic_info": {
+    "job_title": "Analista de Seguridad de la Información y Ciberseguridad",
+    "company_name": "Credibanco",
+    "work_modality": "híbrido",
+    "contract_type": "indefinido",
+    "salary": "competitivo",
+    "summary": "Responsable de monitorear, alertar y gestionar escenarios de riesgo, eventos e incidentes que afecten la confidencialidad, integridad, disponibilidad y confiabilidad de la información e infraestructura."
+  },
+  "responsibilities": [
+    "monitorear alertar y gestionar escenarios de riesgo",
+    "gestionar eventos e incidentes que afecten los principios de confidencialidad, integridad, disponibilidad y confiabilidad de la información e infraestructura",
+    "gestión y actualización de políticas de seguridad"
+  ],
+  "location": "bogotá",
+  "education": "profesional en ingeniería de sistemas electrónica telecomunicaciones o afines",
+  "experience": "experiencia mínima de un año en cargos asociados a seguridad de la información o seguridad informática",
+  "technical_skills": [
+    "monitoreo de logs de seguridad",
+    "gestión de alarmas",
+    "pci dss",
+    "excel avanzado",
+    "automatización de tareas",
+    "power bi",
+    "wazuh",
+    "exabeam",
+    "sistemas operativos windows",
+    "sistemas operativos linux",
+    "fundamentos de networking",
+    "seguridad informática",
+    "protección de datos personales"
+  ],
+  "soft_skills": [],
+  "certifications": "pci dss",
+  "languages": {},
+  "benefits": [
+    "tipo de contrato indefinido",
+    "modalidad hibrida de trabajo",
+    "salario competitivo",
+    "beneficios extralegales"
+  ]
+}

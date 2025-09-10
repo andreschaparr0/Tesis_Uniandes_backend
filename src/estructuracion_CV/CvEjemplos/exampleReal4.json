@@ -1,0 +1,90 @@
+{
+  "personal": {
+    "name": "juan andrés bernal gil",
+    "email": "jabernalg1uniandeseduco",
+    "phone": "DESCONOCIDO",
+    "location": "bogotá"
+  },
+  "education": [
+    {
+      "degree": "ingeniería de sistemas y computación",
+      "institution": "universidad de los andes bogotá",
+      "year": "2025",
+      "field": "sistemas y computación"
+    },
+    {
+      "degree": "ingeniería industrial",
+      "institution": "universidad de los andes bogotá",
+      "year": "2025",
+      "field": "industrial"
+    }
+  ],
+  "experience": [
+    {
+      "position": "desarrollador de software coop",
+      "company": "caseware",
+      "duration": "junio 2024 – junio 2025",
+      "description": "Desarrollé apis restful con nodejs express y typescript, integrando autenticación jwt, diseñé y optimicé consultas en postgresql y mongodb, implementé pruebas unitarias con jest y documentación con swagger, desplegué soluciones en aws lambda, y configuré pipelines cicd con github actions."
+    },
+    {
+      "position": "desarrollador de software",
+      "company": "sistema de gestión de pacientes",
+      "duration": "abril 2024 – junio 2024",
+      "description": "Desarrollé una api restful con nodejs express y typescript para gestionar datos de pacientes, diseñé una base de datos mongodb, implementé pruebas unitarias con jest."
+    },
+    {
+      "position": "desarrollador de software",
+      "company": "api de monitoreo de salud en tiempo real",
+      "duration": "enero 2024 – marzo 2024",
+      "description": "Construí una api con nodejs y express para procesar datos de dispositivos de salud, implementé autenticación oauth 2.0 y pruebas con mocha."
+    },
+    {
+      "position": "desarrollador de software",
+      "company": "redes neuronales para clasificación de resistencia microbiana – agrosavia",
+      "duration": "octubre 2024 – junio 2025",
+      "description": "Desarrollé procesos etl con python y sql, implementé una api restful con nodejs y express, realicé pruebas unitarias con jest y documenté la api con swagger."
+    }
+  ],
+  "technical_skills": [
+    "nodejs",
+    "sql",
+    "python",
+    "javascript",
+    "express",
+    "typescript",
+    "apis restful",
+    "jwt",
+    "oauth",
+    "jest",
+    "mocha",
+    "swagger",
+    "postgresql",
+    "mysql",
+    "mongodb",
+    "aws",
+    "lambda",
+    "s3",
+    "dynamodb",
+    "git",
+    "github actions",
+    "vs code",
+    "postman",
+    "jira"
+  ],
+  "soft_skills": [
+    "colaboración interdisciplinaria",
+    "resolución de problemas",
+    "optimización de procesos"
+  ],
+  "certifications": [],
+  "languages": [
+    {
+      "language": "español",
+      "level": "nativo"
+    },
+    {
+      "language": "inglés",
+      "level": "avanzado"
+    }
+  ]
+}

@@ -4,8 +4,8 @@ import json
 import os
 
 #Variables Globales
-pdf_path = "src/images/exampleReal.pdf"
-nombreJson = "exampleReal.json"
+pdf_path = "src/images/exampleReal4.pdf"
+nombreJson = "exampleReal4.json"
 
 def test_langchain_extraction():
     """

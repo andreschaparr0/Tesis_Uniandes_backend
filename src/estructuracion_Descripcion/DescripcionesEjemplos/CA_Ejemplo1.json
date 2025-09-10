@@ -1,0 +1,47 @@
+{
+  "basic_info": {
+    "job_title": "Analista de Seguridad de Información",
+    "company_name": "Evol",
+    "work_modality": "DESCONOCIDO",
+    "contract_type": "Tiempo completo",
+    "salary": "Remuneración atractiva y acorde al mercado",
+    "summary": "Supervisar actividades de planificación, diseño e implementación de controles internos de TI y de seguridad para cumplir con normativas vigentes."
+  },
+  "responsibilities": [
+    "supervisar las actividades de planificación diseño e implementación de controles internos de ti y de seguridad para cumplir con las normativas vigentes",
+    "monitorear y reportar la implementación de las acciones para mitigar los riesgos en las unidades de tecnologías de información",
+    "establecer y mantener un marco de trabajo para evaluar y administrar los riesgos de tecnologías de información",
+    "establecer y monitorear la implementación de procedimientos de administración de cuentas de usuarios",
+    "gestionar crear modificar eliminar los roles en sap"
+  ],
+  "location": "DESCONOCIDO",
+  "education": "egresado de la carreras técnicas o universitarias de ingeniería de sistemas, computación, ingeniería informática o afines",
+  "experience": "contar con mínimo 4 años trabajando en posiciones similares, experiencia en seguridad de la información",
+  "technical_skills": [
+    "conocimiento de normas y estándares internacionales de seguridad ti",
+    "conocimiento de metodologías de análisis de riesgos de la información",
+    "ejecución gestión y seguimiento de auditorías ti",
+    "gestión de la seguridad y riesgos ti",
+    "gestión de usuarios y roles",
+    "conocimiento en proyectos de segregación de funciones",
+    "conocimiento en seguridad en sap",
+    "experiencia en seguridad de la información",
+    "manejo de herramienta para modelamiento de procesos"
+  ],
+  "soft_skills": [],
+  "certifications": "DESCONOCIDO",
+  "languages": {
+    "alemán": "B2",
+    "portugués": "A1"
+  },
+  "benefits": [
+    "remuneración atractiva y acorde al mercado",
+    "contrato en planilla",
+    "línea de carrera interna o externa",
+    "accederás a nuestros cursos y certificaciones con udemy",
+    "horario lv",
+    "excelente clima laboral",
+    "actividades recreativas salud y bienestar",
+    "incorporación rápida y dinámica"
+  ]
+}

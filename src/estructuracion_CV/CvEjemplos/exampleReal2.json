@@ -1,0 +1,87 @@
+{
+  "personal": {
+    "name": "carlos daniel santoyo sánchez",
+    "email": "csantoyo2011gmailcom",
+    "phone": "3153954077",
+    "location": "bogotá dc"
+  },
+  "education": [
+    {
+      "degree": "ingeniería de sistemas y computación",
+      "institution": "universidad de los andes",
+      "year": "2023",
+      "field": "ingeniería de sistemas"
+    },
+    {
+      "degree": "bachiller académico",
+      "institution": "colegio bilingue lisa meitner",
+      "year": "2018",
+      "field": "educación secundaria"
+    }
+  ],
+  "experience": [
+    {
+      "position": "analista de monitoreo red socnoc",
+      "company": "adsum st",
+      "duration": "2020 – 2021",
+      "description": "Monitoreo y análisis de la red en el SOC/NOC."
+    },
+    {
+      "position": "asesor de servicio al cliente",
+      "company": "concentrix",
+      "duration": "no especificada",
+      "description": "Atención al cliente en el área de seguros de salud."
+    },
+    {
+      "position": "asesor de servicio a cliente y especializado en ventas",
+      "company": "asurion",
+      "duration": "no especificada",
+      "description": "Atención al cliente y ventas en un entorno bilingüe."
+    }
+  ],
+  "technical_skills": [
+    "programación java cc",
+    "programación java",
+    "html5",
+    "html",
+    "análisis de malware",
+    "gestión de equipos de redes",
+    "base de datos",
+    "diseño soluciones para el desarrollo de sistemas"
+  ],
+  "soft_skills": [
+    "responsable",
+    "puntual",
+    "analítica",
+    "dinámica",
+    "comprometido",
+    "organizado",
+    "trabajo en equipo",
+    "vocación de continuo aprendizaje",
+    "liderazgo",
+    "creatividad"
+  ],
+  "certifications": [
+    {
+      "name": "Fortinet NSE1",
+      "issuer": "Fortinet",
+      "year": "2023"
+    },
+    {
+      "name": "Fortinet NSE2",
+      "issuer": "Fortinet",
+      "year": "2023"
+    },
+    {
+      "name": "Fortinet NSE3",
+      "issuer": "Fortinet",
+      "year": "2023"
+    }
+  ],
+  "languages": [
+    {
+      "language": "inglés",
+      "level": "avanzado"
+    }
+  ]
+}
