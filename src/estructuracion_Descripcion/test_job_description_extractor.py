@@ -3,8 +3,8 @@ import json
 import os
 from ..limpieza.limpieza import clean_text
 # Variables Globales
-txt_path = "src/descripciones/descripciones_ejemplos/CA_Ejemplo1"
-nombreJson = "CA_Ejemplo1.json"
+txt_path = "src/descripciones/descripciones_ejemplos/CA_Ejemplo2"
+nombreJson = "CA_Ejemplo2.json"
 
 def test_job_description_extraction():
     """

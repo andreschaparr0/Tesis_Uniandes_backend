@@ -111,14 +111,4 @@ def compare_languages(cv_languages: dict, job_languages: dict) -> dict:
         "missing": missing_languages
     }
 
-def get_language_score(comparison_result: dict) -> float:
-    """
-    Calcula un puntaje numérico basado en los resultados de la comparación.
-    
-    Args:
-        comparison_result (dict): Resultado de compare_languages
-        
-    Returns:
-        float: Puntaje entre 0 y 1
-    """
-    return comparison_result.get("score", 0.0)
+

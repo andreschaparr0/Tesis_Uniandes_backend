@@ -15,11 +15,13 @@
     "gestionar crear modificar eliminar los roles en sap"
   ],
   "location": "DESCONOCIDO",
-  "education": "egresado de la carreras técnicas o universitarias de ingeniería de sistemas, computación, ingeniería informática o afines",
+  "education": "egresado de la carreras técnicas o universitarias de ingeniería de sistemas computación ingeniería informática o afines",
   "experience": "contar con mínimo 4 años trabajando en posiciones similares, experiencia en seguridad de la información",
   "technical_skills": [
+    "certificados aws",
+    "certificados google cloud",
     "conocimiento de normas y estándares internacionales de seguridad ti",
-    "conocimiento de metodologías de análisis de riesgos de la información",
+    "metodologías de análisis de riesgos de la información",
     "ejecución gestión y seguimiento de auditorías ti",
     "gestión de la seguridad y riesgos ti",
     "gestión de usuarios y roles",
@@ -29,7 +31,10 @@
     "manejo de herramienta para modelamiento de procesos"
   ],
   "soft_skills": [],
-  "certifications": "DESCONOCIDO",
+  "certifications": [
+    "certificados aws",
+    "certificados google cloud"
+  ],
   "languages": {
     "alemán": "B2",
     "portugués": "A1"

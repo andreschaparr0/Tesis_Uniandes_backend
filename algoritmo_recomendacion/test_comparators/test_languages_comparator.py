@@ -7,46 +7,9 @@ import os
 # Agregar el directorio padre al path para importar el comparador
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from comparators.languages_comparator import compare_languages, get_language_score
+from comparators.languages_comparator import compare_languages
 
 def test_languages_comparator():
-    """
-    Prueba el comparador de idiomas con datos de ejemplo
-    """
-    print("=== TEST DEL COMPARADOR DE IDIOMAS ===\n")
-    
-    # Datos de ejemplo basados en los JSONs reales
-    cv_languages = {
-        "English": "B2",
-        "Spanish": "Native"
-    }
-    
-    job_languages = {
-        "German": "B2",
-        "Portuguese": "A1"
-    }
-    
-    print("Idiomas del CV:", cv_languages)
-    print("Idiomas requeridos:", job_languages)
-    print()
-    
-    # Realizar comparación
-    result = compare_languages(cv_languages, job_languages)
-    
-    # Mostrar resultados
-    print("=== RESULTADOS DE LA COMPARACIÓN ===")
-    print(f"Puntaje: {result['score']}")
-    print(f"Idiomas que coinciden: {result['matched']}")
-    print(f"Idiomas faltantes: {result['missing']}")
-    print()
-    
-    # Calcular puntaje final
-    score = get_language_score(result)
-    print(f"Puntaje final: {score:.2f}")
-    
-    return result
-
-def test_simple_scenarios():
     """
     Prueba escenarios simples
     """
@@ -87,10 +50,6 @@ def test_simple_scenarios():
     print(f"Faltan: {result4['missing']}")
 
 if __name__ == "__main__":
-    # Ejecutar test principal
-    test_languages_comparator()
-    
     # Ejecutar escenarios simples
-    test_simple_scenarios()
-    
-    print("\n=== FIN DE LOS TESTS ===")
+    test_languages_comparator()
+

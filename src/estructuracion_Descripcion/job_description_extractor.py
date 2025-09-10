@@ -141,9 +141,9 @@ class JobDescriptionExtractor:
                 Si no hay habilidades blandas, devuelve un array vacío [].""",
                 
                 "certifications": """Extrae únicamente las certificaciones requeridas del siguiente texto.
-                Responde en formato JSON con esta estructura:
-                {{"certifications": "certificaciones requeridas"}}
-                Si no encuentras certificaciones, devuelve {{"certifications": "DESCONOCIDO"}}.""",
+                Responde en formato array [] de strings:
+                ["certificado1", "certificado1", "certificado1"]
+                Si no encuentras certificaciones, devuelve un array vacio []""",
                 
                 "languages": """Extrae únicamente los requisitos de idiomas del siguiente texto.
                 Responde en formato JSON como un objeto donde las llaves son los idiomas y los valores son los niveles:
@@ -267,7 +267,7 @@ class JobDescriptionExtractor:
             "experience": experience.get("experience", "DESCONOCIDO") if experience else "DESCONOCIDO",
             "technical_skills": technical_skills if technical_skills else [],
             "soft_skills": soft_skills if soft_skills else [],
-            "certifications": certifications.get("certifications", "DESCONOCIDO") if certifications else "DESCONOCIDO",
+            "certifications": certifications if certifications else [],
             "languages": languages if languages else {},
             "benefits": benefits if benefits else []
         }
@@ -321,13 +321,13 @@ class JobDescriptionExtractor:
             job_data["basic_info"] = expected_structure["basic_info"]
         
         # Validar que las listas sean realmente listas
-        list_fields = ["responsibilities", "technical_skills", "soft_skills", "benefits"]
+        list_fields = ["responsibilities", "technical_skills", "soft_skills", "benefits", "certifications"]
         for field in list_fields:
             if not isinstance(job_data.get(field), list):
                 job_data[field] = []
         
         # Validar que los strings sean strings
-        string_fields = ["location", "education", "experience", "certifications"]
+        string_fields = ["location", "education", "experience"]
         for field in string_fields:
             if not isinstance(job_data.get(field), str):
                 job_data[field] = "DESCONOCIDO"

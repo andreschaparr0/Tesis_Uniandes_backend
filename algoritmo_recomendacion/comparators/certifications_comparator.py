@@ -25,53 +25,13 @@ llm = AzureChatOpenAI(
     max_tokens=500
 )
 
-def compare_certification(cv_certification: str, required_certification: str) -> dict:
-    """
-    Compara una certificación del CV con una requerida usando IA.
-    
-    Args:
-        cv_certification (str): Certificación del CV
-        required_certification (str): Certificación requerida
-        
-    Returns:
-        dict: Resultado de la comparación
-    """
-    try:
-        prompt = ChatPromptTemplate.from_messages([
-            ("system", "Eres un experto en evaluar compatibilidad de certificaciones. Responde ÚNICAMENTE con JSON válido que contenga: 'compatible' (boolean), 'score' (0-1), 'reason' (string)."),
-            ("human", f"Compara estas certificaciones y determina si la certificación del CV cumple con la requerida:\nCV: {cv_certification}\nRequerida: {required_certification}\n\nSi el CV cumple o supera el requerido, score debe ser 1.0. Si no cumple, score debe ser 0.0. Responde en formato JSON.")
-        ])
-        
-        chain = prompt | llm
-        response = chain.invoke({"cv_certification": cv_certification, "required_certification": required_certification})
-        
-        try:
-            result = json.loads(response.content)
-            return {
-                "compatible": result.get("compatible", False),
-                "score": result.get("score", 0),
-                "reason": result.get("reason", "")
-            }
-        except json.JSONDecodeError:
-            # Fallback simple
-            compatible = cv_certification.lower() in required_certification.lower() if cv_certification and required_certification else False
-            return {
-                "compatible": compatible,
-                "score": 1.0 if compatible else 0.0,
-                "reason": "Comparación simple por texto"
-            }
-            
-    except Exception as e:
-        print(f"Error en comparación: {e}")
-        return {"compatible": False, "score": 0.0, "reason": "Error en comparación"}
-
 def compare_certifications(cv_certifications: list, job_certifications: list) -> dict:
     """
     Compara las certificaciones del CV con las requeridas en la descripción de trabajo.
     
     Args:
-        cv_certifications (list): Lista de certificaciones del CV
-        job_certifications (list): Lista de certificaciones requeridas
+        cv_certifications (list): Certificaciones del CV [{"name": "...", "issuer": "...", "year": "..."}]
+        job_certifications (list): Certificaciones requeridas ["certificados aws", "certificados google cloud"]
         
     Returns:
         dict: Resultado de la comparación
@@ -82,44 +42,43 @@ def compare_certifications(cv_certifications: list, job_certifications: list) ->
     if not cv_certifications:
         return {"score": 0.0, "matched": [], "missing": job_certifications}
     
-    matched_certifications = []
-    missing_certifications = []
-    total_score = 0
-    
-    # Comparar cada certificación requerida
-    for required_cert in job_certifications:
-        found_match = False
-        
-        for cv_cert in cv_certifications:
-            # Comparar certificaciones usando IA
-            comparison = compare_certification(cv_cert, required_cert)
-            
-            if comparison["compatible"]:
-                matched_certifications.append(required_cert)
-                total_score += comparison["score"]
-                found_match = True
-                break
-        
-        if not found_match:
-            missing_certifications.append(required_cert)
-    
-    # Calcular puntaje promedio
-    avg_score = total_score / len(job_certifications) if job_certifications else 0
-    
-    return {
-        "score": round(avg_score, 2),
-        "matched": matched_certifications,
-        "missing": missing_certifications
-    }
+    try:
+        # Preparar texto de certificaciones del CV
+        cv_text = ""
+        for cert in cv_certifications:
+            cv_text += f"- {cert.get('name', '')} ({cert.get('issuer', '')})\n"
+       
+        # Preparar texto de certificaciones requeridas
+        job_text = "\n".join([f"- {cert}" for cert in job_certifications])
+        prompt_text = f"""Eres un experto en evaluar relevancia de certificaciones técnicas. Responde ÚNICAMENTE con JSON válido que contenga: 'score' IMPORTANTE QUE SEA UN NUMERO ENTRE 0 Y 1, 'matched' (array de strings), 'missing' (array de strings).
 
-def get_certification_score(comparison_result: dict) -> float:
-    """
-    Calcula un puntaje numérico basado en los resultados de la comparación.
-    
-    Args:
-        comparison_result (dict): Resultado de compare_certifications
-        
-    Returns:
-        float: Puntaje entre 0 y 1
-    """
-    return comparison_result.get("score", 0.0)
+            Compara estas certificaciones del CV con las requeridas:
+
+            CV:
+            {cv_text}
+            Requeridas:
+            {job_text}
+
+            Para cada requerimiento, determina si hay una certificación relevante en el CV. Si es directamente relevante, score debe ser 1.0. Si es parcialmente relevante, score debe ser 0.1-0.7. 
+
+            Responde en JSON  sin bloques de código markdown (```json).: {{"score": numero entre 0.0-1.0, "matched": ["requerimiento1", "requerimiento2"], "missing": ["requerimiento3"]}}"""
+
+        response = llm.invoke(prompt_text)
+        try:
+            result = json.loads(response.content)
+            return {
+                "score": result.get("score", 0),
+                "matched": result.get("matched", []),
+                "missing": result.get("missing", [])
+            }
+        except json.JSONDecodeError:
+            # Fallback simple
+            return {
+                "score": 0.0,
+                "matched": [],
+                "missing": job_certifications
+            }
+            
+    except Exception as e:
+        print(f"Error en comparación de certificaciones: {e}")
+        return {"score": 0.0, "matched": [], "missing": job_certifications}
