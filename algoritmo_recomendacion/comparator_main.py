@@ -147,14 +147,11 @@ class ComparatorMain:
         # Cargar datos
         cv_data = self.load_json_file(cv_file_path)
         job_data = self.load_json_file(job_file_path)
-        
         if not cv_data or not job_data:
             print("Error: No se pudieron cargar los archivos JSON")
             return None
-        
         # Ejecutar todas las comparaciones
         results = self.run_all_comparisons(cv_data, job_data)
-        
         return cv_data, job_data, results
 
 

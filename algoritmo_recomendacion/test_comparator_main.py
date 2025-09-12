@@ -31,6 +31,7 @@ def test_comparator_main():
     print(f"Descripción: {job_file}")
     
     # Ejecutar todas las comparaciones y obtener datos
+    
     data = comparator.run_comparisons(cv_file, job_file)
     
     if data:
