@@ -34,8 +34,6 @@ def main():
         
         print(f"CV limpio: {len(cv_text)} caracteres")
         print(f"Descripción limpia: {len(description_text)} caracteres")
-        print(cv_text)
-        print(description_text)
         return cv_text, description_text
         
     except Exception as e:
