@@ -9,6 +9,7 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from main.data_cleaner import DataCleaner
+from main.data_structurer import DataStructurer
 
 
 def main():
@@ -22,19 +23,28 @@ def main():
     cv_path = "src/images/" + cv + ".pdf"
     description_path = "src/descripciones/descripciones_ejemplos/" + description 
 
-    print("LIMPIEZA DE DATOS")
+    print("SISTEMA DE RECOMENDACION")
     print("=" * 30)
     
-    # Crear instancia del limpiador
+    # Crear instancias
     cleaner = DataCleaner()
+    structurer = DataStructurer()
     
     try:
-        # Ejecutar limpieza
+        # FASE 1: LIMPIEZA
+        print("FASE 1: LIMPIEZA")
         cv_text, description_text = cleaner.process_both_files(cv_path, description_path)
-        
         print(f"CV limpio: {len(cv_text)} caracteres")
-        print(f"Descripción limpia: {len(description_text)} caracteres")
-        return cv_text, description_text
+        print(f"Descripcion limpia: {len(description_text)} caracteres")
+        
+        # FASE 2: ESTRUCTURACION
+        print("\nFASE 2: ESTRUCTURACION")
+        cv_structured, job_structured = structurer.structure_both(cv_text, description_text)
+        print(f"CV estructurado: {len(str(cv_structured))} caracteres")
+        print(f"Descripcion estructurada: {len(str(job_structured))} caracteres")
+        print(cv_structured)
+        print(job_structured)
+        return cv_structured, job_structured
         
     except Exception as e:
         print(f"Error: {e}")
