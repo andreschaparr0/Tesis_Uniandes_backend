@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from main.data_cleaner import DataCleaner
 from main.data_structurer import DataStructurer
+from main.recommendation_engine import RecommendationEngine
 
 
 def main():
@@ -29,6 +30,7 @@ def main():
     # Crear instancias
     cleaner = DataCleaner()
     structurer = DataStructurer()
+    engine = RecommendationEngine()
     
     try:
         # FASE 1: LIMPIEZA
@@ -42,13 +44,24 @@ def main():
         cv_structured, job_structured = structurer.structure_both(cv_text, description_text)
         print(f"CV estructurado: {len(str(cv_structured))} caracteres")
         print(f"Descripcion estructurada: {len(str(job_structured))} caracteres")
-        print(cv_structured)
-        print(job_structured)
-        return cv_structured, job_structured
+        
+        # FASE 3: RECOMENDACION
+        print("\nFASE 3: RECOMENDACION")
+        recommendation = engine.generate_recommendation(cv_structured, job_structured)
+        final_score = recommendation.get('final_score', 0.0)
+        print(f"Score final: {final_score:.2f}")
+        
+        # Mostrar resultados detallados
+        print("\nRESULTADOS DETALLADOS:")
+        for aspect, result in recommendation.get('results', {}).items():
+            score = result.get('score', 0.0)
+            print(f"{aspect}: {score:.2f}")
+        
+        return recommendation
         
     except Exception as e:
         print(f"Error: {e}")
-        return None, None
+        return None
 
 
 if __name__ == "__main__":
