@@ -56,51 +56,41 @@ class ComparatorMain:
         """
         results = {}
         
-        print("Ejecutando todas las comparaciones...")
-        
         # 1. Habilidades técnicas
-        print("Comparando habilidades técnicas...")
         cv_skills = cv_data.get('technical_skills', [])
         job_skills = job_data.get('technical_skills', [])
         results['technical_skills'] = compare_technical_skills(cv_skills, job_skills)
         
         # 2. Experiencia
-        print("Comparando experiencia...")
         cv_experience = cv_data.get('experience', [])
         job_experience = job_data.get('experience', '')
         results['experience'] = compare_experience(cv_experience, job_experience)
         
         # 3. Educación
-        print("Comparando educación...")
         cv_education = cv_data.get('education', [])
         job_education = job_data.get('education', '')
         results['education'] = compare_education(cv_education, job_education)
         
         # 4. Certificaciones
-        print("Comparando certificaciones...")
         cv_certifications = cv_data.get('certifications', [])
         job_certifications = job_data.get('certifications', [])
         results['certifications'] = compare_certifications(cv_certifications, job_certifications)
         
         # 5. Idiomas
-        print("Comparando idiomas...")
         cv_languages = cv_data.get('languages', {})
         job_languages = job_data.get('languages', {})
         results['languages'] = compare_languages(cv_languages, job_languages)
         
         # 6. Ubicación
-        print("Comparando ubicación...")
         cv_location = {'location': cv_data.get('personal', {}).get('location', '')}
         job_location = {'location': job_data.get('location', '')}
         results['location'] = compare_locations(cv_location, job_location)
         
         # 7. Responsabilidades
-        print("Comparando responsabilidades...")
         job_responsibilities = job_data.get('responsibilities', [])
         results['responsibilities'] = compare_responsibilities(cv_experience, job_responsibilities)
         
         # 8. Habilidades blandas
-        print("Comparando habilidades blandas...")
         cv_soft_skills = cv_data.get('soft_skills', [])
         job_soft_skills = job_data.get('soft_skills', [])
         results['soft_skills'] = compare_soft_skills(cv_soft_skills, job_soft_skills)
@@ -150,6 +140,9 @@ class ComparatorMain:
         Args:
             cv_file_path (str): Ruta al archivo JSON del CV
             job_file_path (str): Ruta al archivo JSON de la descripción de trabajo
+            
+        Returns:
+            tuple: (cv_data, job_data, results) o None si hay error
         """
         # Cargar datos
         cv_data = self.load_json_file(cv_file_path)
@@ -157,14 +150,11 @@ class ComparatorMain:
         
         if not cv_data or not job_data:
             print("Error: No se pudieron cargar los archivos JSON")
-            return
+            return None
         
         # Ejecutar todas las comparaciones
         results = self.run_all_comparisons(cv_data, job_data)
         
-        # Mostrar resultados
-        self.print_comparison_results(cv_data, job_data, results)
-        
-        return results
+        return cv_data, job_data, results
 
 

@@ -30,10 +30,15 @@ def test_comparator_main():
     print(f"CV: {cv_file}")
     print(f"Descripción: {job_file}")
     
-    # Ejecutar todas las comparaciones
-    results = comparator.run_comparisons(cv_file, job_file)
+    # Ejecutar todas las comparaciones y obtener datos
+    data = comparator.run_comparisons(cv_file, job_file)
     
-    if results:
+    if data:
+        cv_data, job_data, results = data
+        
+        # Imprimir resultados
+        comparator.print_comparison_results(cv_data, job_data, results)
+        
         print("\n=== TEST COMPLETADO ===")
         print(f"Se ejecutaron {len(results)} comparaciones")
     else:
