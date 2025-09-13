@@ -126,13 +126,21 @@ class ComparatorMain:
             # Mostrar elementos faltantes
             missing = result.get('missing', [])
             if missing:
-                print(f"  Faltantes: {missing[:5]}")  # Mostrar solo los primeros 5
-            
+                print(f"  Faltantes: {missing}") 
+            else:
+                print(f"  Faltantes: No hay faltantes")
             # Mostrar razón si existe
             reason = result.get('reason', '')
             if reason:
                 print(f"  Razón: {reason}")
-    
+            else:
+                print(f"  Razón: No hay razón")
+            # Mostrar coincidencias
+            matched = result.get('matched', [])
+            if matched:
+                print(f"  Coincidencias: {matched}")
+            else:
+                print(f"  Coincidencias: No hay coincidencias")
     def run_comparisons(self, cv_file_path: str, job_file_path: str):
         """
         Ejecuta todas las comparaciones entre CV y descripción de trabajo.

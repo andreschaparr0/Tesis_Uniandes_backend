@@ -37,10 +37,10 @@ def compare_responsibilities(cv_experience: list, job_responsibilities: list) ->
         dict: Resultado de la comparación
     """
     if not job_responsibilities:
-        return {"score": 1.0, "matched": [], "missing": []}
+        return {"score": 1.0, "matched": [], "reason": "No hay responsabilidades requeridas"}
     
     if not cv_experience:
-        return {"score": 0.0, "matched": [], "missing": job_responsibilities}
+        return {"score": 0.0, "matched": [], "reason": "CV no especifica experiencia"}
     
     try:
         # Preparar texto de experiencia del CV
@@ -52,7 +52,7 @@ def compare_responsibilities(cv_experience: list, job_responsibilities: list) ->
         # Preparar texto de responsabilidades requeridas
         job_text = "\n".join([f"- {resp}" for resp in job_responsibilities])
         
-        prompt_text = f"""Eres un experto en evaluar compatibilidad entre responsabilidades laborales y experiencia previa. Responde ÚNICAMENTE con JSON válido que contenga: 'score' IMPORTANTE QUE SEA UN NUMERO ENTRE 0 Y 1, 'matched' (array de strings), 'missing' (array de strings).
+        prompt_text = f"""Eres un experto en evaluar compatibilidad entre responsabilidades laborales y experiencia previa. Responde ÚNICAMENTE con JSON válido que contenga: 'score' IMPORTANTE QUE SEA UN NUMERO ENTRE 0 Y 1, 'matched' (array de strings), 'reason' (string).
 
 Compara la experiencia del CV con las responsabilidades requeridas:
 
@@ -63,7 +63,7 @@ Responsabilidades requeridas:
 
 Para cada responsabilidad, determina si la experiencia del CV demuestra capacidad para cumplirla. Si la experiencia es directamente relevante, score debe ser 1.0. Si es parcialmente relevante, score debe ser 0.1-0.7. Si no es relevante, score debe ser 0.0.
 
-Responde en JSON sin bloques de código markdown (```json).: {{"score": numero entre 0.0-1.0, "matched": ["responsabilidad1", "responsabilidad2"], "missing": ["responsabilidad3"]}}"""
+Responde en JSON sin bloques de código markdown (```json).: {{"score": numero entre 0.0-1.0, "matched": ["responsabilidad1", "responsabilidad2"], "reason": "explicación"}}"""
 
         response = llm.invoke(prompt_text)
         
@@ -72,16 +72,16 @@ Responde en JSON sin bloques de código markdown (```json).: {{"score": numero e
             return {
                 "score": result.get("score", 0),
                 "matched": result.get("matched", []),
-                "missing": result.get("missing", [])
+                "reason": result.get("reason", "")
             }
         except json.JSONDecodeError:
             # Fallback simple
             return {
                 "score": 0.0,
                 "matched": [],
-                "missing": job_responsibilities
+                "reason": "Error en respuesta de IA"
             }
             
     except Exception as e:
         print(f"Error en comparación de responsabilidades: {e}")
-        return {"score": 0.0, "matched": [], "missing": job_responsibilities}
+        return {"score": 0.0, "matched": [], "reason": "Error en comparación"}

@@ -38,7 +38,7 @@ def compare_soft_skills(cv_skills: list, job_skills: list) -> dict:
         dict: Resultado de la comparación
     """
     if not job_skills:
-        return {"score": 1.0, "matched": [], "missing": []}
+        return {"score": 1.0, "matched": ["No hay habilidades blandas requeridas"], "missing": []}
     
     if not cv_skills:
         return {"score": 0.0, "matched": [], "missing": job_skills}

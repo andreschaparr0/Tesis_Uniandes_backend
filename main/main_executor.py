@@ -18,6 +18,7 @@ def main():
     Función principal que ejecuta la limpieza de datos.
     """
     # Rutas de ejemplo
+    
     cv = "exampleReal4"
     description = "CA_ejemplo1"
     
@@ -47,17 +48,12 @@ def main():
         
         # FASE 3: RECOMENDACION
         print("\nFASE 3: RECOMENDACION")
-        recommendation = engine.generate_recommendation(cv_structured, job_structured)
-        final_score = recommendation.get('final_score', 0.0)
-        print(f"Score final: {final_score:.2f}")
+        results = engine.generate_recommendation(cv_structured, job_structured)
         
-        # Mostrar resultados detallados
-        print("\nRESULTADOS DETALLADOS:")
-        for aspect, result in recommendation.get('results', {}).items():
-            score = result.get('score', 0.0)
-            print(f"{aspect}: {score:.2f}")
+        # Mostrar resultados usando el método de ComparatorMain
+        engine.print_recommendation_results(cv_structured, job_structured, results)
         
-        return recommendation
+        return results
         
     except Exception as e:
         print(f"Error: {e}")
