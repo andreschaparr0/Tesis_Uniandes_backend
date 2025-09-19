@@ -77,10 +77,10 @@ def compare_languages(cv_languages: dict, job_languages: dict) -> dict:
         dict: Resultado de la comparación
     """
     if not job_languages:
-        return {"score": 1.0, "matched": [], "missing": []}
+        return {"score": 1.0, "reason": "No hay idiomas requeridos"}
     
     if not cv_languages:
-        return {"score": 0.0, "matched": [], "missing": list(job_languages.keys())}
+        return {"score": 0.0, "reason": "CV no especifica idiomas"}
     
     matched_languages = []
     missing_languages = []
@@ -105,10 +105,17 @@ def compare_languages(cv_languages: dict, job_languages: dict) -> dict:
     # Calcular puntaje promedio
     avg_score = total_score / len(job_languages) if job_languages else 0
     
+    # Crear razón explicativa
+    if len(matched_languages) == 0:
+        reason = f"No se encontraron coincidencias entre los {len(cv_languages)} idiomas del CV y los {len(job_languages)} requeridos."
+    elif len(matched_languages) == len(job_languages):
+        reason = f"Todos los {len(job_languages)} idiomas requeridos tienen coincidencias en el CV: {', '.join(matched_languages)}."
+    else:
+        reason = f"{len(matched_languages)} de {len(job_languages)} idiomas requeridos tienen coincidencias. Coinciden: {', '.join(matched_languages)}. Faltan: {', '.join(missing_languages)}."
+    
     return {
         "score": round(avg_score, 2),
-        "matched": matched_languages,
-        "missing": missing_languages
+        "reason": reason
     }
 
 

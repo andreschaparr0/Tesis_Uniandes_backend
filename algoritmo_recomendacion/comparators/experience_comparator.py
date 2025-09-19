@@ -37,10 +37,10 @@ def compare_experience(cv_experience: list, job_experience: str) -> dict:
         dict: Resultado de la comparación
     """
     if not job_experience:
-        return {"score": 1.0, "matched": True, "reason": "No hay experiencia requerida"}
+        return {"score": 1.0, "reason": "No hay experiencia requerida"}
     
     if not cv_experience:
-        return {"score": 0.0, "matched": False, "reason": "CV no especifica experiencia"}
+        return {"score": 0.0, "reason": "CV no especifica experiencia"}
     
     try:
         # Preparar texto de experiencia del CV
@@ -49,7 +49,7 @@ def compare_experience(cv_experience: list, job_experience: str) -> dict:
             cv_text += f"- {exp.get('position', '')} en {exp.get('company', '')} ({exp.get('duration', '')})\n"
             cv_text += f"  Descripción: {exp.get('description', '')}\n\n"
         
-        prompt_text = f"""Eres un experto en evaluar experiencia laboral. Responde ÚNICAMENTE con JSON válido que contenga: 'score' IMPORTANTE QUE SEA UN NUMERO ENTRE 0 Y 1, 'matched' (boolean), 'reason' (string).
+        prompt_text = f"""Eres un experto en evaluar experiencia laboral. Responde ÚNICAMENTE con JSON válido que contenga: 'score' IMPORTANTE QUE SEA UN NUMERO ENTRE 0 Y 1, 'reason' (string).
 
 Compara la experiencia del CV con la requerida:
 
@@ -59,8 +59,9 @@ Requerida:
 {job_experience}
 
 Evalúa si la experiencia del CV cumple con los requerimientos. Considera años de experiencia, posiciones similares, tecnologías, y habilidades mencionadas. Si cumple completamente, score debe ser 1.0. Si cumple parcialmente, score debe ser 0.1-0.7. Si no cumple, score debe ser 0.0.
+La razón debe explicar qué aspectos de la experiencia cumplen con los requerimientos y cuáles faltan.
 
-Responde en JSON sin bloques de código markdown (```json).: {{"score": numero entre 0.0-1.0, "matched": true/false, "reason": "explicación"}}"""
+Responde en JSON sin bloques de código markdown (```json).: {{"score": numero entre 0.0-1.0, "reason": "explicación detallada"}}"""
 
         response = llm.invoke(prompt_text)
         
@@ -68,17 +69,15 @@ Responde en JSON sin bloques de código markdown (```json).: {{"score": numero e
             result = json.loads(response.content)
             return {
                 "score": result.get("score", 0),
-                "matched": result.get("matched", False),
                 "reason": result.get("reason", "")
             }
         except json.JSONDecodeError:
             # Fallback simple
             return {
                 "score": 0.0,
-                "matched": False,
                 "reason": "Error en respuesta de IA"
             }
             
     except Exception as e:
         print(f"Error en comparación de experiencia: {e}")
-        return {"score": 0.0, "matched": False, "reason": "Error en comparación"}
+        return {"score": 0.0, "reason": "Error en comparación"}

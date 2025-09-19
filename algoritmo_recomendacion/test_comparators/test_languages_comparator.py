@@ -21,8 +21,7 @@ def test_languages_comparator():
     job_lang = {"English": "B2"}
     result1 = compare_languages(cv_lang, job_lang)
     print(f"Puntaje: {result1['score']}")
-    print(f"Coinciden: {result1['matched']}")
-    print(f"Faltan: {result1['missing']}")
+    print(f"Razón: {result1['reason']}")
     
     # Escenario 2: CV con nivel inferior al requerido
     print("\n2. CV con nivel inferior al requerido:")
@@ -30,15 +29,13 @@ def test_languages_comparator():
     job_lang = {"English": "B2"}
     result2 = compare_languages(cv_lang, job_lang)
     print(f"Puntaje: {result2['score']}")
-    print(f"Coinciden: {result2['matched']}")
-    print(f"Faltan: {result2['missing']}")
+    print(f"Razón: {result2['reason']}")
     
     # Escenario 3: Sin idiomas requeridos
     print("\n3. Sin idiomas requeridos:")
     result3 = compare_languages({"English": "B2"}, {})
     print(f"Puntaje: {result3['score']}")
-    print(f"Coinciden: {result3['matched']}")
-    print(f"Faltan: {result3['missing']}")
+    print(f"Razón: {result3['reason']}")
     
     # Escenario 4: Múltiples idiomas
     print("\n4. Múltiples idiomas:")
@@ -46,8 +43,7 @@ def test_languages_comparator():
     job_lang = {"English": "B2", "German": "B1"}
     result4 = compare_languages(cv_lang, job_lang)
     print(f"Puntaje: {result4['score']}")
-    print(f"Coinciden: {result4['matched']}")
-    print(f"Faltan: {result4['missing']}")
+    print(f"Razón: {result4['reason']}")
 
 if __name__ == "__main__":
     # Ejecutar escenarios simples

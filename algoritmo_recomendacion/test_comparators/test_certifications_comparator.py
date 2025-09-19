@@ -27,8 +27,7 @@ def test_certifications_comparator():
     job_certs = ["certificados aws"]
     result1 = compare_certifications(cv_certs, job_certs)
     print(f"Puntaje: {result1['score']}")
-    print(f"Coinciden: {len(result1['matched'])}")
-    print(f"Faltan: {result1['missing']}")
+    print(f"Razón: {result1['reason']}")
     
     # Escenario 2: Certificación relacionada
     print("\n2. Certificación relacionada:")
@@ -42,8 +41,7 @@ def test_certifications_comparator():
     job_certs = ["certificados aws"]
     result2 = compare_certifications(cv_certs, job_certs)
     print(f"Puntaje: {result2['score']}")
-    print(f"Coinciden: {len(result2['matched'])}")
-    print(f"Faltan: {result2['missing']}")
+    print(f"Razón: {result2['reason']}")
     
     # Escenario 3: Múltiples certificaciones
     print("\n3. Múltiples certificaciones:")
@@ -67,8 +65,7 @@ def test_certifications_comparator():
     job_certs = ["certificados aws", "certificados google cloud"]
     result3 = compare_certifications(cv_certs, job_certs)
     print(f"Puntaje: {result3['score']}")
-    print(f"Coinciden: {len(result3['matched'])}")
-    print(f"Faltan: {result3['missing']}")
+    print(f"Razón: {result3['reason']}")
     
     # Escenario 4: Sin certificaciones requeridas
     print("\n4. Sin certificaciones requeridas:")
@@ -82,8 +79,7 @@ def test_certifications_comparator():
     job_certs = []
     result4 = compare_certifications(cv_certs, job_certs)
     print(f"Puntaje: {result4['score']}")
-    print(f"Coinciden: {len(result4['matched'])}")
-    print(f"Faltan: {result4['missing']}")
+    print(f"Razón: {result4['reason']}")
     
     # Escenario 5: CV sin certificaciones
     print("\n5. CV sin certificaciones:")
@@ -91,8 +87,7 @@ def test_certifications_comparator():
     job_certs = ["certificados aws", "certificados google cloud"]
     result5 = compare_certifications(cv_certs, job_certs)
     print(f"Puntaje: {result5['score']}")
-    print(f"Coinciden: {len(result5['matched'])}")
-    print(f"Faltan: {result5['missing']}")
+    print(f"Razón: {result5['reason']}")
     
     #
 

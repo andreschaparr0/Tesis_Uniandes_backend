@@ -28,7 +28,6 @@ def test_experience_comparator():
     job_exp = "contar con mínimo 4 años trabajando en posiciones similares, experiencia en seguridad de la información"
     result1 = compare_experience(cv_exp, job_exp)
     print(f"Puntaje: {result1['score']}")
-    print(f"Coincide: {result1['matched']}")
     print(f"Razón: {result1['reason']}")
     
     # Escenario 2: Experiencia parcialmente relevante
@@ -44,7 +43,6 @@ def test_experience_comparator():
     job_exp = "contar con mínimo 4 años trabajando en posiciones similares, experiencia en seguridad de la información"
     result2 = compare_experience(cv_exp, job_exp)
     print(f"Puntaje: {result2['score']}")
-    print(f"Coincide: {result2['matched']}")
     print(f"Razón: {result2['reason']}")
     
     # Escenario 3: Múltiples experiencias
@@ -66,7 +64,6 @@ def test_experience_comparator():
     job_exp = "contar con mínimo 2 años trabajando en desarrollo de software, experiencia en nodejs y bases de datos"
     result3 = compare_experience(cv_exp, job_exp)
     print(f"Puntaje: {result3['score']}")
-    print(f"Coincide: {result3['matched']}")
     print(f"Razón: {result3['reason']}")
     
     # Escenario 4: Sin experiencia requerida
@@ -82,7 +79,6 @@ def test_experience_comparator():
     job_exp = ""
     result4 = compare_experience(cv_exp, job_exp)
     print(f"Puntaje: {result4['score']}")
-    print(f"Coincide: {result4['matched']}")
     print(f"Razón: {result4['reason']}")
     
     # Escenario 5: CV sin experiencia
@@ -91,7 +87,6 @@ def test_experience_comparator():
     job_exp = "contar con mínimo 3 años trabajando en desarrollo de software"
     result5 = compare_experience(cv_exp, job_exp)
     print(f"Puntaje: {result5['score']}")
-    print(f"Coincide: {result5['matched']}")
     print(f"Razón: {result5['reason']}")
     
     # Escenario 6: Experiencia no relacionada
@@ -107,7 +102,6 @@ def test_experience_comparator():
     job_exp = "contar con mínimo 3 años trabajando en desarrollo de software"
     result6 = compare_experience(cv_exp, job_exp)
     print(f"Puntaje: {result6['score']}")
-    print(f"Coincide: {result6['matched']}")
     print(f"Razón: {result6['reason']}")
 
 if __name__ == "__main__":

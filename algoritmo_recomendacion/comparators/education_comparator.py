@@ -39,10 +39,10 @@ def compare_education(cv_education: list, job_education: str) -> dict:
         dict: Resultado de la comparación
     """
     if not job_education or not job_education.strip():
-        return {"score": 1.0, "matched": [], "missing": [], "reason": "No hay requisitos educativos"}
+        return {"score": 1.0, "reason": "No hay requisitos educativos"}
     
     if not cv_education:
-        return {"score": 0.0, "matched": [], "missing": [job_education], "reason": "CV sin información educativa"}
+        return {"score": 0.0, "reason": "CV sin información educativa"}
     
     try:
         # Crear el prompt para comparar toda la educación de una vez
@@ -59,10 +59,8 @@ def compare_education(cv_education: list, job_education: str) -> dict:
             Considera títulos equivalentes, campos relacionados, niveles educativos similares y especializaciones afines.
             
             Responde ÚNICAMENTE con JSON válido que contenga:
-            - "matches": array de objetos con "cv_education", "job_requirement", "score" (0-1), "reason"
-            - "missing": array de requisitos que no tienen coincidencia
-            - "total_score": puntaje promedio (0-1)
-            - "overall_reason": explicación general de la compatibilidad"""),
+            - "score": puntaje entre 0-1
+            - "reason": explicación detallada de la compatibilidad"""),
             
             ("human", f"""Compara esta educación:
 
@@ -73,8 +71,8 @@ REQUISITOS EDUCATIVOS DEL TRABAJO:
 {job_education}
 
 Analiza si la educación del CV cumple con los requisitos del trabajo.
-Score debe ser 1.0 para cumplimiento exacto, 0.8-0.9 para muy relacionado, 0.3-0.7 para parcialmente relacionado.
-Si no hay coincidencia (Trata de que siempre allá una relacion), inclúyela en "missing".
+Score debe ser 1.0 para cumplimiento exacto, 0.8-0.9 para muy relacionado, 0.3-0.7 para parcialmente relacionado, 0.0-0.2 para no relacionado.
+La razón debe explicar qué aspectos educativos cumplen con los requisitos y cuáles faltan.
 
 Responde en formato JSON. sin bloques de código markdown (```json).""")
         ])
@@ -89,16 +87,12 @@ Responde en formato JSON. sin bloques de código markdown (```json).""")
             result = json.loads(response.content)
             
             # Procesar los resultados
-            matched_education = result.get("matches", [])
-            missing_requirements = result.get("missing", [])
-            total_score = result.get("total_score", 0)
-            overall_reason = result.get("overall_reason", "")
+            score = result.get("score", 0)
+            reason = result.get("reason", "")
             
             return {
-                "score": round(total_score, 2),
-                "matched": matched_education,
-                "missing": missing_requirements,
-                "reason": overall_reason
+                "score": round(score, 2),
+                "reason": reason
             }
             
         except json.JSONDecodeError:
@@ -116,15 +110,14 @@ def _fallback_comparison(cv_education: list, job_education: str) -> dict:
     if not cv_education:
         return {
             "score": 0.0,
-            "matched": [],
-            "missing": [job_education],
             "reason": "CV sin información educativa"
         }
     
     # Buscar coincidencias simples por palabras clave
     job_lower = job_education.lower()
-    matched_education = []
     total_score = 0
+    matched_count = 0
+    matched_details = []
     
     # Palabras clave comunes en educación técnica/universitaria
     technical_keywords = ["ingeniería", "sistemas", "computación", "informática", "técnico", "universitario", "egresado"]
@@ -135,32 +128,32 @@ def _fallback_comparison(cv_education: list, job_education: str) -> dict:
         
         # Verificar si el título o campo contiene palabras clave relacionadas
         score = 0
-        reason = ""
         
         for keyword in technical_keywords:
             if keyword in degree_lower or keyword in field_lower:
                 if keyword in job_lower:
                     score = 1.0
-                    reason = f"Coincidencia exacta con '{keyword}'"
+                    matched_details.append(f"{edu.get('degree', 'N/A')} coincide exactamente con '{keyword}'")
                     break
                 else:
                     score = 0.7
-                    reason = f"Campo relacionado con '{keyword}'"
+                    matched_details.append(f"{edu.get('degree', 'N/A')} es relacionado con '{keyword}'")
         
         if score > 0:
-            matched_education.append({
-                "cv_education": f"{edu.get('degree', 'N/A')} - {edu.get('institution', 'N/A')}",
-                "job_requirement": job_education,
-                "score": score,
-                "reason": reason
-            })
+            matched_count += 1
             total_score += score
     
     avg_score = total_score / len(cv_education) if cv_education else 0
     
+    # Crear razón explicativa
+    if matched_count == 0:
+        reason = f"No se encontraron coincidencias entre las {len(cv_education)} educaciones del CV y los requisitos."
+    elif matched_count == len(cv_education):
+        reason = f"Todas las educaciones del CV cumplen con los requisitos. {', '.join(matched_details[:3])}."
+    else:
+        reason = f"{matched_count} de {len(cv_education)} educaciones cumplen con los requisitos. {', '.join(matched_details[:3])}."
+    
     return {
         "score": round(avg_score, 2),
-        "matched": matched_education,
-        "missing": [job_education] if avg_score < 0.5 else [],
-        "reason": "Comparación simple por palabras clave"
+        "reason": reason
     }

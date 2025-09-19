@@ -38,10 +38,10 @@ def compare_soft_skills(cv_skills: list, job_skills: list) -> dict:
         dict: Resultado de la comparación
     """
     if not job_skills:
-        return {"score": 1.0, "matched": ["No hay habilidades blandas requeridas"], "missing": []}
+        return {"score": 1.0, "reason": "No hay habilidades blandas requeridas"}
     
     if not cv_skills:
-        return {"score": 0.0, "matched": [], "missing": job_skills}
+        return {"score": 0.0, "reason": "CV no especifica habilidades blandas"}
     
     try:
         # Crear el prompt para comparar todas las habilidades de una vez
@@ -54,9 +54,8 @@ def compare_soft_skills(cv_skills: list, job_skills: list) -> dict:
             No Descartes de una analiza si tienen relacion, no tienen que ser exactamente igual para que se relacionen.
             
             Responde ÚNICAMENTE con JSON válido que contenga:
-            - "matches": array de objetos con "cv_skill", "required_skill", "score" (0-1), "reason"
-            - "missing": array de habilidades requeridas que no tienen coincidencia
-            - "total_score": puntaje promedio (0-1)"""),
+            - "score": puntaje entre 0-1
+            - "reason": explicación detallada de la compatibilidad"""),
             
             ("human", f"""Compara estas habilidades blandas:
 
@@ -66,9 +65,9 @@ HABILIDADES BLANDAS DEL CV:
 HABILIDADES BLANDAS REQUERIDAS:
 {job_skills_str}
 
-Para cada habilidad requerida, encuentra la mejor coincidencia en el CV (si existe).
-Score debe ser 1.0 para coincidencias exactas, 0.8-0.9 para muy relacionadas, 0.3-0.7 para parcialmente relacionadas.
-Si no hay coincidencia (Trata de que siempre allá una relacion), inclúyela en "missing".
+Evalúa la compatibilidad general entre las habilidades blandas del CV y las requeridas.
+Score debe ser 1.0 para compatibilidad perfecta, 0.8-0.9 para muy buena, 0.3-0.7 para regular, 0.0-0.2 para baja.
+La razón debe explicar qué habilidades coinciden, cuáles faltan y por qué.
 
 Responde en formato JSON. sin bloques de código markdown (```json).""")
         ])
@@ -83,14 +82,12 @@ Responde en formato JSON. sin bloques de código markdown (```json).""")
             result = json.loads(response.content)
             
             # Procesar los resultados
-            matched_skills = result.get("matches", [])
-            missing_skills = result.get("missing", [])
-            total_score = result.get("total_score", 0)
+            score = result.get("score", 0)
+            reason = result.get("reason", "")
             
             return {
-                "score": round(total_score, 2),
-                "matched": matched_skills,
-                "missing": missing_skills
+                "score": round(score, 2),
+                "reason": reason
             }
             
         except json.JSONDecodeError:
@@ -105,13 +102,13 @@ def _fallback_comparison(cv_skills: list, job_skills: list) -> dict:
     """
     Comparación simple de fallback cuando falla la IA.
     """
-    matched_skills = []
-    missing_skills = []
+    matched_count = 0
     total_score = 0
+    matched_details = []
     
     for required_skill in job_skills:
-        best_match = None
         best_score = 0
+        best_match = ""
         
         for cv_skill in cv_skills:
             cv_lower = cv_skill.lower().strip()
@@ -127,23 +124,25 @@ def _fallback_comparison(cv_skills: list, job_skills: list) -> dict:
             
             if score > best_score:
                 best_score = score
-                best_match = {
-                    "cv_skill": cv_skill,
-                    "required_skill": required_skill,
-                    "score": score,
-                    "reason": "Comparación simple por texto"
-                }
+                best_match = cv_skill
         
-        if best_match and best_match["score"] > 0.5:
-            matched_skills.append(best_match)
-            total_score += best_match["score"]
-        else:
-            missing_skills.append(required_skill)
+        if best_score > 0.5:
+            matched_count += 1
+            matched_details.append(f"{best_match} coincide con {required_skill}")
+        
+        total_score += best_score
     
     avg_score = total_score / len(job_skills) if job_skills else 0
     
+    # Crear razón explicativa
+    if matched_count == 0:
+        reason = f"No se encontraron coincidencias entre las {len(cv_skills)} habilidades blandas del CV y las {len(job_skills)} requeridas."
+    elif matched_count == len(job_skills):
+        reason = f"Todas las {len(job_skills)} habilidades blandas requeridas tienen coincidencias en el CV. {', '.join(matched_details[:3])}."
+    else:
+        reason = f"{matched_count} de {len(job_skills)} habilidades blandas requeridas tienen coincidencias. {', '.join(matched_details[:3])}."
+    
     return {
         "score": round(avg_score, 2),
-        "matched": matched_skills,
-        "missing": missing_skills
+        "reason": reason
     }

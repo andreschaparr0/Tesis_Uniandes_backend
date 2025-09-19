@@ -37,10 +37,10 @@ def compare_responsibilities(cv_experience: list, job_responsibilities: list) ->
         dict: Resultado de la comparación
     """
     if not job_responsibilities:
-        return {"score": 1.0, "matched": [], "reason": "No hay responsabilidades requeridas"}
+        return {"score": 1.0, "reason": "No hay responsabilidades requeridas"}
     
     if not cv_experience:
-        return {"score": 0.0, "matched": [], "reason": "CV no especifica experiencia"}
+        return {"score": 0.0, "reason": "CV no especifica experiencia"}
     
     try:
         # Preparar texto de experiencia del CV
@@ -52,7 +52,7 @@ def compare_responsibilities(cv_experience: list, job_responsibilities: list) ->
         # Preparar texto de responsabilidades requeridas
         job_text = "\n".join([f"- {resp}" for resp in job_responsibilities])
         
-        prompt_text = f"""Eres un experto en evaluar compatibilidad entre responsabilidades laborales y experiencia previa. Responde ÚNICAMENTE con JSON válido que contenga: 'score' IMPORTANTE QUE SEA UN NUMERO ENTRE 0 Y 1, 'matched' (array de strings), 'reason' (string).
+        prompt_text = f"""Eres un experto en evaluar compatibilidad entre responsabilidades laborales y experiencia previa. Responde ÚNICAMENTE con JSON válido que contenga: 'score' IMPORTANTE QUE SEA UN NUMERO ENTRE 0 Y 1, 'reason' (string).
 
 Compara la experiencia del CV con las responsabilidades requeridas:
 
@@ -61,9 +61,10 @@ CV:
 Responsabilidades requeridas:
 {job_text}
 
-Para cada responsabilidad, determina si la experiencia del CV demuestra capacidad para cumplirla. Si la experiencia es directamente relevante, score debe ser 1.0. Si es parcialmente relevante, score debe ser 0.1-0.7. Si no es relevante, score debe ser 0.0.
+Evalúa si la experiencia del CV demuestra capacidad para cumplir las responsabilidades. Si la experiencia es directamente relevante, score debe ser 1.0. Si es parcialmente relevante, score debe ser 0.1-0.7. Si no es relevante, score debe ser 0.0.
+La razón debe explicar qué responsabilidades puede cumplir basándose en la experiencia y cuáles faltan.
 
-Responde en JSON sin bloques de código markdown (```json).: {{"score": numero entre 0.0-1.0, "matched": ["responsabilidad1", "responsabilidad2"], "reason": "explicación"}}"""
+Responde en JSON sin bloques de código markdown (```json).: {{"score": numero entre 0.0-1.0, "reason": "explicación detallada"}}"""
 
         response = llm.invoke(prompt_text)
         
@@ -71,17 +72,15 @@ Responde en JSON sin bloques de código markdown (```json).: {{"score": numero e
             result = json.loads(response.content)
             return {
                 "score": result.get("score", 0),
-                "matched": result.get("matched", []),
                 "reason": result.get("reason", "")
             }
         except json.JSONDecodeError:
             # Fallback simple
             return {
                 "score": 0.0,
-                "matched": [],
                 "reason": "Error en respuesta de IA"
             }
             
     except Exception as e:
         print(f"Error en comparación de responsabilidades: {e}")
-        return {"score": 0.0, "matched": [], "reason": "Error en comparación"}
+        return {"score": 0.0, "reason": "Error en comparación"}

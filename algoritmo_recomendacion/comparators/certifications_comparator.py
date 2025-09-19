@@ -37,10 +37,10 @@ def compare_certifications(cv_certifications: list, job_certifications: list) ->
         dict: Resultado de la comparación
     """
     if not job_certifications:
-        return {"score": 1.0, "matched": [], "missing": []}
+        return {"score": 1.0, "reason": "No hay certificaciones requeridas"}
     
     if not cv_certifications:
-        return {"score": 0.0, "matched": [], "missing": job_certifications}
+        return {"score": 0.0, "reason": "CV no especifica certificaciones"}
     
     try:
         # Preparar texto de certificaciones del CV
@@ -50,7 +50,7 @@ def compare_certifications(cv_certifications: list, job_certifications: list) ->
        
         # Preparar texto de certificaciones requeridas
         job_text = "\n".join([f"- {cert}" for cert in job_certifications])
-        prompt_text = f"""Eres un experto en evaluar relevancia de certificaciones técnicas. Responde ÚNICAMENTE con JSON válido que contenga: 'score' IMPORTANTE QUE SEA UN NUMERO ENTRE 0 Y 1, 'matched' (array de strings), 'missing' (array de strings).
+        prompt_text = f"""Eres un experto en evaluar relevancia de certificaciones técnicas. Responde ÚNICAMENTE con JSON válido que contenga: 'score' IMPORTANTE QUE SEA UN NUMERO ENTRE 0 Y 1, 'reason' (string).
 
             Compara estas certificaciones del CV con las requeridas:
 
@@ -59,26 +59,25 @@ def compare_certifications(cv_certifications: list, job_certifications: list) ->
             Requeridas:
             {job_text}
 
-            Para cada requerimiento, determina si hay una certificación relevante en el CV. Si es directamente relevante, score debe ser 1.0. Si es parcialmente relevante, score debe ser 0.1-0.7. 
+            Evalúa si las certificaciones del CV cumplen con los requerimientos. Si es directamente relevante, score debe ser 1.0. Si es parcialmente relevante, score debe ser 0.1-0.7. Si no es relevante, score debe ser 0.0.
+            La razón debe explicar qué certificaciones cumplen con los requerimientos y cuáles faltan.
 
-            Responde en JSON  sin bloques de código markdown (```json).: {{"score": numero entre 0.0-1.0, "matched": ["requerimiento1", "requerimiento2"], "missing": ["requerimiento3"]}}"""
+            Responde en JSON  sin bloques de código markdown (```json).: {{"score": numero entre 0.0-1.0, "reason": "explicación detallada"}}"""
 
         response = llm.invoke(prompt_text)
         try:
             result = json.loads(response.content)
             return {
                 "score": result.get("score", 0),
-                "matched": result.get("matched", []),
-                "missing": result.get("missing", [])
+                "reason": result.get("reason", "")
             }
         except json.JSONDecodeError:
             # Fallback simple
             return {
                 "score": 0.0,
-                "matched": [],
-                "missing": job_certifications
+                "reason": "Error en respuesta de IA"
             }
             
     except Exception as e:
         print(f"Error en comparación de certificaciones: {e}")
-        return {"score": 0.0, "matched": [], "missing": job_certifications}
+        return {"score": 0.0, "reason": "Error en comparación"}

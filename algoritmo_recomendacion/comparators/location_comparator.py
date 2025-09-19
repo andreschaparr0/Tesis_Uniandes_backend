@@ -99,10 +99,10 @@ def compare_locations(cv_location: dict, job_location: dict) -> dict:
         dict: Resultado de la comparación
     """
     if not job_location or not job_location.get("location"):
-        return {"score": 1.0, "matched": True, "reason": "No hay ubicación requerida"}
+        return {"score": 1.0, "reason": "No hay ubicación requerida"}
     
     if not cv_location or not cv_location.get("location"):
-        return {"score": 0.0, "matched": False, "reason": "CV no especifica ubicación"}
+        return {"score": 0.0, "reason": "CV no especifica ubicación"}
     
     cv_loc = cv_location.get("location", "")
     job_loc = job_location.get("location", "")
@@ -112,6 +112,5 @@ def compare_locations(cv_location: dict, job_location: dict) -> dict:
     
     return {
         "score": comparison["score"],
-        "matched": comparison["compatible"],
         "reason": comparison["reason"]
     }

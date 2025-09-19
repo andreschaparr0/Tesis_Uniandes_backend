@@ -31,8 +31,7 @@ def test_responsibilities_comparator():
     ]
     result1 = compare_responsibilities(cv_exp, job_resp)
     print(f"Puntaje: {result1['score']}")
-    print(f"Coinciden: {len(result1['matched'])}")
-    print(f"Faltan: {result1['missing']}")
+    print(f"Razón: {result1['reason']}")
     
     # Escenario 2: Experiencia parcialmente relevante
     print("\n2. Experiencia parcialmente relevante:")
@@ -50,8 +49,7 @@ def test_responsibilities_comparator():
     ]
     result2 = compare_responsibilities(cv_exp, job_resp)
     print(f"Puntaje: {result2['score']}")
-    print(f"Coinciden: {len(result2['matched'])}")
-    print(f"Faltan: {result2['missing']}")
+    print(f"Razón: {result2['reason']}")
     
     # Escenario 3: Múltiples experiencias
     print("\n3. Múltiples experiencias:")
@@ -75,8 +73,7 @@ def test_responsibilities_comparator():
     ]
     result3 = compare_responsibilities(cv_exp, job_resp)
     print(f"Puntaje: {result3['score']}")
-    print(f"Coinciden: {len(result3['matched'])}")
-    print(f"Faltan: {result3['missing']}")
+    print(f"Razón: {result3['reason']}")
     
     # Escenario 4: Sin responsabilidades requeridas
     print("\n4. Sin responsabilidades requeridas:")
@@ -91,8 +88,7 @@ def test_responsibilities_comparator():
     job_resp = []
     result4 = compare_responsibilities(cv_exp, job_resp)
     print(f"Puntaje: {result4['score']}")
-    print(f"Coinciden: {len(result4['matched'])}")
-    print(f"Faltan: {result4['missing']}")
+    print(f"Razón: {result4['reason']}")
     
     # Escenario 5: CV sin experiencia
     print("\n5. CV sin experiencia:")
@@ -102,8 +98,7 @@ def test_responsibilities_comparator():
     ]
     result5 = compare_responsibilities(cv_exp, job_resp)
     print(f"Puntaje: {result5['score']}")
-    print(f"Coinciden: {len(result5['matched'])}")
-    print(f"Faltan: {result5['missing']}")
+    print(f"Razón: {result5['reason']}")
     
     # Escenario 6: Experiencia no relacionada
     print("\n6. Experiencia no relacionada:")
@@ -120,8 +115,7 @@ def test_responsibilities_comparator():
     ]
     result6 = compare_responsibilities(cv_exp, job_resp)
     print(f"Puntaje: {result6['score']}")
-    print(f"Coinciden: {len(result6['matched'])}")
-    print(f"Faltan: {result6['missing']}")
+    print(f"Razón: {result6['reason']}")
 
 if __name__ == "__main__":
     # Ejecutar escenarios de prueba

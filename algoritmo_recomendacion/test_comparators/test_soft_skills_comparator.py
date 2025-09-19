@@ -21,8 +21,7 @@ def test_soft_skills_comparator():
     job_skills = ["teamwork", "leadership", "problem solving"]
     result1 = compare_soft_skills(cv_skills, job_skills)
     print(f"Puntaje: {result1['score']}")
-    print(f"Coinciden: {len(result1['matched'])} habilidades")
-    print(f"Faltan: {result1['missing']}")
+    print(f"Razón: {result1['reason']}")
     
     # Escenario 2: CV con habilidades parcialmente coincidentes
     print("\n2. CV con habilidades parcialmente coincidentes:")
@@ -30,22 +29,19 @@ def test_soft_skills_comparator():
     job_skills = ["teamwork", "leadership", "time management", "stress management"]
     result2 = compare_soft_skills(cv_skills, job_skills)
     print(f"Puntaje: {result2['score']}")
-    print(f"Coinciden: {len(result2['matched'])} habilidades")
-    print(f"Faltan: {result2['missing']}")
+    print(f"Razón: {result2['reason']}")
     
     # Escenario 3: Sin habilidades requeridas
     print("\n3. Sin habilidades requeridas:")
     result3 = compare_soft_skills(["teamwork", "leadership"], [])
     print(f"Puntaje: {result3['score']}")
-    print(f"Coinciden: {len(result3['matched'])} habilidades")
-    print(f"Faltan: {result3['missing']}")
+    print(f"Razón: {result3['reason']}")
     
     # Escenario 4: CV sin habilidades blandas
     print("\n4. CV sin habilidades blandas:")
     result4 = compare_soft_skills([], ["teamwork", "leadership", "communication"])
     print(f"Puntaje: {result4['score']}")
-    print(f"Coinciden: {len(result4['matched'])} habilidades")
-    print(f"Faltan: {result4['missing']}")
+    print(f"Razón: {result4['reason']}")
     
     # Escenario 5: Habilidades relacionadas (usando IA optimizada)
     print("\n5. Habilidades relacionadas (IA optimizada - UNA SOLA LLAMADA):")
@@ -53,14 +49,7 @@ def test_soft_skills_comparator():
     job_skills = ["collaboration", "management skills", "analytical thinking", "flexibility"]
     result5 = compare_soft_skills(cv_skills, job_skills)
     print(f"Puntaje: {result5['score']}")
-    print(f"Coinciden: {len(result5['matched'])} habilidades")
-    print(f"Faltan: {result5['missing']}")
-    
-    # Mostrar detalles de las coincidencias
-    if result5['matched']:
-        print("\nDetalles de coincidencias:")
-        for match in result5['matched']:
-            print(f"  CV: {match['cv_skill']} -> Requerido: {match['required_skill']} (Score: {match['score']})")
+    print(f"Razón: {result5['reason']}")
     
 def test_with_real_examples():
     """
@@ -92,18 +81,7 @@ def test_with_real_examples():
     
     result = compare_soft_skills(cv_skills, job_skills)
     print(f"Puntaje total: {result['score']}")
-    print(f"Habilidades coincidentes: {len(result['matched'])}")
-    print(f"Habilidades faltantes: {len(result['missing'])}")
-    
-    if result['matched']:
-        print("\nHabilidades que coinciden:")
-        for match in result['matched']:
-            print(f"  ✓ {match['cv_skill']} -> {match['required_skill']} (Score: {match['score']})")
-    
-    if result['missing']:
-        print("\nHabilidades faltantes:")
-        for skill in result['missing']:
-            print(f"  ✗ {skill}")
+    print(f"Razón: {result['reason']}")
 
 def test_soft_skills_synonyms():
     """
@@ -134,18 +112,7 @@ def test_soft_skills_synonyms():
     
     result = compare_soft_skills(cv_skills, job_skills)
     print(f"Puntaje total: {result['score']}")
-    print(f"Habilidades coincidentes: {len(result['matched'])}")
-    print(f"Habilidades faltantes: {len(result['missing'])}")
-    
-    if result['matched']:
-        print("\nHabilidades que coinciden:")
-        for match in result['matched']:
-            print(f"  ✓ {match['cv_skill']} -> {match['required_skill']} (Score: {match['score']})")
-    
-    if result['missing']:
-        print("\nHabilidades faltantes:")
-        for skill in result['missing']:
-            print(f"  ✗ {skill}")
+    print(f"Razón: {result['reason']}")
 
 if __name__ == "__main__":
     # Ejecutar escenarios simples
