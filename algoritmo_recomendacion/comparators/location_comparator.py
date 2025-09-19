@@ -38,8 +38,8 @@ def compare_location_compatibility(cv_location: str, required_location: str) -> 
     """
     try:
         prompt = ChatPromptTemplate.from_messages([
-            ("system", "Eres un experto en evaluar compatibilidad de ubicaciones geográficas. Responde ÚNICAMENTE con JSON válido que contenga: 'compatible' (boolean), 'score' (0-1), 'reason' (string). Considera ciudades, países, regiones y proximidad geográfica."),
-            ("human", f"Compara estas ubicaciones y determina si la ubicación del CV es compatible con la requerida:\nCV: {cv_location}\nRequerida: {required_location}\n\nSi las ubicaciones son la misma ciudad/país o están muy cerca geográficamente, score debe ser 1.0. Si están en diferentes países lejanos, score debe ser 0.0. Para ubicaciones en el mismo país pero diferentes ciudades, usa un score intermedio (0.3-0.7). Para mismas ciudades y paises pero en escritas en diferente formato es 1. Responde en formato JSON.")
+            ("system", "Eres un experto en evaluar compatibilidad de ubicaciones geográficas. Responde ÚNICAMENTE con JSON válido que contenga: 'score' (0-1), 'reason' (string). Considera ciudades, países, regiones y proximidad geográfica."),
+            ("human", f"Compara estas ubicaciones y determina si la ubicación del CV es compatible con la requerida:\nCV: {cv_location}\nRequerida: {required_location}\n\nSi las ubicaciones son la misma ciudad/país o están muy cerca geográficamente, score debe ser 1.0. Si están en diferentes países lejanos, score debe ser 0.0. Para ubicaciones en el mismo país pero diferentes ciudades, usa un score intermedio (0.3-0.7). Para mismas ciudades y paises pero en escritas en diferente formato es 1. La razón debe explicar el nivel de compatibilidad. Responde en formato JSON.")
         ])
         
         chain = prompt | llm
@@ -48,7 +48,6 @@ def compare_location_compatibility(cv_location: str, required_location: str) -> 
         try:
             result = json.loads(response.content)
             return {
-                "compatible": result.get("compatible", False),
                 "score": result.get("score", 0),
                 "reason": result.get("reason", "")
             }
@@ -60,7 +59,6 @@ def compare_location_compatibility(cv_location: str, required_location: str) -> 
             # Si son exactamente iguales
             if cv_lower == req_lower:
                 return {
-                    "compatible": True,
                     "score": 1.0,
                     "reason": "Ubicaciones idénticas"
                 }
@@ -72,20 +70,18 @@ def compare_location_compatibility(cv_location: str, required_location: str) -> 
             
             if common_words:
                 return {
-                    "compatible": True,
                     "score": 0.7,
                     "reason": f"Ubicaciones con elementos comunes: {', '.join(common_words)}"
                 }
             
             return {
-                "compatible": False,
                 "score": 0.0,
                 "reason": "Ubicaciones diferentes"
             }
             
     except Exception as e:
         print(f"Error en comparación de ubicación: {e}")
-        return {"compatible": False, "score": 0.0, "reason": "Error en comparación"}
+        return {"score": 0.0, "reason": "Error en comparación"}
 
 def compare_locations(cv_location: dict, job_location: dict) -> dict:
     """
