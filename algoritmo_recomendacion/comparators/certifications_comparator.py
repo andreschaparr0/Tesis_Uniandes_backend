@@ -37,10 +37,10 @@ def compare_certifications(cv_certifications: list, job_certifications: list) ->
         dict: Resultado de la comparación
     """
     if not job_certifications:
-        return {"score": 1.0, "reason": "No hay certificaciones requeridas"}
+        return {"score": -1.0, "reason": "No hay certificaciones requeridas"}
     
     if not cv_certifications:
-        return {"score": 0.0, "reason": "CV no especifica certificaciones"}
+        return {"score": -1.0, "reason": "CV no especifica certificaciones"}
     
     try:
         # Preparar texto de certificaciones del CV

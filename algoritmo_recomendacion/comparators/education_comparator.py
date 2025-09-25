@@ -39,10 +39,10 @@ def compare_education(cv_education: list, job_education: str) -> dict:
         dict: Resultado de la comparación
     """
     if not job_education or not job_education.strip():
-        return {"score": 1.0, "reason": "No hay requisitos educativos"}
+        return {"score": -1.0, "reason": "No hay requisitos educativos"}
     
     if not cv_education:
-        return {"score": 0.0, "reason": "CV sin información educativa"}
+        return {"score": -1.0, "reason": "CV sin información educativa"}
     
     try:
         # Crear el prompt para comparar toda la educación de una vez

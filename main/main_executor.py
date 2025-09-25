@@ -20,7 +20,7 @@ def main():
     # Rutas de ejemplo
     
     cv = "exampleReal4"
-    description = "CA_ejemplo1"
+    description = "Pragma"
     
     cv_path = "src/images/" + cv + ".pdf"
     description_path = "src/descripciones/descripciones_ejemplos/" + description 

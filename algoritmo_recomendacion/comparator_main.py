@@ -121,7 +121,86 @@ class ComparatorMain:
         
         return results
     
-    def print_comparison_results(self, cv_data: Dict[str, Any], job_data: Dict[str, Any], results: Dict[str, Any]):
+    def calculate_final_score(self, results: Dict[str, Any], weights: Dict[str, float] = None) -> Dict[str, Any]:
+        """
+        Calcula el score final ponderado basado en los resultados de las comparaciones.
+        
+        Args:
+            results (dict): Resultados de todas las comparaciones
+            weights (dict): Pesos para cada aspecto. Si es None, usa pesos predeterminados.
+            
+        Returns:
+            dict: Score final y detalles del cálculo
+        """
+        # Pesos predeterminados
+        default_weights = {
+            'experience': 0.30,          # 30% - Muy importante  
+            'technical_skills': 0.15,    # 15% - Muy importante
+            'education': 0.15,           # 15% - Importante
+            'responsibilities': 0.15,    # 15% - Importante
+            'certifications': 0.10,      # 10% - Moderado
+            'soft_skills': 0.08,         # 8% - Moderado
+            'languages': 0.04,           # 4% - Bajo
+            'location': 0.03             # 3% - Muy bajo
+        }
+        
+        # Usar pesos proporcionados o los predeterminados
+        if weights is None:
+            weights = default_weights
+        
+        # Validar que los pesos sumen 1.0
+        total_weight = sum(weights.values())
+        if abs(total_weight - 1.0) > 0.01:  # Tolerancia de 0.01
+            print(f"Advertencia: Los pesos suman {total_weight:.3f}, no 1.0. Normalizando...")
+            weights = {k: v/total_weight for k, v in weights.items()}
+        
+        # Calcular score ponderado
+        weighted_score = 0.0
+        score_details = {}
+        total_used_weight = 0.0
+        
+        for aspect, result in results.items():
+            if aspect in weights:
+                score = result.get('score', 0.0)
+                weight = weights[aspect]
+                
+                # Si el score es -1, no se incluye en el cálculo
+                if score == -1.0:
+                    score_details[aspect] = {
+                        'score': score,
+                        'weight': weight,
+                        'contribution': 0.0,
+                        'ignored': True
+                    }
+                else:
+                    contribution = score * weight
+                    weighted_score += contribution
+                    total_used_weight += weight
+                    
+                    score_details[aspect] = {
+                        'score': score,
+                        'weight': weight,
+                        'contribution': contribution,
+                        'ignored': False
+                    }
+        
+        # Normalizar el score si se ignoraron algunos aspectos
+        if total_used_weight > 0:
+            normalized_score = weighted_score / total_used_weight
+        else:
+            normalized_score = 0.0
+        
+        return {
+            'final_score': round(normalized_score, 3),
+            'raw_score': round(weighted_score, 3),
+            'weights_used': weights,
+            'score_breakdown': score_details,
+            'total_weight': sum(weights.values()),
+            'used_weight': round(total_used_weight, 3),
+            'ignored_aspects': [aspect for aspect, details in score_details.items() if details.get('ignored', False)]
+        }
+    
+    def print_comparison_results(self, cv_data: Dict[str, Any], job_data: Dict[str, Any], results: Dict[str, Any], weights: Dict[str, float] = None):
         """
         Imprime los resultados de todas las comparaciones.
         
@@ -129,6 +208,7 @@ class ComparatorMain:
             cv_data (dict): Datos del CV
             job_data (dict): Datos del trabajo
             results (dict): Resultados de comparación
+            weights (dict): Pesos para el cálculo del score final
         """
         print("\n" + "="*50)
         print("RESULTADOS DE COMPARACIONES")
@@ -142,10 +222,34 @@ class ComparatorMain:
         print(f"Candidato: {cv_name}")
         print(f"Posición: {job_title} en {company}")
         
+        # Calcular y mostrar score final
+        final_score_data = self.calculate_final_score(results, weights)
+        final_score = final_score_data['final_score']
+        ignored_aspects = final_score_data.get('ignored_aspects', [])
+        
+        print(f"\n" + "-"*30)
+        print(f"SCORE FINAL: {final_score:.1%}")
+        if ignored_aspects:
+            print(f"ASPECTOS IGNORADOS: {', '.join(ignored_aspects)}")
+        print("-"*30)
+        
         # Mostrar resultados de cada comparación
         for aspect, result in results.items():
             print(f"\n{aspect.replace('_', ' ').title()}:")
-            print(f"  Score: {result.get('score', 0.0)}")
+            score = result.get('score', 0.0)
+            print(f"  Score: {score:.2f}")
+            
+            # Mostrar contribución al score final si está disponible
+            if aspect in final_score_data['score_breakdown']:
+                breakdown = final_score_data['score_breakdown'][aspect]
+                weight = breakdown['weight']
+                contribution = breakdown['contribution']
+                ignored = breakdown.get('ignored', False)
+                
+                if ignored:
+                    print(f"  Peso: {weight:.1%} | IGNORADO (sin datos)")
+                else:
+                    print(f"  Peso: {weight:.1%} | Contribución: {contribution:.3f}")
                         
             reason = result.get('reason', '')
             if reason:

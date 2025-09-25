@@ -77,10 +77,10 @@ def compare_languages(cv_languages: dict, job_languages: dict) -> dict:
         dict: Resultado de la comparación
     """
     if not job_languages:
-        return {"score": 1.0, "reason": "No hay idiomas requeridos"}
+        return {"score": -1.0, "reason": "No hay idiomas requeridos"}
     
     if not cv_languages:
-        return {"score": 0.0, "reason": "CV no especifica idiomas"}
+        return {"score": -1.0, "reason": "CV no especifica idiomas"}
     
     matched_languages = []
     missing_languages = []

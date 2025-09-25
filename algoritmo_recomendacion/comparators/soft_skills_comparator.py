@@ -38,10 +38,10 @@ def compare_soft_skills(cv_skills: list, job_skills: list) -> dict:
         dict: Resultado de la comparación
     """
     if not job_skills:
-        return {"score": 1.0, "reason": "No hay habilidades blandas requeridas"}
+        return {"score": -1.0, "reason": "No hay habilidades blandas requeridas"}
     
     if not cv_skills:
-        return {"score": 0.0, "reason": "CV no especifica habilidades blandas"}
+        return {"score": -1.0, "reason": "CV no especifica habilidades blandas"}
     
     try:
         # Crear el prompt para comparar todas las habilidades de una vez

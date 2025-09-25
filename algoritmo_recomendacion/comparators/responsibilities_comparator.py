@@ -37,10 +37,10 @@ def compare_responsibilities(cv_experience: list, job_responsibilities: list) ->
         dict: Resultado de la comparación
     """
     if not job_responsibilities:
-        return {"score": 1.0, "reason": "No hay responsabilidades requeridas"}
+        return {"score": -1.0, "reason": "No hay responsabilidades requeridas"}
     
     if not cv_experience:
-        return {"score": 0.0, "reason": "CV no especifica experiencia"}
+        return {"score": -1.0, "reason": "CV no especifica experiencia"}
     
     try:
         # Preparar texto de experiencia del CV
