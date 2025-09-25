@@ -59,40 +59,64 @@ class ComparatorMain:
         # 1. Habilidades técnicas
         cv_skills = cv_data.get('technical_skills', [])
         job_skills = job_data.get('technical_skills', [])
+        # print("Habilidades técnicas")
+        # print(cv_skills)
+        # print(job_skills)
         results['technical_skills'] = compare_technical_skills(cv_skills, job_skills)
-        
+            
         # 2. Experiencia
         cv_experience = cv_data.get('experience', [])
         job_experience = job_data.get('experience', '')
+        # print("Experiencia")
+        # print(cv_experience)
+        # print(job_experience)
         results['experience'] = compare_experience(cv_experience, job_experience)
         
         # 3. Educación
         cv_education = cv_data.get('education', [])
         job_education = job_data.get('education', '')
+        # print("Educación")
+        # print(cv_education)
+        # print(job_education)
         results['education'] = compare_education(cv_education, job_education)
         
         # 4. Certificaciones
         cv_certifications = cv_data.get('certifications', [])
         job_certifications = job_data.get('certifications', [])
+        # print("Certificaciones")
+        # print(cv_certifications)
+        # print(job_certifications)
         results['certifications'] = compare_certifications(cv_certifications, job_certifications)
         
         # 5. Idiomas
         cv_languages = cv_data.get('languages', {})
-        job_languages = job_data.get('languages', {})
+        job_languages = job_data.get('languages', {})   
+        # print("Idiomas")
+        # print(cv_languages)
+        # print(job_languages)
         results['languages'] = compare_languages(cv_languages, job_languages)
         
         # 6. Ubicación
         cv_location = {'location': cv_data.get('personal', {}).get('location', '')}
         job_location = {'location': job_data.get('location', '')}
+        # print("Ubicación")
+        # print(cv_location)
+        # print(job_location)
         results['location'] = compare_locations(cv_location, job_location)
         
         # 7. Responsabilidades
         job_responsibilities = job_data.get('responsibilities', [])
+        # print("Responsabilidades")
+        # print(cv_experience)
+        # print(job_responsibilities)
         results['responsibilities'] = compare_responsibilities(cv_experience, job_responsibilities)
         
         # 8. Habilidades blandas
         cv_soft_skills = cv_data.get('soft_skills', [])
         job_soft_skills = job_data.get('soft_skills', [])
+        # print("Habilidades blandas")
+        # print(cv_soft_skills)
+        # print(job_soft_skills)
         results['soft_skills'] = compare_soft_skills(cv_soft_skills, job_soft_skills)
         
         return results
