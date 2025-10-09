@@ -7,6 +7,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
 
 # Distribuciones / empaquetado
 .Python
@@ -107,3 +108,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Archivos temporales de uploads (API)
+temp_uploads/
