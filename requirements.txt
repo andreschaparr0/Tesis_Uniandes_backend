@@ -1,4 +1,5 @@
 # Dependencias para el proyecto de tesis
+
 # Procesamiento de PDFs
 PyMuPDF==1.23.14
 
@@ -15,6 +16,12 @@ langchain-core==0.1.0
 
 # Variables de entorno
 python-dotenv==1.0.0
+
+# FastAPI + Base de Datos
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+sqlalchemy==2.0.25
 
 # Análisis de datos (para futuras funcionalidades)
 pandas==2.1.4

@@ -8,7 +8,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.pyc
-
+*.cpython-311.pyc
+*__pycache__/.cpython-311.pyc
 # Distribuciones / empaquetado
 .Python
 build/
