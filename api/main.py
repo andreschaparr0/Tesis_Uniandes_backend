@@ -465,6 +465,15 @@ def top_candidatos(
     } for idx, a in enumerate(analyses)]
 
 
+@app.delete("/analyses/{analysis_id}")
+def eliminar_analysis(analysis_id: int, db: Session = Depends(get_db)):
+    """Elimina un análisis específico"""
+    success = AnalysisRepository.delete(db, analysis_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Análisis no encontrado")
+    return {"message": f"Análisis {analysis_id} eliminado"}
+
+
 @app.get("/stats")
 def estadisticas(db: Session = Depends(get_db)):
     """Estadísticas generales del sistema"""

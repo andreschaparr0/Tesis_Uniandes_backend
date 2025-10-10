@@ -176,4 +176,14 @@ class AnalysisRepository:
             "total_jobs": total_jobs,
             "average_score": round(avg_score, 3)
         }
+    
+    @staticmethod
+    def delete(db: Session, analysis_id: int) -> bool:
+        """Elimina un análisis"""
+        analysis = db.query(Analysis).filter(Analysis.id == analysis_id).first()
+        if analysis:
+            db.delete(analysis)
+            db.commit()
+            return True
+        return False
 
