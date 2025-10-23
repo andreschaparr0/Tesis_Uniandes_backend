@@ -1,0 +1,54 @@
+Job Title: Software Engineer Intern
+
+Location: Remote / Colombia
+
+About Sezzle:
+
+Sezzle is a cutting-edge fintech company dedicated to financially empowering the next generation. Through our payment platform, we provide interest-free installment plans to consumers, driving sales for thousands of eCommerce merchants. Our mission is to bridge the gap between consumers' needs and modern payment solutions.
+
+About the Role:
+
+We are seeking a passionate Software Engineer Intern to join our innovative technology team. This is a great opportunity to gain hands-on experience and work within a highly skilled group of developers to build and maintain features for Sezzle’s platform. As a Software Engineer Intern, you’ll contribute to real-world projects, participate in code reviews, and gain exposure to Sezzle’s technology stack.
+
+What You'll Do:
+
+Assist in developing and maintaining backend and frontend services.
+Write clean, scalable code and participate in code reviews.
+Collaborate with the engineering team to implement new features and resolve bugs.
+Work on performance tuning, debugging, and scaling of Sezzle's platform.
+Document software functionalities and contribute to the knowledge base.
+
+Sezzle’s Technology Stack:
+
+Languages: Golang, Typescript, Python
+Frontend: Typescript - React and React Native
+Backend: Golang
+Database: MySQL, Postgres, Elasticsearch
+DevOps & Cloud: AWS, Kubernetes
+Version Control: Git
+CI/CD: Gitlab
+Testing: Developer-driven, focus on automated unit, integration, and end-to-end tests
+Sezzle is focused on using open source, and we build what we can before buying!
+
+What We Look For:
+
+Experience with Golang, Python, or any backend language.
+Familiarity with Javascript/Typescript, and React or similar framework.
+Basic understanding of databases and SQL.
+Eagerness to learn and adapt to new technologies quickly.
+Problem-solving mindset and attention to detail.
+
+About You:
+
+You are curious, eager to learn, and not afraid to ask questions.
+You are passionate about technology and eager to develop your skills.
+You enjoy working collaboratively and contributing to a fast-paced team.
+You have a strong desire to solve complex problems.
+
+What Makes Working at Sezzle Awesome:
+
+At Sezzle, you’ll be part of a dynamic team, work on real-world fintech solutions, and get mentorship from experienced engineers. We offer flexible working conditions, making it an ideal internship for motivated students or graduates who want to kickstart their tech careers.
+
+Compensation: The salary for the Software Engineer Intern is 700 USD monthly gross.
+
+#Full-time
