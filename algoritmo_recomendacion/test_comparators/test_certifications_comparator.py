@@ -67,8 +67,8 @@ def test_certifications_comparator():
     print(f"Puntaje: {result3['score']}")
     print(f"Razón: {result3['reason']}")
     
-    # Escenario 4: Sin certificaciones requeridas
-    print("\n4. Sin certificaciones requeridas:")
+    # Escenario 4: Sin certificaciones requeridas (sin habilidades técnicas)
+    print("\n4. Sin certificaciones requeridas (sin habilidades técnicas):")
     cv_certs = [
         {
             "name": "aws certified solutions architect",
@@ -88,6 +88,41 @@ def test_certifications_comparator():
     result5 = compare_certifications(cv_certs, job_certs)
     print(f"Puntaje: {result5['score']}")
     print(f"Razón: {result5['reason']}")
+    
+    # Escenario 6: Sin certificaciones requeridas pero con habilidades técnicas (NUEVA FUNCIONALIDAD)
+    print("\n6. Sin certificaciones requeridas pero comparando con habilidades técnicas:")
+    cv_certs = [
+        {
+            "name": "aws certified solutions architect",
+            "issuer": "amazon web services",
+            "year": "2023"
+        },
+        {
+            "name": "kubernetes administrator certification",
+            "issuer": "linux foundation",
+            "year": "2024"
+        }
+    ]
+    job_certs = []
+    job_tech_skills = ["aws", "kubernetes", "docker", "terraform", "python"]
+    result6 = compare_certifications(cv_certs, job_certs, job_tech_skills)
+    print(f"Puntaje: {result6['score']}")
+    print(f"Razón: {result6['reason']}")
+    
+    # Escenario 7: Certificaciones no relacionadas con habilidades técnicas
+    print("\n7. Certificaciones no relacionadas con habilidades técnicas:")
+    cv_certs = [
+        {
+            "name": "diplomado en liderazgo",
+            "issuer": "universidad",
+            "year": "2023"
+        }
+    ]
+    job_certs = []
+    job_tech_skills = ["java", "spring boot", "microservices", "sql"]
+    result7 = compare_certifications(cv_certs, job_certs, job_tech_skills)
+    print(f"Puntaje: {result7['score']}")
+    print(f"Razón: {result7['reason']}")
     
     #
 
