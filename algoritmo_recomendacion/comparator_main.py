@@ -86,8 +86,8 @@ class ComparatorMain:
         # print("Certificaciones")
         # print(cv_certifications)
         # print(job_certifications)
-        # Pasar también las habilidades técnicas como fallback
-        results['certifications'] = compare_certifications(cv_certifications, job_certifications, job_skills)
+        # Pasar también las habilidades técnicas del job y del CV
+        results['certifications'] = compare_certifications(cv_certifications, job_certifications, job_skills, cv_skills)
         
         # 5. Idiomas
         cv_languages = cv_data.get('languages', {})
