@@ -249,6 +249,12 @@ class JobDescriptionExtractor:
         # Extraer idiomas
         languages = self.extract_with_simple_chain(text, "languages")
         
+        # Si no hay idiomas especificados, detectar el idioma del texto
+        if not languages or len(languages) == 0:
+            detected_language = self._detect_text_language(text)
+            if detected_language:
+                languages = detected_language
+        
         # Extraer beneficios
         benefits = self.extract_with_simple_chain(text, "benefits")
         # Crear estructura final según la nueva estructura definida
@@ -275,6 +281,42 @@ class JobDescriptionExtractor:
         # Validar estructura final
         validated_job = self._validate_job_structure(job_final)
         return validated_job
+    
+    def _detect_text_language(self, text: str) -> dict:
+        """
+        Detecta el idioma en el que está escrita la descripción del trabajo usando IA.
+        
+        Args:
+            text (str): Texto de la descripción de trabajo
+            
+        Returns:
+            dict: Diccionario con el idioma detectado y nivel básico requerido
+        """
+        try:
+            prompt_text = f"""Detecta el idioma principal en el que está escrito el siguiente texto.
+Responde ÚNICAMENTE con un objeto JSON donde la clave es el nombre del idioma en español y el valor es "Intermedio" (como nivel básico requerido).
+Formato: {{"idioma": "Intermedio"}}
+
+Texto:
+{text[:1000]}
+
+Responde solo con el JSON, sin bloques de código markdown."""
+
+            response = self.llm.invoke(prompt_text)
+            
+            try:
+                result = self._clean_json_response(response.content)
+                if result and isinstance(result, dict) and len(result) > 0:
+                    return result
+            except:
+                pass
+            
+            # Fallback: Si falla, retornar vacío
+            return {}
+            
+        except Exception as e:
+            print(f"Error al detectar idioma del texto: {e}")
+            return {}
     
     def _validate_job_structure(self, job_data: dict) -> dict:
         """
