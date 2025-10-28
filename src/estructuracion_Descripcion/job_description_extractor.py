@@ -242,6 +242,12 @@ class JobDescriptionExtractor:
         
         # Extraer habilidades blandas
         soft_skills = self.extract_with_simple_chain(text, "soft_skills")
+        
+        # Si no hay soft skills especificadas, inferirlas de las responsabilidades
+        if not soft_skills or len(soft_skills) == 0:
+            inferred_soft_skills = self._infer_soft_skills_from_responsibilities(responsibilities, basic_info)
+            if inferred_soft_skills:
+                soft_skills = inferred_soft_skills
 
         # Extraer certificaciones
         certifications = self.extract_with_simple_chain(text, "certifications")
@@ -281,6 +287,63 @@ class JobDescriptionExtractor:
         # Validar estructura final
         validated_job = self._validate_job_structure(job_final)
         return validated_job
+    
+    def _infer_soft_skills_from_responsibilities(self, responsibilities: list, basic_info: dict) -> list:
+        """
+        Infiere soft skills necesarias basándose en las responsabilidades del trabajo.
+        Solo infiere las soft skills MÁS CRÍTICAS para evitar generar demasiadas.
+        
+        Args:
+            responsibilities (list): Responsabilidades del trabajo
+            basic_info (dict): Información básica del trabajo (incluye título)
+            
+        Returns:
+            list: Lista de soft skills inferidas (máximo 3-5)
+        """
+        # Si no hay responsabilidades, no se puede inferir
+        if not responsibilities or len(responsibilities) == 0:
+            return []
+        
+        try:
+            # Preparar texto de responsabilidades
+            resp_text = "\n".join([f"- {resp}" for resp in responsibilities])
+            
+            # Obtener título del trabajo
+            job_title = basic_info.get("job_title", "N/A") if basic_info else "N/A"
+            
+            prompt_text = f"""Eres un experto en recursos humanos. Analiza las responsabilidades de este trabajo e infiere SOLO las soft skills MÁS CRÍTICAS y NECESARIAS.
+
+Título del trabajo: {job_title}
+
+Responsabilidades:
+{resp_text}
+
+IMPORTANTE: 
+- Infiere MÁXIMO 3-5 soft skills (no más), si es necesario no pongas ninguna
+- Solo las MÁS IMPORTANTES y EVIDENTES
+- NO inventes soft skills genéricas
+- Basate únicamente en lo que las responsabilidades requieren claramente
+
+Responde ÚNICAMENTE con un array JSON de strings (nombres de soft skills en español):
+["soft skill 1", "soft skill 2", "soft skill 3"]
+
+Sin bloques de código markdown."""
+
+            response = self.llm.invoke(prompt_text)
+            
+            try:
+                result = self._clean_json_response(response.content)
+                # Validar que sea una lista y no tenga más de 5 elementos
+                if result and isinstance(result, list) and len(result) > 0:
+                    # Limitar a máximo 5 soft skills
+                    return result[:5]
+                return []
+            except:
+                return []
+            
+        except Exception as e:
+            print(f"Error al inferir soft skills de responsabilidades: {e}")
+            return []
     
     def _detect_text_language(self, text: str) -> dict:
         """
