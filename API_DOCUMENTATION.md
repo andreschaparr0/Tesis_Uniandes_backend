@@ -455,6 +455,7 @@ Realiza un análisis de compatibilidad entre un CV y un Job.
   "trabajo": "Desarrollador Java Senior",
   "score": 0.823,
   "score_porcentaje": 82.3,
+  "summary": "Candidato muy adecuado. Destaca en Experiencia, Habilidades Técnicas y Habilidades Blandas. Requiere mejorar en Certificaciones.",
   "score_breakdown": {
     "experience": {
       "score": 0.90,
@@ -1155,6 +1156,23 @@ curl -X DELETE "http://localhost:8000/analyses/1"
 - **60-69%**: Candidato aceptable, cumple requisitos básicos
 - **50-59%**: Candidato por debajo del perfil
 - **< 50%**: Candidato no recomendado
+
+### Summary (Resumen)
+
+El campo `summary` proporciona un **resumen automático en lenguaje natural** del resultado del análisis:
+
+- **Calificación general**: Categoriza al candidato según su score
+- **Fortalezas**: Menciona los aspectos donde el candidato destaca (score ≥ 0.7)
+- **Debilidades**: Indica áreas de mejora (score < 0.5)
+- **Aspectos no evaluados**: Lista aspectos ignorados por falta de datos
+
+**Ejemplos de resúmenes generados:**
+
+| Score | Resumen |
+|-------|---------|
+| 88% | "Candidato muy adecuado. Destaca en Experiencia, Habilidades Técnicas y Educación." |
+| 68% | "Candidato adecuado. Destaca en Educación. Requiere mejorar en Experiencia y Certificaciones." |
+| 45% | "Candidato con baja compatibilidad. Requiere mejorar en varios aspectos clave." |
 
 ### Score Breakdown
 

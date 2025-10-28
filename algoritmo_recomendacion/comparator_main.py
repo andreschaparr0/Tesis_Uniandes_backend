@@ -191,6 +191,9 @@ class ComparatorMain:
         else:
             normalized_score = 0.0
         
+        # Generar razón/resumen del score final
+        final_reason = self._generate_final_summary(score_details, normalized_score, results)
+        
         return {
             'final_score': round(normalized_score, 3),
             'raw_score': round(weighted_score, 3),
@@ -198,8 +201,95 @@ class ComparatorMain:
             'score_breakdown': score_details,
             'total_weight': sum(weights.values()),
             'used_weight': round(total_used_weight, 3),
-            'ignored_aspects': [aspect for aspect, details in score_details.items() if details.get('ignored', False)]
+            'ignored_aspects': [aspect for aspect, details in score_details.items() if details.get('ignored', False)],
+            'summary': final_reason
         }
+    
+    def _generate_final_summary(self, score_details: Dict[str, Any], final_score: float, results: Dict[str, Any]) -> str:
+        """
+        Genera un resumen/razón del score final basándose en los aspectos evaluados.
+        
+        Args:
+            score_details (dict): Detalles de cada aspecto evaluado
+            final_score (float): Score final normalizado
+            results (dict): Resultados completos de las comparaciones
+            
+        Returns:
+            str: Resumen explicativo del score final
+        """
+        # Nombres amigables para los aspectos
+        aspect_names = {
+            'experience': 'Experiencia',
+            'technical_skills': 'Habilidades Técnicas',
+            'education': 'Educación',
+            'responsibilities': 'Responsabilidades',
+            'certifications': 'Certificaciones',
+            'soft_skills': 'Habilidades Blandas',
+            'languages': 'Idiomas',
+            'location': 'Ubicación'
+        }
+        
+        # Separar aspectos evaluados y no evaluados
+        evaluated = []
+        ignored = []
+        
+        for aspect, details in score_details.items():
+            if details.get('ignored', False):
+                ignored.append(aspect_names.get(aspect, aspect))
+            else:
+                evaluated.append((aspect, details.get('score', 0)))
+        
+        # Ordenar por score (mejor a peor)
+        evaluated.sort(key=lambda x: x[1], reverse=True)
+        
+        # Identificar fortalezas (score >= 0.7)
+        strengths = [aspect_names.get(asp, asp) for asp, score in evaluated if score >= 0.7]
+        
+        # Identificar debilidades (score < 0.5)
+        weaknesses = [aspect_names.get(asp, asp) for asp, score in evaluated if score < 0.5]
+        
+        # Construir el resumen
+        parts = []
+        
+        # Calificación general
+        if final_score >= 0.85:
+            parts.append("Candidato excepcional.")
+        elif final_score >= 0.75:
+            parts.append("Candidato muy adecuado.")
+        elif final_score >= 0.65:
+            parts.append("Candidato adecuado.")
+        elif final_score >= 0.50:
+            parts.append("Candidato con potencial.")
+        else:
+            parts.append("Candidato con baja compatibilidad.")
+        
+        # Fortalezas
+        if strengths:
+            if len(strengths) == 1:
+                parts.append(f"Destaca en {strengths[0]}.")
+            elif len(strengths) == 2:
+                parts.append(f"Destaca en {strengths[0]} y {strengths[1]}.")
+            else:
+                parts.append(f"Destaca en {', '.join(strengths[:-1])} y {strengths[-1]}.")
+        
+        # Debilidades
+        if weaknesses:
+            if len(weaknesses) == 1:
+                parts.append(f"Requiere mejorar en {weaknesses[0]}.")
+            elif len(weaknesses) == 2:
+                parts.append(f"Requiere mejorar en {weaknesses[0]} y {weaknesses[1]}.")
+            elif len(weaknesses) <= 4:
+                parts.append(f"Requiere mejorar en {', '.join(weaknesses[:-1])} y {weaknesses[-1]}.")
+            else:
+                # Si son muchas debilidades, solo mencionar las principales
+                parts.append(f"Requiere mejorar en varios aspectos clave.")
+        
+        # Aspectos no evaluados
+        if ignored:
+            if len(ignored) <= 2:
+                parts.append(f"No se evaluó: {', '.join(ignored)}.")
+        
+        return " ".join(parts)
     
     def print_comparison_results(self, cv_data: Dict[str, Any], job_data: Dict[str, Any], results: Dict[str, Any], weights: Dict[str, float] = None):
         """
@@ -228,11 +318,16 @@ class ComparatorMain:
         final_score = final_score_data['final_score']
         ignored_aspects = final_score_data.get('ignored_aspects', [])
         
-        print(f"\n" + "-"*30)
+        print(f"\n" + "-"*50)
         print(f"SCORE FINAL: {final_score:.1%}")
         if ignored_aspects:
             print(f"ASPECTOS IGNORADOS: {', '.join(ignored_aspects)}")
-        print("-"*30)
+        
+        # Mostrar resumen
+        summary = final_score_data.get('summary', '')
+        if summary:
+            print(f"\nRESUMEN: {summary}")
+        print("-"*50)
         
         # Mostrar resultados de cada comparación
         for aspect, result in results.items():

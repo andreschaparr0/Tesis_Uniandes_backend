@@ -369,6 +369,7 @@ def analizar(
             "score": round(resultado["score"], 3),
             "score_porcentaje": round(resultado["score"] * 100, 1),
             "score_breakdown": resultado["score_breakdown"],
+            "summary": resultado["resultado_completo"].get("final_score_data", {}).get("summary", ""),
             "weights_used": resultado["resultado_completo"].get("final_score_data", {}).get("weights_used", {}),
             "processing_time": round(processing_time, 2)
         }
