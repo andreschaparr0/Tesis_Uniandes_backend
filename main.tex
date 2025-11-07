@@ -1,0 +1,92 @@
+% Tesis - Universidad de los Andes
+% Proyecto LaTeX base
+\documentclass[12pt,letterpaper,oneside]{report}
+
+% ======= Paquetes =======
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{csquotes}
+\usepackage{setspace}
+\usepackage{geometry}
+\geometry{letterpaper,margin=1in}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% Bibliografía (biblatex)
+\usepackage[backend=biber,style=ieee,maxbibnames=6]{biblatex}
+\addbibresource{bibliography.bib}
+
+% Espaciado
+\onehalfspacing
+
+% ======= Datos de la tesis =======
+\title{Desarrollo y Evaluación de un Algoritmo de Recomendación de Hojas de Vida con NLP para Mejorar la Eficiencia en Reclutamiento}
+\author{Andrés Felipe Chaparro Díaz}
+\date{Universidad de los Andes\\Facultad de Ingeniería\\Programas: Ingeniería Industrial e Ingeniería de Sistemas y Computación\\2025}
+
+% ======= Documento =======
+\begin{document}
+
+% Portada simple
+\begin{titlepage}
+    \centering
+    {\Large Universidad de los Andes\\Facultad de Ingeniería\\Programas: Ingeniería Industrial e Ingeniería de Sistemas y Computación\\}\vspace{1.5cm}
+    {\LARGE \textbf{\MakeUppercase{Desarrollo y Evaluación de un Algoritmo de Recomendación de Hojas de Vida con NLP para Mejorar la Eficiencia en Reclutamiento}}\\}\vspace{1.5cm}
+    {\large Tesis de grado}\vspace{1cm}
+
+    {\large Autor: Andrés Felipe Chaparro Díaz\\}
+    {\large Asesores: Juan Fernando Pérez Bernal (Ingeniería Industrial)\\
+    Rubén Francisco Manrique (Ingeniería de Sistemas y Computación)}\\[1.5cm]
+
+    {\large Bogotá, Colombia}\vfill
+    {\large 2025}
+\end{titlepage}
+
+\pagenumbering{roman}
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+[Resumen de 200\,--\,300 palabras. Objetivo, método, resultados y conclusiones.]
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+[Abstract en inglés.]
+
+\clearpage
+\pagenumbering{arabic}
+
+% ======= Capítulos =======
+% Hacer que compile aunque no existan archivos externos (Overleaf)
+\makeatletter
+\IfFileExists{chapters/01-introduccion.tex}{\input{chapters/01-introduccion}}{\chapter{Introducción} Plantilla de capítulo.}
+\IfFileExists{chapters/02-marco-teorico.tex}{\input{chapters/02-marco-teorico}}{\chapter{Marco Teórico} Contenido placeholder.}
+\IfFileExists{chapters/03-estado-del-arte.tex}{\input{chapters/03-estado-del-arte}}{\chapter{Estado del Arte} Contenido placeholder.}
+\IfFileExists{chapters/04-metodologia.tex}{\input{chapters/04-metodologia}}{\chapter{Metodología} Contenido placeholder.}
+\IfFileExists{chapters/05-diseno-arquitectura.tex}{\input{chapters/05-diseno-arquitectura}}{\chapter{Diseño y Arquitectura} Contenido placeholder.}
+\IfFileExists{chapters/06-implementacion.tex}{\input{chapters/06-implementacion}}{\chapter{Implementación} Contenido placeholder.}
+\IfFileExists{chapters/07-experimentos-resultados.tex}{\input{chapters/07-experimentos-resultados}}{\chapter{Experimentos y Resultados} Contenido placeholder.}
+\IfFileExists{chapters/08-discusion-amenazas.tex}{\input{chapters/08-discusion-amenazas}}{\chapter{Discusión y Amenazas a la Validez} Contenido placeholder.}
+\IfFileExists{chapters/09-conclusiones-trabajo-futuro.tex}{\input{chapters/09-conclusiones-trabajo-futuro}}{\chapter{Conclusiones y Trabajo Futuro} Contenido placeholder.}
+\makeatother
+
+% ======= Apéndices =======
+\appendix
+\makeatletter
+\IfFileExists{appendices/A-datasets-y-prompts.tex}{\input{appendices/A-datasets-y-prompts}}{\chapter{Datasets y Prompts} Contenido placeholder.}
+\IfFileExists{appendices/B-instrumentos-y-scripts.tex}{\input{appendices/B-instrumentos-y-scripts}}{\chapter{Instrumentos y Scripts} Contenido placeholder.}
+\makeatother
+
+% ======= Bibliografía =======
+\printbibliography
+
+\end{document}
+
