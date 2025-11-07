@@ -1,0 +1,57 @@
+\chapter{Introducción}
+\label{chap:introduccion}
+
+% Contexto y motivación
+La gestión eficiente del talento requiere herramientas que permitan relacionar perfiles de candidatos con descripciones de trabajo de forma objetiva, transparente y reproducible. En la práctica, los equipos de reclutamiento enfrentan la revisión manual de grandes volúmenes de hojas de vida (HVs), con formatos heterogéneos (PDFs, imágenes, estilos no estandarizados) y calidad variable de contenido. Este proceso es intensivo en tiempo y recursos, puede introducir sesgos no intencionales en la preselección y dificulta priorizar candidatos óptimos con oportunidad.
+
+Esta tesis aborda el diseño, implementación y evaluación de un sistema de recomendación que analiza HVs y descripciones de trabajo empleando técnicas de procesamiento de lenguaje natural (NLP) y un esquema de comparación por aspectos. El sistema toma como entradas una HV (en formato PDF) y una descripción de puesto, extrae y limpia el texto, estructura la información relevante y calcula un \emph{puntaje de ajuste} por aspectos (experiencia, habilidades técnicas, educación, certificaciones, idiomas, ubicación, responsabilidades y habilidades blandas), con pesos configurables para reflejar prioridades de negocio. El objetivo es apoyar una preselección inicial más eficiente, objetiva y escalable.
+
+\section{Planteamiento del problema}
+\subsection{Situación actual}
+La revisión manual de HVs consume una cantidad significativa de tiempo del equipo de reclutamiento y obstaculiza la identificación rápida de candidatos con alto ajuste al puesto. La heterogeneidad de formatos (incluyendo PDFs no indexables o con bajo nivel de estructuración) y la falta de estándares dificulta la automatización y el análisis a escala. Además, la intervención humana temprana puede introducir variabilidad y sesgos no deseados.
+
+\subsection{Situación deseada}
+Se busca un prototipo funcional que:
+\begin{itemize}
+  \item Procese HVs en PDF, extraiga y limpie el texto de forma robusta.
+  \item Estructure la información de HVs y descripciones (perfil, experiencia, habilidades, educación, etc.).
+  \item Calcule un \emph{puntaje de ajuste} HV--puesto y genere un ranking de candidatos.
+  \item Reduzca el tiempo de revisión manual inicial (meta indicativa: $\geq 30\%$) y aumente la probabilidad de identificar candidatos adecuados en etapas tempranas.
+\end{itemize}
+
+\subsection{Restricciones y enfoque}
+El desarrollo se realizará con un conjunto de datos inicial acotado (del orden de decenas de HVs), adoptando un enfoque iterativo de mejora continua. Se privilegiará una arquitectura modular, reproducible y auditable, que permita refinar comparadores y pesos sin afectar la estabilidad del sistema.
+
+\section{Pregunta de investigación}
+¿Cómo el diseño e implementación de un sistema de recomendación de hojas de vida basado en procesamiento de lenguaje natural permite mejorar la eficiencia y efectividad del proceso de selección de talento en una organización?
+
+\section{Objetivos}
+\subsection{Objetivo general}
+Diseñar, implementar y evaluar un sistema de recomendación de hojas de vida basado en procesamiento de lenguaje natural, con el fin de mejorar la eficiencia y efectividad del proceso de selección de talento en una empresa.
+
+\subsection{Objetivos específicos}
+\begin{enumerate}
+  \item Analizar y caracterizar el proceso actual de selección de talento, identificando actividades clave, recursos utilizados e ineficiencias en la revisión de HVs.
+  \item Desarrollar una metodología y herramientas para la extracción y estructuración de información a partir de HVs en formato PDF no indexable o poco estructurado.
+  \item Diseñar e implementar comparadores por aspecto y un esquema de ponderación configurable para calcular el ajuste HV--puesto.
+  \item Evaluar el rendimiento técnico del algoritmo y el impacto potencial del sistema en métricas operacionales de eficiencia y efectividad.
+  \item Proponer lineamientos para la integración del sistema en el flujo de trabajo del equipo de reclutamiento.
+\end{enumerate}
+
+% Contribuciones
+\section{Contribuciones}
+\begin{itemize}
+  \item Una arquitectura en capas (API, servicios, repositorios y base de datos) que soporta ingestión, análisis y persistencia de resultados, basada en \texttt{FastAPI}, \texttt{SQLAlchemy} y \texttt{SQLite}.
+  \item Un módulo de limpieza y extracción de texto de PDFs, y un módulo de estructuración de HVs y descripciones apoyado en orquestación de prompts.
+  \item Un motor de comparación por aspectos con desglose explicativo de puntajes y esquema de pesos configurable.
+  \item Un protocolo experimental y un conjunto de métricas para evaluar desempeño técnico y operacional del sistema.
+\end{itemize}
+
+\section{Consideraciones éticas y normativas}
+El manejo de datos personales presentes en HVs exige medidas de seguridad, consentimiento informado y cumplimiento de la normativa de protección de datos aplicable. Asimismo, se abordará la mitigación de sesgos algorítmicos mediante transparencia de criterios, explicación de puntajes por aspecto y validaciones con casos de prueba controlados. Estas consideraciones se retoman en detalle al discutir amenazas a la validez y aspectos éticos del estudio.
+
+% Estructura del documento
+\section{Estructura del documento}
+El resto del documento se organiza así: el Capítulo~\ref{chap:marco-teorico} presenta el marco teórico, el Capítulo~\ref{chap:estado-del-arte} resume el estado del arte, el Capítulo~\ref{chap:metodologia} describe la metodología, los Capítulos~\ref{chap:diseno} y~\ref{chap:implementacion} detallan diseño y arquitectura e implementación, el Capítulo~\ref{chap:experimentos} reporta los resultados experimentales, el Capítulo~\ref{chap:discusion} discute hallazgos y amenazas a la validez, y el Capítulo~\ref{chap:conclusiones} cierra con conclusiones y trabajo futuro.
+
+
