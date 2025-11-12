@@ -18,75 +18,42 @@ Una vez extraído el texto, se requiere un proceso de limpieza y normalización 
   \item \textbf{Eliminación de ruido}: Remoción de caracteres especiales, puntuación excesiva y artefactos de formato.
 \end{itemize}
 
-\subsection{Tokenización y Preprocesamiento}
 
-La tokenización es el proceso de dividir un texto en unidades más pequeñas llamadas tokens (generalmente palabras o subpalabras). En español, la tokenización presenta desafíos adicionales debido a la presencia de acentos, caracteres especiales y palabras compuestas.
-
-El preprocesamiento típico incluye:
-\begin{itemize}
-  \item \textbf{Eliminación de stopwords}: Palabras funcionales (artículos, preposiciones, conjunciones) que no aportan significado semántico relevante para el análisis.
-  \item \textbf{Stemming}: Reducción de palabras a su raíz o forma base (ej: ``desarrollador'', ``desarrolladores'' $\rightarrow$ ``desarroll''). El algoritmo de Porter es ampliamente utilizado para esta tarea.
-  \item \textbf{Lematización}: Proceso más sofisticado que reduce palabras a su lema canónico considerando el contexto y la categoría gramatical.
-\end{itemize}
 
 En este trabajo, se utilizan técnicas de limpieza específicas para documentos en español, incluyendo normalización de tildes y manejo de caracteres especiales comunes en HVs.
 
-\subsection{Extracción de Entidades y Estructuración}
+\subsection{Estructuración}
 
-La extracción de entidades nombradas (Named Entity Recognition, NER) identifica y clasifica elementos clave en el texto, como nombres de personas, organizaciones, ubicaciones, fechas y habilidades técnicas. En el contexto de HVs, esta tarea es crítica para identificar:
+La estructuración de información consiste en identificar y organizar automáticamente los elementos más relevantes de un texto. En el caso de las hojas de vida (HVs), esta tarea permite reconocer datos personales y profesionales de manera estructurada.
 
 \begin{itemize}
-  \item Información personal (nombre, correo electrónico, teléfono, ubicación)
-  \item Experiencia laboral (posiciones, empresas, períodos)
-  \item Formación académica (títulos, instituciones, años)
-  \item Habilidades técnicas y blandas
-  \item Certificaciones e idiomas
+  \item Datos personales: nombre, correo electrónico, teléfono y ubicación.
+  \item Experiencia laboral: cargos, empresas y períodos de trabajo.
+  \item Formación académica: títulos, instituciones y años de estudio.
+  \item Habilidades técnicas y blandas.
+  \item Certificaciones e idiomas.
 \end{itemize}
-
-Tradicionalmente, esta tarea se abordaba con modelos estadísticos o basados en reglas. Sin embargo, los modelos de lenguaje grandes (LLMs) han demostrado superioridad en tareas de estructuración semántica, especialmente cuando se combinan con técnicas de \emph{prompting} estructurado.
 
 \section{Modelos de Lenguaje y Extracción de Información}
 
 \subsection{Modelos de Lenguaje Grandes (LLMs)}
 
-Los modelos de lenguaje grandes son sistemas de aprendizaje profundo entrenados en grandes volúmenes de texto que aprenden representaciones ricas del lenguaje. GPT-4o-mini, utilizado en este trabajo, es un modelo de la familia GPT (Generative Pre-trained Transformer) desarrollado por OpenAI y desplegado a través de Azure OpenAI Services.
+Los modelos de lenguaje grandes son sistemas de aprendizaje profundo entrenados con grandes volúmenes de texto, capaces de aprender representaciones complejas del lenguaje y comprender su contexto y semántica. En este trabajo se emplea GPT-4o-mini, un modelo de la familia GPT (Generative Pre-trained Transformer) desarrollado por OpenAI y desplegado a través de Azure OpenAI Services. Estos modelos pueden generar respuestas estructuradas a partir de instrucciones bien definidas y adaptarse a distintos dominios o tareas con un ajuste mínimo.
 
-Estos modelos se caracterizan por:
-\begin{itemize}
-  \item Capacidad de entender contexto y semántica más allá de coincidencias exactas de palabras.
-  \item Habilidad para generar respuestas estructuradas cuando se guían mediante prompts bien diseñados.
-  \item Flexibilidad para adaptarse a diferentes dominios y tareas con ajuste mínimo (\emph{few-shot learning}).
-\end{itemize}
 
-\subsection{Prompt Engineering y Orquestación}
+\subsection{Prompt Engineering}
 
-El \emph{prompt engineering} es la práctica de diseñar instrucciones (prompts) que guían a los LLMs para producir salidas deseadas. Para tareas de estructuración de información, se utilizan técnicas como:
-
-\begin{itemize}
-  \item \textbf{Prompts estructurados}: Instrucciones claras que especifican el formato de salida esperado (ej: JSON).
-  \item \textbf{Chain-of-thought prompting}: Descomposición de tareas complejas en pasos intermedios.
-  \item \textbf{Few-shot learning}: Proporcionar ejemplos en el prompt para guiar el comportamiento del modelo.
-\end{itemize}
-
-LangChain \cite{langchain} es un framework que facilita la orquestación de interacciones con LLMs, permitiendo:
-\begin{itemize}
-  \item Gestión de templates de prompts reutilizables.
-  \item Parsing estructurado de respuestas (ej: mediante \texttt{PydanticOutputParser}).
-  \item Manejo de errores y reintentos.
-  \item Integración con múltiples proveedores de modelos.
-\end{itemize}
-
-En este trabajo, LangChain se utiliza para estructurar la información de HVs y descripciones de trabajo, dividiendo la extracción en múltiples pasos (información personal, experiencia, educación, habilidades) que se ejecutan de forma orquestada.
+El \emph{prompt engineering} consiste en diseñar instrucciones que guían a los modelos de lenguaje para generar resultados precisos y estructurados. En tareas de extracción y organización de información, esta práctica permite definir con claridad el formato de salida y descomponer procesos complejos en pasos intermedios. Al incluir ejemplos dentro del propio prompt, el modelo puede adaptarse mejor al contexto y producir respuestas más consistentes. Para la orquestación de estas interacciones se emplea LangChain \cite{langchain}, un framework que permite gestionar plantillas de prompts, estructurar las respuestas mediante parsers, manejar errores y conectar distintos proveedores de modelos.
 
 \section{Sistemas de Recomendación y Matching de Perfiles}
 
 \subsection{Recomendación Basada en Contenido}
 
-Los sistemas de recomendación basados en contenido filtran elementos (en este caso, candidatos) basándose en las características y preferencias del usuario (en este caso, requisitos del puesto). A diferencia de los sistemas colaborativos, que dependen de interacciones históricas entre usuarios e ítems, los sistemas basados en contenido utilizan información intrínseca de los elementos a recomendar \cite{ricci2011introduction}.
+Los sistemas de recomendación basados en contenido filtran elementos (en este caso, candidatos) basándose en las características y preferencias del usuario (en este caso, requisitos del puesto). Los sistemas basados en contenido utilizan información intrínseca de los elementos a recomendar \cite{ricci2011introduction}.
 
-El proceso típico incluye:
+El proceso  incluye:
 \begin{enumerate}
-  \item \textbf{Representación de perfiles}: Transformar información de candidatos y puestos en vectores de características.
+  \item \textbf{Representación de perfiles}: Transformar información de candidatos y puestos en un diccionario de características.
   \item \textbf{Medida de similitud}: Calcular qué tan similar es un candidato a un puesto utilizando funciones de distancia o similitud.
   \item \textbf{Ranking}: Ordenar candidatos según su puntaje de compatibilidad.
 \end{enumerate}
@@ -107,13 +74,8 @@ En este trabajo, se evalúan ocho aspectos:
   \item \textbf{Ubicación}: Compatibilidad geográfica y modalidad de trabajo.
 \end{enumerate}
 
-Cada aspecto recibe un puntaje entre 0 y 1, donde:
-\begin{itemize}
-  \item $1.0$ indica compatibilidad completa.
-  \item $0.5-0.9$ indica compatibilidad parcial.
-  \item $0.0-0.4$ indica baja compatibilidad.
-  \item $-1.0$ indica que el aspecto no pudo evaluarse (datos insuficientes).
-\end{itemize}
+Cada aspecto evaluado recibe un puntaje entre 0 y 1, donde un valor más alto representa una mayor compatibilidad. Un puntaje de 1.0 indica compatibilidad completa, valores entre 0.5 y 0.9 reflejan compatibilidad parcial, entre 0.0 y 0.4 indican baja compatibilidad, y un valor de -1.0 se asigna cuando no hay datos suficientes para realizar la evaluación.
+
 
 \subsection{Sistema de Pesos Configurable}
 
@@ -129,21 +91,10 @@ Los pesos pueden configurarse según el tipo de puesto:
 \begin{itemize}
   \item \textbf{Perfil Junior}: Mayor peso en educación y habilidades técnicas.
   \item \textbf{Perfil Senior}: Mayor peso en experiencia y certificaciones.
-  \item \textbf{Perfil Gerencial}: Mayor peso en habilidades blandas y responsabilidades.
 \end{itemize}
 
 Si un aspecto tiene puntaje $-1.0$ (no evaluable), se excluye del cálculo y los pesos restantes se normalizan para que sumen 1.0.
 
-\subsection{Comparación Semántica}
-
-A diferencia de comparaciones exactas (string matching), la comparación semántica utiliza modelos de lenguaje para entender el significado y relacionar conceptos similares aunque no sean idénticos. Por ejemplo, ``Desarrollador de Software'' y ``Software Engineer'' pueden considerarse equivalentes semánticamente, aunque las palabras sean diferentes.
-
-En este trabajo, cada comparador utiliza GPT-4o-mini para realizar comparaciones semánticas, lo que permite:
-\begin{itemize}
-  \item Reconocer sinónimos y variaciones terminológicas.
-  \item Entender contexto y relevancia.
-  \item Proporcionar explicaciones razonadas de las comparaciones.
-\end{itemize}
 
 \section{Arquitectura de Sistemas y Herramientas}
 
@@ -159,57 +110,9 @@ El sistema implementa una arquitectura en capas que separa responsabilidades:
   \item \textbf{Capa de Persistencia}: Base de datos SQLite que almacena HVs, ofertas de trabajo y resultados de análisis.
 \end{enumerate}
 
-Esta arquitectura facilita:
-\begin{itemize}
-  \item \textbf{Mantenibilidad}: Cambios en una capa no afectan necesariamente a las demás.
-  \item \textbf{Escalabilidad}: Cada capa puede escalarse independientemente.
-  \item \textbf{Testabilidad}: Cada capa puede probarse de forma aislada.
-\end{itemize}
-
-\subsection{API RESTful con FastAPI}
-
-FastAPI \cite{fastapi} es un framework web moderno para Python que permite desarrollar APIs RESTful de alto rendimiento. Características relevantes para este trabajo:
-
-\begin{itemize}
-  \item \textbf{Validación automática}: Utiliza Pydantic para validar tipos de datos y generar documentación automática.
-  \item \textbf{Documentación interactiva}: Genera automáticamente documentación OpenAPI accesible en \texttt{/docs} (Swagger UI).
-  \item \textbf{Alto rendimiento}: Basado en ASGI (Asynchronous Server Gateway Interface), permite manejar múltiples solicitudes concurrentes.
-  \item \textbf{Tipado estático}: Soporte nativo para type hints de Python, mejorando la seguridad de tipos.
-\end{itemize}
-
-\subsection{Persistencia de Datos con SQLAlchemy}
-
-SQLAlchemy es un ORM (Object-Relational Mapping) que proporciona una abstracción de alto nivel sobre bases de datos relacionales. Ventajas en este contexto:
-
-\begin{itemize}
-  \item \textbf{Independencia de base de datos}: El código puede migrarse entre diferentes motores de base de datos (SQLite, PostgreSQL, MySQL) con cambios mínimos.
-  \item \textbf{Mapeo objeto-relacional}: Permite trabajar con objetos Python en lugar de escribir SQL directamente.
-  \item \textbf{Gestión de migraciones}: Facilita la evolución del esquema de base de datos.
-\end{itemize}
-
-SQLite se eligió para este prototipo por su simplicidad (base de datos en archivo) y ausencia de requisitos de servidor, lo que facilita el despliegue y desarrollo.
-
-\subsection{Interfaz Web con React}
-
-React \cite{react} es una biblioteca de JavaScript para construir interfaces de usuario. Características utilizadas en este trabajo:
-
-\begin{itemize}
-  \item \textbf{Componentes reutilizables}: Facilita la construcción de interfaces modulares.
-  \item \textbf{Estado reactivo}: Actualización automática de la UI cuando cambian los datos.
-  \item \textbf{Ecosystem}: Amplia disponibilidad de bibliotecas complementarias (Recharts para gráficos, React Router para navegación).
-\end{itemize}
-
-Vite se utiliza como herramienta de build, proporcionando:
-\begin{itemize}
-  \item Desarrollo rápido con Hot Module Replacement (HMR).
-  \item Build optimizado para producción.
-  \item Soporte nativo para módulos ES6.
-\end{itemize}
-
-TailwindCSS se utiliza para estilos, proporcionando utilidades CSS que permiten construir interfaces sin escribir CSS personalizado, acelerando el desarrollo y manteniendo consistencia visual.
-
+Esta arquitectura facilita la mantebilidad, robustez y testabilidad de la aplicación:
 \section{Resumen}
 
-Este marco teórico establece las bases conceptuales para el desarrollo del sistema. Las técnicas de NLP permiten transformar documentos no estructurados en datos estructurados, los modelos de lenguaje grandes facilitan la extracción semántica de información, y los sistemas de recomendación basados en contenido con matching por aspectos múltiples proporcionan un marco para evaluar compatibilidad entre candidatos y puestos. La arquitectura en capas y las herramientas seleccionadas (FastAPI, SQLAlchemy, React) proporcionan una base sólida para implementar un sistema robusto, mantenible y escalable.
+Este marco teórico establece las bases conceptuales para el desarrollo del sistema. Las técnicas de NLP permiten transformar documentos no estructurados en datos estructurados, los modelos de lenguaje grandes facilitan la extracción semántica de información, y los sistemas de recomendación basados en contenido con matching por aspectos múltiples proporcionan un marco para evaluar compatibilidad entre candidatos y puestos. La arquitectura en capas y las herramientas seleccionadas (FastAPI, SQLAlchemy, React) proporcionan una base sólida para implementar un sistema robusto y mantenible.
 
 

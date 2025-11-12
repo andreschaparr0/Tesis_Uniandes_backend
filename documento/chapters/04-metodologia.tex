@@ -2,12 +2,90 @@
 \label{chap:metodologia}
 
 \section{Preguntas de Investigación}
-Definición de preguntas e hipótesis.
+
+Este trabajo busca responder a la pregunta principal planteada en la Introducción: ¿Cómo el diseño e implementación de un sistema de recomendación de hojas de vida basado en procesamiento de lenguaje natural mejora la efectividad del proceso de selección de talento?
+
+Derivamos las siguientes preguntas específicas:
+\begin{enumerate}
+  \item ¿Con qué calidad se estructuran las hojas de vida y las descripciones de trabajo (por rubro/campo) al transformarlas a JSON?
+  \item ¿En qué medida el \emph{score} de compatibilidad del sistema y sus explicaciones por aspecto son considerados adecuados por un profesional de RR.\,HH.?
+  \item ¿En qué medida coinciden los rankings de candidatos producidos por el sistema con el ranking emitido por un profesional de RR.\,HH.?
+\end{enumerate}
+
+Hipótesis asociadas:
+\begin{itemize}
+  \item \textbf{H1 (Estructuración CV/Job)}: La estructuración automática alcanza puntajes altos (0--100) por rubro al compararse con las fuentes originales (PDF del CV y texto del Job).
+  \item \textbf{H2 (Adecuación de score y explicación)}: Un profesional de RR.\,HH. califica con valores altos (0--100) tanto el \emph{score} del sistema como las razones por aspecto (experiencia, responsabilidades, habilidades, etc.).
+  \item \textbf{H3 (Consistencia de ranking)}: El orden de candidatos del sistema muestra coincidencias relevantes con el ranking emitido por el profesional de RR.\,HH.
+\end{itemize}
 
 \section{Diseño Experimental}
-Protocolo, variables, métricas y procedimientos de recolección/anotación.
+
+\subsection{Contexto y dataset}
+Se emplea un conjunto acotado de 10 hojas de vida (la mayoría de estudiantes/egresados de la Universidad de los Andes; 5 estudiantes activos) y descripciones de cargos en tecnología (desarrollo de software y TI). Este tamaño permite un ciclo iterativo de prueba y mejora controlado.
+
+\subsection{Variables}
+\textbf{Independientes}:
+\begin{itemize}
+  \item Descripción de cargo (tarea) frente a la cual se evalúan candidatos.
+  \item Conjunto de hojas de vida analizadas por tarea.
+\end{itemize}
+\textbf{Dependientes}:
+\begin{itemize}
+  \item Calidad de estructuración (0--100) por rubro/campo en CVs y Jobs.
+  \item Calificación (0--100) del \emph{score} del sistema por análisis.
+  \item Calificación (0--100) de las razones/explicaciones por aspecto.
+  \item Comparación de rankings entre experto y sistema (coincidencias/diferencias).
+\end{itemize}
+
+\subsection{Métricas}
+\begin{itemize}
+  \item \textbf{Estructuración de CVs y Jobs}: Puntuación 0--100 por rubro al contrastar JSON contra el PDF (CV) o texto (Job). Se reportan promedios por rubro y un promedio global por documento.
+  \item \textbf{Adecuación del modelo (por análisis)}:
+    \begin{itemize}
+      \item Calificación 0--100 del \emph{score} de compatibilidad producido por el sistema.
+      \item Calificación 0--100 de la explicación por aspecto (experiencia, responsabilidades, habilidades técnicas, habilidades blandas, certificaciones, idiomas, ubicación).
+    \end{itemize}
+  \item \textbf{Ranking experto vs.\ sistema}: Se comparan las listas ordenadas de candidatos por análisis y se registran coincidencias y diferencias principales (sin aplicar métricas de precisión/recuperación).
+\end{itemize}
+
+\subsection{Procedimiento}
+\begin{enumerate}
+  \item \textbf{Preparación}: Limpieza y estructuración de HVs y descripciones (pipeline de extracción; ver capítulos previos). Registro de versiones de prompts y configuraciones.
+  \item \textbf{Análisis automático}: Para cada combinación \emph{(CV, Job)} se ejecuta el análisis con pesos \emph{default}. Se almacenan \emph{score}, desglose por aspecto y tiempos.
+  \item \textbf{Estructuración (validación manual)}: Para CVs y Jobs se revisa rubro por rubro el JSON estructurado contra la fuente (PDF o texto) y se asigna una calificación 0--100 por rubro. Se agregan promedios por rubro y globales por documento.
+  \item \textbf{Evaluación experta del modelo}: Un profesional de RR.\,HH., Juan Pablo Chaparro (25 años, \(\sim\)2 años de experiencia), realiza 4 análisis; en cada uno evalúa 5 hojas de vida (20 evaluaciones en total). Para cada análisis:
+    \begin{itemize}
+      \item Califica 0--100 el \emph{score} de compatibilidad entregado por el sistema.
+      \item Califica 0--100 las razones por aspecto (experiencia, responsabilidades, habilidades, certificaciones, idiomas, ubicación).
+      \item Emite un ranking de candidatos y se compara cualitativamente con el ranking del sistema (coincidencias/diferencias).
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Amenazas y controles}
+\begin{itemize}
+  \item \textbf{Tamaño muestral reducido}: Se reportan resultados con intervalos y se evita sobreinterpretación; se propone ampliar dataset como trabajo futuro.
+  \item \textbf{Variabilidad del modelo de lenguaje}: Se fija configuración conservadora (temperatura baja) y se almacenan salidas intermedias para trazabilidad.
+  \item \textbf{Sesgo de dominio}: El estudio se acota a roles de tecnología; se declara la validez externa como amenaza y se discute su impacto.
+\end{itemize}
 
 \section{Reproducibilidad}
-Gestión de datos, control de versiones y criterios de replicación.
+
+\subsection{Entorno y dependencias}
+Se utiliza Python 3.11, FastAPI, SQLAlchem}, PyMuPDF, NLTK, LangChain y cliente de Azure OpenAI. Las versiones se especifican en \texttt{requirements.txt}. 
+
+\subsection{Modelos y configuración}
+Se emplea \texttt{GPT-4o-mini} vía Azure OpenAI con variables de entorno (\texttt{.env}). Se recomienda fijar temperatura baja y registrar \emph{prompts} en los apéndices. Las respuestas estructuradas (CVs/Jobs) y resultados de análisis se persisten en \texttt{cv\_system.db}.
+
+\subsection{Datos y trazabilidad}
+Los PDFs de HVs y textos de descripciones se versionan como artefactos de datos (o referencias anonimizadas). Se guarda:
+\begin{itemize}
+  \item Texto extraído y versiones de limpieza.
+  \item JSON estructurado por entidad (CV/Job).
+  \item Resultados de análisis: \emph{score}, desglose por aspecto, tiempos.
+  \item Anotaciones/orden del experto de RR.\,HH.
+\end{itemize}
+
+
 
 
