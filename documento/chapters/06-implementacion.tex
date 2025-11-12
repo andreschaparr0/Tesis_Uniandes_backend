@@ -2,12 +2,88 @@
 \label{chap:implementacion}
 
 \section{Tecnologías y Entorno}
-Lenguajes, librerías y configuración (FastAPI, SQLAlchemy, PyMuPDF, etc.).
+El backend está desarrollado en \textbf{Python 3.11} y utiliza:
+\begin{itemize}
+  \item \textbf{FastAPI} + \textbf{Uvicorn} para la API REST.
+  \item \textbf{SQLAlchemy} + \textbf{SQLite} para persistencia.
+  \item \textbf{PyMuPDF} (fitz) y utilidades de \texttt{src/limpieza} para extracción/limpieza de texto.
+  \item \textbf{LangChain} y \textbf{Azure OpenAI} (GPT-4o-mini) para estructuración y comparaciones semánticas.
+  \item \textbf{Pydantic} para validación de datos a nivel de API.
+\end{itemize}
+Las versiones están fijadas en \texttt{requirements.txt}. La API se ejecuta con \texttt{python run\_api.py} en \texttt{http://localhost:8000}, generando documentación interactiva en \texttt{/docs}.
 
 \section{Módulos y Detalles}
-Detalles de implementación por módulo y contratos de interfaces.
+\subsection{Limpieza y extracción (PDF → texto)}
+El módulo \texttt{main/data\_cleaner.py} implementa la clase \texttt{DataCleaner}, encargada de extraer texto desde PDFs y normalizarlo utilizando funciones de \texttt{src/limpieza}. La operación principal es \texttt{clean\_cv\_from\_image(ruta\_pdf)} que:
+\begin{enumerate}
+  \item Verifica existencia y formato del archivo (\texttt{.pdf}).
+  \item Extrae texto mediante \texttt{src/limpieza/pdf\_text\_extractor.extract\_text\_from\_pdf}.
+  \item Aplica limpieza y normalización con \texttt{src/limpieza/limpieza.clean\_text}.
+\end{enumerate}
+Este flujo se invoca desde \texttt{CVService} al recibir un PDF en \texttt{POST /cvs}.
+
+\subsection{Estructuración (texto → JSON)}
+El módulo \texttt{main/data\_structurer.py} implementa \texttt{DataStructurer}, que orquesta los extractores:
+\begin{itemize}
+  \item \texttt{SimpleCVExtractor} (\texttt{src/estructuracion\_CV/cv\_simple\_extractor.py}) para CVs.
+  \item \texttt{JobDescriptionExtractor} (\texttt{src/estructuracion\_Descripcion/job\_description\_extractor.py}) para Jobs.
+\end{itemize}
+Los métodos \texttt{structure\_cv(texto)} y \texttt{structure\_job\_description(texto)} retornan JSON con campos clave (información personal, experiencia, educación, habilidades, certificaciones, idiomas, ubicación para CVs; e información básica, requerimientos y responsabilidades para Jobs). Los \emph{prompts} utilizados para cada sub-extracción están resumidos en las Tablas \ref{tab:prompts-cv} y \ref{tab:prompts-job}. Estos métodos se invocan desde \texttt{CVService} y \texttt{JobService}.
+
+\subsection{API y Servicios}
+La API (\texttt{api/main.py}) define endpoints para CVs, Jobs, Análisis y estadísticas. La capa de servicios (\texttt{api/services.py}) abstrae la lógica:
+\begin{itemize}
+  \item \textbf{CVService}: procesa PDF y estructura el CV; extrae un resumen (nombre, email, teléfono, ubicación).
+  \item \textbf{JobService}: estructura la descripción textual de un Job y extrae un resumen (título, empresa, modalidad, ubicación).
+  \item \textbf{RecommendationService}: invoca el motor de recomendación y consolida \textit{score}, desglose por aspecto y resultado completo para persistencia.
+\end{itemize}
+El endpoint \texttt{POST /analyze/\{cv\_id\}/\{job\_id\}} toma los JSON persistidos de CV y Job, ejecuta el análisis y guarda el resultado en la tabla de \texttt{analyses}.
+
+\paragraph{Detalles de API (formatos y manejo).}
+\begin{itemize}
+  \item \textbf{Sesión de BD}: inyección de dependencia \texttt{get\_db()} (SQLAlchemy \texttt{Session}) en cada endpoint.
+  \item \textbf{Carga de archivos}: \texttt{POST /cvs} recibe \texttt{multipart/form-data} con \texttt{cv\_file} (\texttt{UploadFile}). Se guarda en \texttt{temp\_uploads/}, se procesa y se elimina en \texttt{finally}.
+  \item \textbf{Creación de Jobs}: \texttt{POST /jobs} recibe \texttt{Form} (\texttt{application/x-www-form-urlencoded}) con \texttt{description}.
+  \item \textbf{Análisis}: \texttt{POST /analyze/\{cv\_id\}/\{job\_id\}} acepta \texttt{Body JSON} opcional (\texttt{WeightsRequest}) y retorna \texttt{score}, \texttt{score\_porcentaje}, \texttt{score\_breakdown}, \texttt{summary}, \texttt{processing\_time}.
+  \item \textbf{Listados y búsqueda}: \texttt{GET /cvs}, \texttt{/jobs}, \texttt{/analyses} con paginación \texttt{skip}, \texttt{limit}. Búsqueda parcial \texttt{/cvs/search/\{nombre\}}, \texttt{/jobs/search/\{titulo\}} (case-insensitive).
+  \item \textbf{Ranking y stats}: \texttt{GET /jobs/\{job\_id\}/top-candidatos} (ordenado por \textit{score}); \texttt{GET /stats} (totales y promedio de \textit{score}).
+  \item \textbf{Errores}: \texttt{404} (no encontrado), \texttt{422} (validación), \texttt{500} (procesamiento). Se utiliza \texttt{HTTPException} con \texttt{detail} descriptivo.
+\end{itemize}
+
+\subsection{Repositorios y modelos de datos}
+Los repositorios (\texttt{api/repositories.py}) encapsulan operaciones CRUD sobre los modelos de \texttt{api/database.py}:
+\begin{itemize}
+  \item \texttt{CV}: \texttt{nombre}, \texttt{email}, \texttt{telefono}, \texttt{ubicacion}, \texttt{cv\_data (JSON)}, \texttt{created\_at}.
+  \item \texttt{JobDescription}: \texttt{titulo}, \texttt{empresa}, \texttt{ubicacion}, \texttt{job\_data (JSON)}, \texttt{created\_at}.
+  \item \texttt{Analysis}: \texttt{cv\_id}, \texttt{job\_id}, \texttt{nombre\_candidato}, \texttt{titulo\_trabajo}, \texttt{score}, \texttt{score\_breakdown (JSON)}, \texttt{resultado\_completo (JSON)}, \texttt{processing\_time}, \texttt{created\_at}.
+\end{itemize}
+Este diseño permite almacenar tanto los datos estructurados como la traza completa del análisis, favoreciendo reproducibilidad y auditoría.
+
+\subsection{Motor de recomendación y comparadores}
+El motor (\texttt{main/recommendation\_engine.py}) delega en \texttt{ComparatorMain} (\texttt{algoritmo\_recomendacion/comparator\_main.py}) la ejecución de comparadores y el cálculo del \textit{score} final. Flujo:
+\begin{enumerate}
+  \item \textbf{run\_all\_comparisons}: evalúa ocho aspectos independientes usando funciones de \texttt{comparators/}.
+  \item \textbf{calculate\_final\_score}: combina los puntajes por aspecto usando pesos por defecto; si algún aspecto no tiene datos (\(-1.0\)), se normaliza sobre los restantes.
+\end{enumerate}
+Comparadores por aspecto (ver Tabla \ref{tab:prompts-comp}):
+\begin{itemize}
+  \item \textbf{Habilidades técnicas}: compara las \emph{technical\_skills} del CV vs.\ las requeridas en el Job; usa un prompt de IA (Azure OpenAI vía LangChain) con \textit{fallback} determinista.
+  \item \textbf{Experiencia}: contrasta la experiencia del CV (cargos, empresas, duración, descripción) con los requisitos de experiencia del Job; devuelve \texttt{score} y \texttt{reason}.
+  \item \textbf{Educación}: evalúa compatibilidad educativa entre el historial académico del CV y los requisitos del Job; devuelve \texttt{score} y \texttt{reason}.
+  \item \textbf{Certificaciones}: verifica relevancia de certificaciones del CV frente a certificaciones requeridas y/o habilidades técnicas del Job; devuelve \texttt{score} y \texttt{reason}.
+  \item \textbf{Idiomas}: compara niveles de idioma requeridos vs.\ los reportados en el CV; devuelve \texttt{compatible}, \texttt{score} y \texttt{reason}.
+  \item \textbf{Ubicación}: evalúa compatibilidad geográfica (ciudad/país/proximidad) entre CV y Job; devuelve \texttt{score} y \texttt{reason}.
+  \item \textbf{Responsabilidades}: alinea responsabilidades del cargo con tareas evidenciadas en la experiencia del CV; devuelve \texttt{score} y \texttt{reason}.
+  \item \textbf{Habilidades blandas}: compara \emph{soft\_skills} del CV con las requeridas; usa IA con estructura de salida \texttt{score}/\texttt{reason}.
+\end{itemize}
+El resultado consolidado incluye: \texttt{score}, \texttt{score\_breakdown} (contribuciones por aspecto e indicadores de ignorado), \texttt{summary} y \texttt{weights\_used}.
 
 \section{Persistencia y API}
-Modelos de datos, endpoints y validación.
-
+La persistencia se implementa con \texttt{SQLite}. La inicialización de tablas ocurre en \texttt{api/database.init\_db()} al iniciar la aplicación. La API expone:
+\begin{itemize}
+  \item \texttt{POST /cvs}, \texttt{GET /cvs}, \texttt{GET /cvs/\{id\}}, \texttt{DELETE /cvs/\{id\}}, \texttt{GET /cvs/search/\{nombre\}}, \texttt{GET /cvs/\{cv\_id\}/analyses}.
+  \item \texttt{POST /jobs}, \texttt{GET /jobs}, \texttt{GET /jobs/\{id\}}, \texttt{DELETE /jobs/\{id\}}, \texttt{GET /jobs/search/\{titulo\}}, \texttt{GET /jobs/\{job\_id\}/analyses}, \texttt{GET /jobs/\{job\_id\}/top-candidatos}.
+  \item \texttt{POST /analyze/\{cv\_id\}/\{job\_id\}}, \texttt{GET /analyses}, \texttt{GET /analyses/\{id\}}, \texttt{DELETE /analyses/\{id\}}, \texttt{GET /stats}, \texttt{GET /health}.
+\end{itemize}
+La validación de entrada se realiza con \texttt{Pydantic} (por ejemplo, modelo \texttt{WeightsRequest} para pesos opcionales en el análisis), y se manejan errores y códigos HTTP apropiados (\texttt{404}, \texttt{422}, \texttt{500}).
 

@@ -37,6 +37,7 @@ El motor (archivo \texttt{main/recommendation\_engine.py}) delega en \texttt{Com
 
 \section{Flujos principales}
 \subsection*{1) Subir CV (PDF)}
+\noindent Referencia: véase Figura \ref{fig:ui-subir-cv}.
 \begin{enumerate}
   \item \texttt{POST /cvs}: la API recibe el archivo.
   \item \textbf{CVService} extrae/limpia texto y estructura el CV.
@@ -45,6 +46,7 @@ El motor (archivo \texttt{main/recommendation\_engine.py}) delega en \texttt{Com
 \end{enumerate}
 
 \subsection*{2) Crear Job (texto)}
+\noindent Referencia: véase Figura \ref{fig:ui-crear-job}.
 \begin{enumerate}
   \item \texttt{POST /jobs}: la API recibe la descripción.
   \item \textbf{JobService} estructura el texto a JSON.
@@ -53,6 +55,7 @@ El motor (archivo \texttt{main/recommendation\_engine.py}) delega en \texttt{Com
 \end{enumerate}
 
 \subsection*{3) Analizar CV vs Job}
+\noindent Referencia: véase Figura \ref{fig:ui-analizar}.
 \begin{enumerate}
   \item \texttt{POST /analyze/\{cv\_id\}/\{job\_id\}}: la API recibe ids.
   \item \textbf{RecommendationService} obtiene CV/Job y ejecuta comparadores.
@@ -61,6 +64,7 @@ El motor (archivo \texttt{main/recommendation\_engine.py}) delega en \texttt{Com
 \end{enumerate}
 
 \subsection*{4) Ranking de candidatos}
+\noindent Referencia: véase Figura \ref{fig:ui-ranking}.
 \begin{enumerate}
   \item \texttt{GET /jobs/\{job\_id\}/top-candidatos}.
   \item \textbf{AnalysisRepository} ordena por \emph{score} y retorna el top.
