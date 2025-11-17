@@ -1,91 +1,98 @@
-\chapter{Metodología}
-\label{chap:metodologia}
+\chapter{Marco Teórico}
+\label{chap:marco-teorico}
 
-\section{Preguntas de Investigación}
+Este capítulo presenta los fundamentos teóricos que sustentan el desarrollo del sistema de recomendación de hojas de vida. Se abordan conceptos de procesamiento de lenguaje natural, sistemas de recomendación, modelos de lenguaje y arquitecturas de software relevantes para la extracción, estructuración y comparación de información contenida en documentos de texto.
 
-Este trabajo busca responder a la pregunta principal planteada en la Introducción: ¿Cómo el diseño e implementación de un sistema de recomendación de hojas de vida basado en procesamiento de lenguaje natural mejora la efectividad del proceso de selección de talento?
+\section{Procesamiento de Lenguaje Natural}
 
-Derivamos las siguientes preguntas específicas:
+El procesamiento de lenguaje natural (NLP) es una disciplina que combina lingüística, informática e inteligencia artificial para dotar a las máquinas de la capacidad de entender, interpretar y generar lenguaje humano \cite{jurafsky2023speech}. En el contexto de este trabajo, las técnicas de NLP son fundamentales para transformar documentos no estructurados (HVs en formato PDF) en representaciones estructuradas que permitan análisis automatizado.
+
+\subsection{Extracción y Limpieza de Texto}
+
+La extracción de texto es un proceso fundamental dentro del análisis automatizado de documentos, especialmente cuando se trabaja con archivos en formatos que no garantizan una estructura interna uniforme, como los documentos PDF. En términos generales, este proceso consiste en identificar y recuperar el contenido textual presente en un documento, independientemente de si proviene de texto digital embebido o de representaciones gráficas que requieren técnicas de reconocimiento óptico de caracteres (OCR). La diversidad en la forma en que los PDF almacenan la información implica que los métodos de extracción deben ser capaces de manejar distintos niveles de estructuración y fidelidad del contenido.
+
+Posterior a la extracción, se realiza una etapa de limpieza y normalización del texto. Esta etapa busca transformar el contenido recuperado en una representación consistente y procesable, e incluye actividades como la normalización de caracteres, la corrección de artefactos comunes de digitalización o conversión, y la eliminación de elementos considerados ruido, tales como símbolos no textuales, fragmentaciones incorrectas de palabras o puntuación irrelevante. Estas operaciones son esenciales para garantizar que el texto final pueda ser utilizado de manera efectiva en posteriores tareas de análisis, modelado o procesamiento lingüístico.
+
+
+
+En este trabajo, se utilizan técnicas de limpieza específicas para documentos en español, incluyendo normalización de tildes y manejo de caracteres especiales comunes en HVs.
+
+
+\section{Modelos de Lenguaje y Extracción de Información}
+
+\subsection{Modelos de Lenguaje Grandes (LLMs)}
+
+Los modelos de lenguaje grandes son sistemas de aprendizaje profundo entrenados con grandes volúmenes de texto, capaces de aprender representaciones complejas del lenguaje y comprender su contexto y semántica. En este trabajo se emplea GPT-4o-mini, un modelo de la familia GPT (Generative Pre-trained Transformer) desarrollado por OpenAI y desplegado a través de Azure OpenAI Services. Estos modelos pueden generar respuestas estructuradas a partir de instrucciones bien definidas y adaptarse a distintos dominios o tareas con un ajuste mínimo.
+
+
+\subsection{Prompt Engineering}
+
+El \emph{prompt engineering} consiste en diseñar instrucciones que guían a los modelos de lenguaje para generar resultados precisos y estructurados. En tareas de extracción y organización de información, esta práctica permite definir con claridad el formato de salida y descomponer procesos complejos en pasos intermedios. Al incluir ejemplos dentro del propio prompt, el modelo puede adaptarse mejor al contexto y producir respuestas más consistentes. Para la orquestación de estas interacciones se emplea LangChain \cite{langchain}, un framework que permite gestionar plantillas de prompts, estructurar las respuestas mediante parsers, manejar errores y conectar distintos proveedores de modelos.
+
+\section{Sistemas de Recomendación y Matching de Perfiles}
+
+\subsection{Recomendación Basada en Contenido}
+
+Los sistemas de recomendación basados en contenido filtran elementos (en este caso, candidatos) basándose en las características y preferencias del usuario (en este caso, requisitos del puesto). Los sistemas basados en contenido utilizan información intrínseca de los elementos a recomendar \cite{ricci2011introduction}.
+
+El proceso  incluye:
 \begin{enumerate}
-  \item ¿Con qué calidad se estructuran las hojas de vida y las descripciones de trabajo (por rubro/campo) al transformarlas a JSON?
-  \item ¿En qué medida el \emph{score} de compatibilidad del sistema y sus explicaciones por aspecto son considerados adecuados por un profesional de RR.\,HH.?
-  \item ¿En qué medida coinciden los rankings de candidatos producidos por el sistema con el ranking emitido por un profesional de RR.\,HH.?
+  \item \textbf{Representación de perfiles}: Transformar información de candidatos y puestos en un diccionario de características.
+  \item \textbf{Medida de similitud}: Calcular qué tan similar es un candidato a un puesto utilizando funciones de distancia o similitud.
+  \item \textbf{Ranking}: Ordenar candidatos según su puntaje de compatibilidad.
 \end{enumerate}
 
-Hipótesis asociadas:
-\begin{itemize}
-  \item \textbf{H1 (Estructuración CV/Job)}: La estructuración automática alcanza puntajes altos (0--100) por rubro al compararse con las fuentes originales (PDF del CV y texto del Job).
-  \item \textbf{H2 (Adecuación de score y explicación)}: Un profesional de RR.\,HH. califica con valores altos (0--100) tanto el \emph{score} del sistema como las razones por aspecto (experiencia, responsabilidades, habilidades, etc.).
-  \item \textbf{H3 (Consistencia de ranking)}: El orden de candidatos del sistema muestra coincidencias relevantes con el ranking emitido por el profesional de RR.\,HH.
-\end{itemize}
+\subsection{Matching por Aspectos Múltiples}
 
-\section{Diseño Experimental}
+En lugar de calcular una única medida de similitud, el matching por aspectos múltiples descompone la comparación en dimensiones independientes. Cada aspecto se evalúa por separado y luego se combinan los resultados mediante un esquema de ponderación.
 
-\subsection{Contexto y dataset}
-Se emplea un conjunto acotado de 10 hojas de vida (la mayoría de estudiantes/egresados de la Universidad de los Andes; 5 estudiantes activos) y descripciones de cargos en tecnología (desarrollo de software y TI). Este tamaño permite un ciclo iterativo de prueba y mejora controlado.
-
-\subsection{Variables}
-\textbf{Independientes}:
-\begin{itemize}
-  \item Descripción de cargo (tarea) frente a la cual se evalúan candidatos.
-  \item Conjunto de hojas de vida analizadas por tarea.
-\end{itemize}
-\textbf{Dependientes}:
-\begin{itemize}
-  \item Calidad de estructuración (0--100) por rubro/campo en CVs y Jobs.
-  \item Calificación (0--100) del \emph{score} del sistema por análisis.
-  \item Calificación (0--100) de las razones/explicaciones por aspecto.
-  \item Comparación de rankings entre experto y sistema (coincidencias/diferencias).
-\end{itemize}
-
-\subsection{Métricas}
-\begin{itemize}
-  \item \textbf{Estructuración de CVs y Jobs}: Puntuación 0--100 por rubro al contrastar JSON contra el PDF (CV) o texto (Job). Se reportan promedios por rubro y un promedio global por documento.
-  \item \textbf{Adecuación del modelo (por análisis)}:
-    \begin{itemize}
-      \item Calificación 0--100 del \emph{score} de compatibilidad producido por el sistema.
-      \item Calificación 0--100 de la explicación por aspecto (experiencia, responsabilidades, habilidades técnicas, habilidades blandas, certificaciones, idiomas, ubicación).
-    \end{itemize}
-  \item \textbf{Ranking experto vs.\ sistema}: Se comparan las listas ordenadas de candidatos por análisis y se registran coincidencias y diferencias principales (sin aplicar métricas de precisión/recuperación).
-\end{itemize}
-
-\subsection{Procedimiento}
+En este trabajo, se evalúan ocho aspectos:
 \begin{enumerate}
-  \item \textbf{Preparación}: Limpieza y estructuración de HVs y descripciones (pipeline de extracción; ver capítulos previos). Registro de versiones de prompts y configuraciones.
-  \item \textbf{Análisis automático}: Para cada combinación \emph{(CV, Job)} se ejecuta el análisis con pesos \emph{default}. Se almacenan \emph{score}, desglose por aspecto y tiempos.
-  \item \textbf{Estructuración (validación manual)}: Para CVs y Jobs se revisa rubro por rubro el JSON estructurado contra la fuente (PDF o texto) y se asigna una calificación 0--100 por rubro. Se agregan promedios por rubro y globales por documento.
-  \item \textbf{Evaluación experta del modelo}: Un profesional de RR.\,HH., Juan Pablo Chaparro (25 años, \(\sim\)2 años de experiencia), realiza 4 análisis; en cada uno evalúa 5 hojas de vida (20 evaluaciones en total). Para cada análisis:
-    \begin{itemize}
-      \item Califica 0--100 el \emph{score} de compatibilidad entregado por el sistema.
-      \item Califica 0--100 las razones por aspecto (experiencia, responsabilidades, habilidades, certificaciones, idiomas, ubicación).
-      \item Emite un ranking de candidatos y se compara cualitativamente con el ranking del sistema (coincidencias/diferencias).
-    \end{itemize}
+  \item \textbf{Experiencia}: Años y relevancia de experiencia laboral previa.
+  \item \textbf{Habilidades técnicas}: Tecnologías, herramientas y competencias técnicas.
+  \item \textbf{Educación}: Nivel educativo, títulos y instituciones.
+  \item \textbf{Responsabilidades}: Match entre responsabilidades previas y requeridas.
+  \item \textbf{Certificaciones}: Certificaciones profesionales relevantes.
+  \item \textbf{Habilidades blandas}: Competencias interpersonales y de trabajo en equipo.
+  \item \textbf{Idiomas}: Nivel de dominio de idiomas requeridos.
+  \item \textbf{Ubicación}: Compatibilidad geográfica y modalidad de trabajo.
 \end{enumerate}
 
-\subsection{Amenazas y controles}
+Cada aspecto evaluado recibe un puntaje entre 0 y 1, donde un valor más alto representa una mayor compatibilidad. Un puntaje de 1.0 indica compatibilidad completa, valores entre 0.5 y 0.9 reflejan compatibilidad parcial, entre 0.0 y 0.4 indican baja compatibilidad, y un valor de -1.0 se asigna cuando no hay datos suficientes para realizar la evaluación.
+
+
+\subsection{Sistema de Pesos Configurable}
+
+El puntaje final se calcula como una suma ponderada:
+
+\begin{equation}
+\text{Score}_{final} = \sum_{i=1}^{n} w_i \cdot s_i
+\end{equation}
+
+donde $w_i$ es el peso del aspecto $i$, $s_i$ es el puntaje del aspecto $i$, y $\sum_{i=1}^{n} w_i = 1$.
+
+Los pesos pueden configurarse según el tipo de puesto:
 \begin{itemize}
-  \item \textbf{Tamaño muestral reducido}: Se reportan resultados con intervalos y se evita sobreinterpretación; se propone ampliar dataset como trabajo futuro.
-  \item \textbf{Variabilidad del modelo de lenguaje}: Se fija configuración conservadora (temperatura baja) y se almacenan salidas intermedias para trazabilidad.
-  \item \textbf{Sesgo de dominio}: El estudio se acota a roles de tecnología; se declara la validez externa como amenaza y se discute su impacto.
+  \item \textbf{Perfil Junior}: Mayor peso en educación y habilidades técnicas.
+  \item \textbf{Perfil Senior}: Mayor peso en experiencia y certificaciones.
 \end{itemize}
 
-\section{Reproducibilidad}
+Si un aspecto tiene puntaje $-1.0$ (no evaluable), se excluye del cálculo y los pesos restantes se normalizan para que sumen 1.0.
 
-\subsection{Entorno y dependencias}
-Se utiliza Python 3.11, FastAPI, SQLAlchem}, PyMuPDF, NLTK, LangChain y cliente de Azure OpenAI. Las versiones se especifican en \texttt{requirements.txt}. 
 
-\subsection{Modelos y configuración}
-Se emplea \texttt{GPT-4o-mini} vía Azure OpenAI con variables de entorno (\texttt{.env}). Se recomienda fijar temperatura baja y registrar \emph{prompts} en los apéndices. Las respuestas estructuradas (CVs/Jobs) y resultados de análisis se persisten en \texttt{cv\_system.db}.
+\section{Arquitectura de Sistemas y Herramientas}
 
-\subsection{Datos y trazabilidad}
-Los PDFs de HVs y textos de descripciones se versionan como artefactos de datos (o referencias anonimizadas). Se guarda:
-\begin{itemize}
-  \item Texto extraído y versiones de limpieza.
-  \item JSON estructurado por entidad (CV/Job).
-  \item Resultados de análisis: \emph{score}, desglose por aspecto, tiempos.
-  \item Anotaciones/orden del experto de RR.\,HH.
-\end{itemize}
+\subsection{Arquitectura en Capas}
 
+El sistema implementa una arquitectura en capas que separa responsabilidades para facilitar la mantebilidad, robustez y testabilidad de la aplicación
+
+\begin{enumerate}
+  \item \textbf{Capa de Presentación (Frontend)}: Interfaz web desarrollada en React que permite a los usuarios interactuar con el sistema.
+  \item \textbf{Capa de API}: Endpoints RESTful desarrollados con FastAPI que exponen la funcionalidad del sistema.
+  \item \textbf{Capa de Servicios}: Lógica de negocio que orquesta el procesamiento de datos y análisis.
+  \item \textbf{Capa de Repositorios}: Abstracción de acceso a datos que simplifica operaciones CRUD.
+  \item \textbf{Capa de Persistencia}: Base de datos SQLite que almacena HVs, ofertas de trabajo y resultados de análisis.
+\end{enumerate}
 
 
 
