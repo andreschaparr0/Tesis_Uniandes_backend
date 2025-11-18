@@ -1,4 +1,7 @@
+\usepackage{wrapfig}
+\usepackage{graphicx}
 \usepackage{float}
+\usepackage{caption}
 \chapter{Metodología}
 \label{chap:metodologia}
 
@@ -23,33 +26,73 @@ Con la definición del problema y los datos, se requiere convertir HVs y descrip
 
 \subsection{Esquema de estructuración de hojas de vida}
 Para HVs se adopta un esquema orientado a capturar la información mínima necesaria para la preselección temprana en el proceso de selección:
+
+\subsection{Esquema de estructuración de hojas de vida}
+Para HVs se adopta un esquema orientado a capturar la información mínima necesaria para la preselección temprana en el proceso de selección:
+
+\vspace{0.3cm}
+\noindent
+\begin{minipage}[t]{0.62\textwidth}
+\vspace{0pt}
 \begin{itemize}
-  \item \textbf{Información personal}: Corresponde a los datos básicos del candidato (nombre, correo, número de contacto y ubicación de referencia).
-  \item \textbf{Educación}: lista de objetos con \texttt{grado}, \texttt{institución}, \texttt{año}, \texttt{campo}. Resume los títulos formales obtenidos y sus campos de estudio.
-  \item \textbf{Experiencia}: lista de objetos con \texttt{posición}, \texttt{compañia}, \texttt{duración}, \texttt{descripción}. Describe los cargos desempeñados, el contexto laboral y las responsabilidades principales.
-  \item \textbf{Habilidades técnicas}: lista de habilidades técnicas. Incluye tecnologías, lenguajes y herramientas declaradas por el candidato.
-  \item \textbf{Habilidades blandas}: lista de habilidades blandas. Agrupa competencias transversales reportadas o inferidas del CV.
-  \item \textbf{Certificaciones}: lista de objetos con los certificados. Representa credenciales formales que respaldan conocimientos o habilidades específicas.
-  \item \textbf{Idiomas}: objeto \{idioma: nivel\}. Asocia cada lengua al nivel de dominio declarado.
+    \item \textbf{Información personal}: Corresponde a los datos básicos del candidato (nombre, correo, número de contacto y ubicación de referencia).
+    \item \textbf{Educación}: lista de objetos con \texttt{grado}, \texttt{institución}, \texttt{año}, \texttt{campo}. Resume los títulos formales obtenidos y sus campos de estudio.
+    \item \textbf{Experiencia}: lista de objetos con \texttt{posición}, \texttt{compañia}, \texttt{duración}, \texttt{descripción}. Describe los cargos desempeñados, el contexto laboral y las responsabilidades principales.
+    \item \textbf{Habilidades técnicas}: lista de habilidades técnicas. Incluye tecnologías, lenguajes y herramientas declaradas por el candidato.
+    \item \textbf{Habilidades blandas}: lista de habilidades blandas. Agrupa competencias transversales reportadas o inferidas del CV.
+    \item \textbf{Certificaciones}: lista de objetos con los certificados. Representa credenciales formales que respaldan conocimientos o habilidades específicas.
+    \item \textbf{Idiomas}: objeto \{idioma: nivel\}. Asocia cada lengua al nivel de dominio declarado.
 \end{itemize}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.31\textwidth}
+    \vspace{0pt}
+    \centering
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.95\textwidth]{estructura_cuadros_elemenos_HV.png}
+        \caption{Estructura de elementos del CV}
+        \label{fig:estructura-cv}
+    \end{figure}
+\end{minipage}
+
+\vspace{1em}
 
 Esta selección equilibra cobertura y simplicidad: concentra atributos que típicamente evalúan RR.\,HH. en el primer filtro y se alinea con los comparadores por aspecto (experiencia, educación, habilidades, certificaciones, idiomas y ubicación). El formato facilita la explicación de resultados y la detección explícita de ausencias (\texttt{DESCONOCIDO}) sin introducir ruido.
 
 \subsection{Esquema de estructuración de descripciones de trabajo}
 Para descripciones de trabajo se define un esquema que recoge requisitos y contexto del cargo, habilitando la comparación por aspectos:
-\begin{itemize}
-  \item \textbf{Información básica}: Titulo cargo, nombre empresa, modalidad trabajo, tipo contrato, salario y resumen. Proporciona el marco general del rol.
-  \item \textbf{Responsabilidades}: lista de responsabilidades. Tareas y funciones esperadas del cargo.
-  \item \textbf{Ubicación}: Referencia geográfica relevante para compatibilidad y modalidad.
-  \item \textbf{Educación}: Requisitos educativos mínimos o deseables.
-  \item \textbf{Experiencia}: Años o tipo de experiencia requerida.
-  \item \textbf{Habilidades técnicas}: lista de habilidades técnicas. Tecnologías y herramientas obligatorias o deseables.
-  \item \textbf{Habilidades blandas}: lista de habilidades blandas. Competencias transversales esperadas.
-  \item \textbf{Certificaciones}: lista de certificaciones. Certificaciones requeridas o valoradas.
-  \item \textbf{Idiomas}: objeto \{idioma: nivel\}. Niveles de idioma requeridos.
-  \item \textbf{Beneficios}: lista de beneficios. Condiciones y beneficios relevantes.
-\end{itemize}
 
+\vspace{0.3cm}
+\noindent
+\begin{minipage}[t]{0.62\textwidth}
+\vspace{0pt}
+\begin{itemize}
+    \item \textbf{Información básica}: Titulo cargo, nombre empresa, modalidad trabajo, tipo contrato, salario y resumen. Proporciona el marco general del rol.
+    \item \textbf{Responsabilidades}: lista de responsabilidades. Tareas y funciones esperadas del cargo.
+    \item \textbf{Ubicación}: Referencia geográfica relevante para compatibilidad y modalidad.
+    \item \textbf{Educación}: Requisitos educativos mínimos o deseables.
+    \item \textbf{Experiencia}: Años o tipo de experiencia requerida.
+    \item \textbf{Habilidades técnicas}: lista de habilidades técnicas. Tecnologías y herramientas obligatorias o deseables.
+    \item \textbf{Habilidades blandas}: lista de habilidades blandas. Competencias transversales esperadas.
+    \item \textbf{Certificaciones}: lista de certificaciones. Certificaciones requeridas o valoradas.
+    \item \textbf{Idiomas}: objeto \{idioma: nivel\}. Niveles de idioma requeridos.
+    \item \textbf{Beneficios}: lista de beneficios. Condiciones y beneficios relevantes.
+\end{itemize}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.35\textwidth}
+    \vspace{0pt}
+    \centering
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.65\textwidth]{estructura_cuadros_elementos_descripcion.png}
+        \caption{Estructura de elementos de la descripción}
+        \label{fig:estructura-descripcion}
+    \end{figure}
+\end{minipage}
+
+\vspace{1em}
 Este esquema prioriza la comparabilidad con los campos del CV y la trazabilidad de requisitos típicos del mercado tecnológico (responsabilidades, habilidades, experiencia, educación, ubicación e idiomas). La homogeneización en JSON permite ejecutar comparaciones semánticas y producir un desglose por aspecto comprensible para RR.\,HH.; las ausencias se documentan como \texttt{DESCONOCIDO} para evitar inferencias no sustentadas.
 
  \section{Comparación por aspectos}
