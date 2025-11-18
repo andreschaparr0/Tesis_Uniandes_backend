@@ -1,7 +1,7 @@
 \chapter{Marco Teórico}
 \label{chap:marco-teorico}
 
-Este capítulo presenta los fundamentos teóricos que sustentan el desarrollo del sistema de recomendación de hojas de vida. Se abordan conceptos de procesamiento de lenguaje natural, sistemas de recomendación, modelos de lenguaje y arquitecturas de software relevantes para la extracción, estructuración y comparación de información contenida en documentos de texto.
+Este capítulo presenta los fundamentos teóricos que sustentan el desarrollo del sistema de recomendación de hojas de vida. Se abordan conceptos clave para el desarrollo de la tesis principalmente en el procesamiento de lenguaje natural y en los modelos de lenguaje y extracción de información.
 
 \section{Procesamiento de Lenguaje Natural}
 
@@ -9,32 +9,12 @@ El procesamiento de lenguaje natural (NLP) es una disciplina que combina lingü�
 
 \subsection{Extracción y Limpieza de Texto}
 
-La extracción de texto de documentos PDF constituye el primer paso en el pipeline de procesamiento. Los PDFs pueden presentar diferentes niveles de estructuración: desde documentos con texto indexable hasta documentos escaneados que requieren técnicas de reconocimiento óptico de caracteres (OCR). PyMuPDF (también conocido como \texttt{fitz}) es una biblioteca que permite extraer texto de PDFs tanto indexables como con contenido gráfico, manteniendo información sobre estructura y formato.
+La extracción y limpieza de texto son procesos fundamentales en el análisis automático de documentos. La extracción se refiere a recuperar el contenido textual de un archivo, el cual puede encontrarse estructurado o representar texto a través de imágenes que requieren técnicas de reconocimiento óptico de caracteres. Una vez obtenido el contenido, la etapa de limpieza busca normalizarlo y eliminar inconsistencias propias de la digitalización o del formato, como caracteres irregulares, fragmentación de palabras o elementos considerados ruido. Estas transformaciones permiten obtener un texto coherente y uniforme que pueda ser utilizado en posteriores tareas de procesamiento y análisis.
 
-Una vez extraído el texto, se requiere un proceso de limpieza y normalización que incluye:
-\begin{itemize}
-  \item \textbf{Normalización de caracteres}: Eliminación de símbolos problemáticos, conversión de caracteres especiales y manejo de codificación de caracteres (Unicode).
-  \item \textbf{Corrección de errores de extracción}: Unión de letras separadas por espacios (problema común en extracción de PDFs) y corrección de palabras fragmentadas.
-  \item \textbf{Eliminación de ruido}: Remoción de caracteres especiales, puntuación excesiva y artefactos de formato.
-\end{itemize}
-
-
-
-En este trabajo, se utilizan técnicas de limpieza específicas para documentos en español, incluyendo normalización de tildes y manejo de caracteres especiales comunes en HVs.
-
-\subsection{Estructuración}
-
-La estructuración de información consiste en identificar y organizar automáticamente los elementos más relevantes de un texto. En el caso de las hojas de vida (HVs), esta tarea permite reconocer datos personales y profesionales de manera estructurada.
-
-\begin{itemize}
-  \item Datos personales: nombre, correo electrónico, teléfono y ubicación.
-  \item Experiencia laboral: cargos, empresas y períodos de trabajo.
-  \item Formación académica: títulos, instituciones y años de estudio.
-  \item Habilidades técnicas y blandas.
-  \item Certificaciones e idiomas.
-\end{itemize}
 
 \section{Modelos de Lenguaje y Extracción de Información}
+
+Esta sección describe cómo los modelos de lenguaje y las prácticas de diseño de \emph{prompts} permiten transformar texto libre en representaciones estructuradas útiles para el sistema: primero se presentan las capacidades de los LLMs para comprender contexto y semántica; luego se explica cómo, mediante \emph{prompt engineering} y un framework de python, se obtienen salidas en formatos controlados (p.\,ej., JSON) que alimentan los módulos de estructuración y comparaciónn.
 
 \subsection{Modelos de Lenguaje Grandes (LLMs)}
 
@@ -45,74 +25,10 @@ Los modelos de lenguaje grandes son sistemas de aprendizaje profundo entrenados 
 
 El \emph{prompt engineering} consiste en diseñar instrucciones que guían a los modelos de lenguaje para generar resultados precisos y estructurados. En tareas de extracción y organización de información, esta práctica permite definir con claridad el formato de salida y descomponer procesos complejos en pasos intermedios. Al incluir ejemplos dentro del propio prompt, el modelo puede adaptarse mejor al contexto y producir respuestas más consistentes. Para la orquestación de estas interacciones se emplea LangChain \cite{langchain}, un framework que permite gestionar plantillas de prompts, estructurar las respuestas mediante parsers, manejar errores y conectar distintos proveedores de modelos.
 
-\section{Sistemas de Recomendación y Matching de Perfiles}
-
-\subsection{Recomendación Basada en Contenido}
-
-Los sistemas de recomendación basados en contenido filtran elementos (en este caso, candidatos) basándose en las características y preferencias del usuario (en este caso, requisitos del puesto). Los sistemas basados en contenido utilizan información intrínseca de los elementos a recomendar \cite{ricci2011introduction}.
-
-El proceso  incluye:
-\begin{enumerate}
-  \item \textbf{Representación de perfiles}: Transformar información de candidatos y puestos en un diccionario de características.
-  \item \textbf{Medida de similitud}: Calcular qué tan similar es un candidato a un puesto utilizando funciones de distancia o similitud.
-  \item \textbf{Ranking}: Ordenar candidatos según su puntaje de compatibilidad.
-\end{enumerate}
-
-\subsection{Matching por Aspectos Múltiples}
-
-En lugar de calcular una única medida de similitud, el matching por aspectos múltiples descompone la comparación en dimensiones independientes. Cada aspecto se evalúa por separado y luego se combinan los resultados mediante un esquema de ponderación.
-
-En este trabajo, se evalúan ocho aspectos:
-\begin{enumerate}
-  \item \textbf{Experiencia}: Años y relevancia de experiencia laboral previa.
-  \item \textbf{Habilidades técnicas}: Tecnologías, herramientas y competencias técnicas.
-  \item \textbf{Educación}: Nivel educativo, títulos y instituciones.
-  \item \textbf{Responsabilidades}: Match entre responsabilidades previas y requeridas.
-  \item \textbf{Certificaciones}: Certificaciones profesionales relevantes.
-  \item \textbf{Habilidades blandas}: Competencias interpersonales y de trabajo en equipo.
-  \item \textbf{Idiomas}: Nivel de dominio de idiomas requeridos.
-  \item \textbf{Ubicación}: Compatibilidad geográfica y modalidad de trabajo.
-\end{enumerate}
-
-Cada aspecto evaluado recibe un puntaje entre 0 y 1, donde un valor más alto representa una mayor compatibilidad. Un puntaje de 1.0 indica compatibilidad completa, valores entre 0.5 y 0.9 reflejan compatibilidad parcial, entre 0.0 y 0.4 indican baja compatibilidad, y un valor de -1.0 se asigna cuando no hay datos suficientes para realizar la evaluación.
 
 
-\subsection{Sistema de Pesos Configurable}
 
-El puntaje final se calcula como una suma ponderada:
+\subsection{LangChain}
 
-\begin{equation}
-\text{Score}_{final} = \sum_{i=1}^{n} w_i \cdot s_i
-\end{equation}
-
-donde $w_i$ es el peso del aspecto $i$, $s_i$ es el puntaje del aspecto $i$, y $\sum_{i=1}^{n} w_i = 1$.
-
-Los pesos pueden configurarse según el tipo de puesto:
-\begin{itemize}
-  \item \textbf{Perfil Junior}: Mayor peso en educación y habilidades técnicas.
-  \item \textbf{Perfil Senior}: Mayor peso en experiencia y certificaciones.
-\end{itemize}
-
-Si un aspecto tiene puntaje $-1.0$ (no evaluable), se excluye del cálculo y los pesos restantes se normalizan para que sumen 1.0.
-
-
-\section{Arquitectura de Sistemas y Herramientas}
-
-\subsection{Arquitectura en Capas}
-
-El sistema implementa una arquitectura en capas que separa responsabilidades:
-
-\begin{enumerate}
-  \item \textbf{Capa de Presentación (Frontend)}: Interfaz web desarrollada en React que permite a los usuarios interactuar con el sistema.
-  \item \textbf{Capa de API}: Endpoints RESTful desarrollados con FastAPI que exponen la funcionalidad del sistema.
-  \item \textbf{Capa de Servicios}: Lógica de negocio que orquesta el procesamiento de datos y análisis.
-  \item \textbf{Capa de Repositorios}: Abstracción de acceso a datos que simplifica operaciones CRUD.
-  \item \textbf{Capa de Persistencia}: Base de datos SQLite que almacena HVs, ofertas de trabajo y resultados de análisis.
-\end{enumerate}
-
-Esta arquitectura facilita la mantebilidad, robustez y testabilidad de la aplicación:
-\section{Resumen}
-
-Este marco teórico establece las bases conceptuales para el desarrollo del sistema. Las técnicas de NLP permiten transformar documentos no estructurados en datos estructurados, los modelos de lenguaje grandes facilitan la extracción semántica de información, y los sistemas de recomendación basados en contenido con matching por aspectos múltiples proporcionan un marco para evaluar compatibilidad entre candidatos y puestos. La arquitectura en capas y las herramientas seleccionadas (FastAPI, SQLAlchemy, React) proporcionan una base sólida para implementar un sistema robusto y mantenible.
-
+LangChain es un framework diseñado para facilitar la construcción de aplicaciones basadas en modelos de lenguaje mediante la definición de cadenas de procesamiento, plantillas de prompts reutilizables y mecanismos de estandarización de entradas y salidas. Además, incorpora herramientas para validar formatos de salida, integrar proveedores externos de modelos y gestionar parámetros de ejecución de forma consistente. Estas características lo convierten en una plataforma adecuada para desarrollar sistemas que requieran orquestar interacciones complejas con modelos de lenguaje de manera reproducible y controlada.\cite{langchain}
 
