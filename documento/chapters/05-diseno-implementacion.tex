@@ -38,10 +38,24 @@ Desde el punto de vista de la comunicación interna, la API recibe las solicitud
 \section{Capa de aplicación: API y servicios}
 
 \subsection{Introducción a la capa de aplicación}
-La capa de aplicación es el punto de entrada del backend: recibe las peticiones HTTP provenientes del frontend, las valida y las traduce en operaciones de negocio concretas. En ella se ubican la API, implementada con FastAPI, y la capa de servicios, responsable de coordinar el pipeline de limpieza, estructuración, recomendación y acceso a datos. De esta forma, la lógica de negocio queda encapsulada en servicios reutilizables, mientras que la API se limita a exponer endpoints bien definidos y a gestionar aspectos transversales como serialización, manejo de errores y documentación.
+La capa de aplicación es el punto de entrada del backend: recibe las peticiones HTTP provenientes del frontend, las valida y las traduce en operaciones de negocio concretas. En ella se ubican la API, implementada con FastAPI, y la capa de servicios, responsable de coordinar el pipeline de limpieza, estructuración, recomendación y acceso a datos. De esta forma, la lógica de negocio queda encapsulada en servicios reutilizables, mientras que la API se limita a exponer endpoints bien definidos y a gestionar aspectos transversales como serialización, manejo de errores y documentación. En la siguiente Figura \ref{fig:capa_de_aplicacion_en_backend} se muestra cual es la capa de aplicación en el backend.
 
-En términos de flujo, el frontend invoca los endpoints de la API para subir un CV, registrar una descripción de trabajo o solicitar un análisis; la API delega en el servicio correspondiente (CVService, JobService o RecommendationService), que a su vez invoca el core (DataCleaner, DataStructurer, RecommendationEngine) y los repositorios necesarios. Las figuras de secuencia incluidas en el apéndice de figuras (Figuras \ref{fig:seq-subir-cv}, \ref{fig:seq-crear-job} y \ref{fig:seq-analizar}) ilustran estos flujos paso a paso para los casos de uso principales.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Arquitectura_backend_capa_de_aplicacion.png}
+    \caption{Capa de aplicación en el backend}
+    \label{fig:capa_de_aplicacion_en_backend}
+\end{figure}
 
+
+En términos de flujo, como se puede observar en la siguiente Figura \ref{fig:Capa_de_aplicacion} , el frontend invoca los endpoints de la API para subir un CV, registrar una descripción de trabajo o solicitar un análisis; la API delega en el servicio correspondiente (CVService, JobService o RecommendationService), que a su vez invoca el core y los repositorios necesarios. Las figuras de secuencia incluidas en el apéndice de figuras (Figuras \ref{fig:seq-subir-cv}, \ref{fig:seq-crear-job} y \ref{fig:seq-analizar}) ilustran estos flujos paso a paso para los casos de uso principales.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Capa_de_aplicacion.png}
+    \caption{Arquitectura de la capa de aplicación}
+    \label{fig:Capa_de_aplicacion}
+\end{figure}
 \subsection{API REST: endpoints y tecnologías}
 La API se implementó utilizando FastAPI sobre Python 3.11, aprovechando su soporte para tipado estático, validación automática con Pydantic y generación de documentación OpenAPI. El servidor de desarrollo se levanta con Uvicorn, exponiendo la aplicación en \texttt{http://localhost:8000}, con documentación interactiva disponible en \texttt{/docs}. La configuración de CORS en desarrollo permite el acceso desde el frontend en \texttt{http://localhost:3000}, mientras que en un entorno productivo se recomienda restringir orígenes y habilitar HTTPS.
 
