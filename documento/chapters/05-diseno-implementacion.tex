@@ -48,7 +48,7 @@ La capa de aplicación es el punto de entrada del backend: recibe las peticiones
 \end{figure}
 
 
-En términos de flujo, como se puede observar en la siguiente Figura \ref{fig:Capa_de_aplicacion} , el frontend invoca los endpoints de la API para subir un CV, registrar una descripción de trabajo o solicitar un análisis; la API delega en el servicio correspondiente (CVService, JobService o RecommendationService), que a su vez invoca el core y los repositorios necesarios. Las figuras de secuencia incluidas en el apéndice de figuras (Figuras \ref{fig:seq-subir-cv}, \ref{fig:seq-crear-job} y \ref{fig:seq-analizar}) ilustran estos flujos paso a paso para los casos de uso principales.
+En términos de flujo, como se puede observar en la siguiente Figura \ref{fig:Capa_de_aplicacion} , el frontend invoca los endpoints de la API para manejar todo lo referente a las HV, descripciones o análisis; la API delega exclusivamente en el servicio correspondiente (CVService, JobService, RecommendationService o AnalysisService), el cual encapsula toda la lógica de orquestación. Es el servicio quien invoca al core para el procesamiento y quien interactúa con los repositorios para la persistencia de datos. Las figuras de secuencia incluidas en el apéndice de figuras (Figuras \ref{fig:seq-subir-cv}, \ref{fig:seq-crear-job} y \ref{fig:seq-analizar}) ilustran estos flujos paso a paso para los casos de uso principales.
 
 \begin{figure}[H]
     \centering
@@ -78,15 +78,58 @@ El componente \texttt{Job\_Endpoint} gestiona las ofertas laborales de manera an
 \subsubsection*{Análisis y Estadísticas}
 El componente \texttt{Analysis\_Endpoint} actúa como el núcleo funcional donde converge la información. Su método principal, \texttt{analizar}, desencadena la comparación entre una HV y un Job. Este módulo también ofrece endpoints para consultar el historial (\texttt{listar\_analyses}), obtener detalles específicos (\texttt{obtener\_analysis}), generar rankings de mejores candidatos (\texttt{analyses\_por\_job} o top candidatos) y visualizar métricas generales del sistema (\texttt{estadisticas}). Puede consultar el detalle técnico de estos endpoints en el Apéndice \ref{sec:api-analysis}.
 
-Cada endpoint está diseñado para delegar la lógica de negocio a la capa de servicios, limitándose a validar la petición HTTP y devolver la respuesta adecuada con los códigos de estado estándar.
+Cada endpoint está diseñado bajo el patrón de \emph{application services}, delegando la totalidad del procesamiento y la persistencia a la capa de servicios. Su responsabilidad se limita a validar la estructura de la petición HTTP, invocar el método de servicio adecuado y transformar la respuesta de negocio en una respuesta HTTP con los códigos de estado estándar.
 
 \subsection{Servicios y lógica de negocio}
-La capa de servicios sigue un patrón de \emph{application services} que encapsulan la lógica de negocio alrededor de casos de uso específicos. Tres servicios principales estructuran el backend:
+
+La capa de servicios sigue un patrón de \emph{application services} que centraliza la lógica de negocio, orquestando la interacción entre los componentes del sistema. Como se ilustra en la Figura \ref{fig:FiguraServices}, estos servicios actúan como intermediarios que coordinan el acceso a datos y la ejecución de procesos del núcleo, garantizando que la API permanezca desacoplada de la implementación subyacente.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Figura_Services.png}
+    \caption{Componentes de la capa de servicios}
+    \label{fig:FiguraServices}
+\end{figure}
+
+El backend se estructura en cuatro servicios principales, cada uno con responsabilidades delimitadas:
+
 \begin{itemize}
-  \item \textbf{CVService}: orquesta la ingestión de HVs en PDF. Recibe la ruta del archivo, invoca a \texttt{DataCleaner} para extraer y limpiar el texto y a \texttt{DataStructurer} para estructurarlo según el esquema definido en la metodología. Luego utiliza \texttt{CVRepository} para persistir el CV estructurado y devuelve un resumen legible (nombre, correo, teléfono, ubicación) a la API.
-  \item \textbf{JobService}: coordina la ingestión de descripciones de trabajo en texto plano. Llama a \texttt{DataStructurer} para producir el JSON estructurado y a \texttt{JobRepository} para almacenarlo, devolviendo información básica (título del cargo, empresa, modalidad, ubicación).
-  \item \textbf{RecommendationService}: implementa el caso de uso central de análisis CV--Job. Dado un par \texttt{(cv\_id, job\_id)}, recupera los datos estructurados desde los repositorios, invoca al \texttt{RecommendationEngine} para ejecutar comparaciones por aspecto y generar el score final y, finalmente, utiliza \texttt{AnalysisRepository} para guardar el resultado completo (score, breakdown, resumen, tiempos) antes de devolver una respuesta resumida a la API.
+  \item \textbf{CVService}: Gestiona el ciclo de vida de las hojas de vida. Sus funciones principales incluyen procesar archivos PDF (\texttt{process\_cv\_from\_file}) interactuando con el nucleo y administrar la persistencia de datos (creación, búsqueda y eliminación) interactuando directamente con la capa de repositorios.
+  
+  \item \textbf{JobService}: Centraliza la lógica relacionada con las descripciones de trabajo. Coordina la estructuración de texto plano mediante IA (\texttt{process\_job\_from\_text}) interactuando con el core y gestiona todas las operaciones CRUD sobre las ofertas laborales, asegurando que los datos almacenados cumplan con el esquema requerido.
+
+  \item \textbf{AnalysisService}: Administra el historial y consulta de resultados. Este servicio se encarga de persistir los análisis generados, recuperar detalles específicos, y ofrecer consultas agregadas como rankings de candidatos  o estadísticas globales del sistema, sirviendo como fuente de verdad para la visualización de datos.
+
+  \item \textbf{RecommendationService}: Encapsula la inteligencia del sistema. Su método principal (\texttt{analyze}) orquesta el motor de recomendación (\texttt{RecommendationEngine}) para comparar los datos estructurados de una HV y un Job. Este servicio es responsable de calcular los puntajes de compatibilidad y generar los desgloses explicativos, delegando la persistencia del resultado final al \texttt{AnalysisService}.
 \end{itemize}
-Este patrón permite que los controladores de la API permanezcan delgados y facilita la prueba unitaria de la lógica de negocio, ya que los servicios pueden ejercitarse de forma aislada sustituyendo dependencias (por ejemplo, simulando repositorios o respuestas del motor de recomendación). Además, al concentrar la lógica de orquestación en los servicios, se reduce el acoplamiento entre el core (comparadores, limpiadores y estructuradores) y la interfaz HTTP, lo que deja abierta la posibilidad de exponer futuras interfaces (por ejemplo, tareas batch o colas de mensajes) reutilizando el mismo núcleo de negocio.
+
+Este diseño modular facilita la mantenibilidad y las pruebas unitarias, ya que cada servicio puede aislarse para verificar su lógica de orquestación independientemente de la interfaz HTTP o de la base de datos.
+\section{Capa de Datos y Persistencia}
+\label{sec:capa-datos}
+
+\subsection{Introducción a la capa de datos}
+Esta sección detalla la capa encargada de garantizar la persistencia y consistencia de la información dentro del sistema. Como se aprecia en la Figura \ref{fig:capa_de_datos_en_backend}, donde se resalta en amarillo el componente de datos, esta capa fundamenta el almacenamiento del sistema. La arquitectura se basa en el patrón \textit{Repository}, el cual actúa como una colección en memoria para objetos del dominio, abstrayendo los detalles de implementación de la base de datos subyacente. En este caso, se emplea SQLite como motor de almacenamiento debido a su ligereza y suficiencia para el alcance del prototipo, gestionado a través de \texttt{SQLAlchemy} como ORM (Object-Relational Mapper). Esta combinación permite manipular los datos utilizando clases y objetos de Python, facilitando la evolución del esquema sin atar la lógica de negocio a consultas SQL específicas.
 
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Arquitectura_backend_capa_de_datos.png}
+    \caption{Capa de datos en el backend}
+    \label{fig:capa_de_datos_en_backend}
+\end{figure}
+
+\subsection{Implementación de Repositorios y Flujo de Persistencia}
+\subsection{Modelo de Datos e Implementación de Persistencia}
+
+El diseño de la capa de datos se fundamenta en un modelo relacional simple pero robusto, representado en la Figura \ref{fig:er-modelo}, que permite almacenar de forma estructurada la información clave del proceso de selección. El esquema consta de tres entidades principales: \textbf{CVS}, que almacena los perfiles de los candidatos; \textbf{JOBS}, que contiene las descripciones de las vacantes; y \textbf{ANALYSES}, una tabla intermedia que materializa la relación muchos a muchos entre candidatos y vacantes, registrando los resultados detallados de cada evaluación de compatibilidad.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{ModeloEntidadRelacion.png}
+    \caption{Modelo de datos (ER)}
+    \label{fig:er-modelo}
+\end{figure}
+
+Para llevar este modelo a la implementación, se emplea un diseño que desacopla la definición de las entidades de su lógica de manipulación, tal como se introdujo en la Figura \ref{fig:capa_de_datos_en_backend}. Como se detalla en el Apéndice (Figura \ref{fig:DetallesImplementacionDatos}), se utilizan clases de modelo (\textit{Models}) que heredan de la base declarativa de SQLAlchemy para mapear los atributos definidos en el diagrama ER a columnas físicas de la base de datos SQLite.
+
+La manipulación de estos datos se delega a los repositorios, que actúan como gestores de transacciones. El flujo de persistencia, ilustrado en la Figura \ref{fig:flujo_persistencia_analysis}, sigue una secuencia rigurosa para asegurar la integridad referencial: cuando un servicio solicita guardar un análisis, el repositorio transforma los datos en una instancia del modelo ORM, gestiona la sesión de la base de datos y ejecuta la confirmación (\textit{commit}), retornando finalmente el objeto con su identificador persistido para su uso en las capas superiores.
