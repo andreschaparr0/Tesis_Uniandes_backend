@@ -1,0 +1,134 @@
+\chapter{Documentación de la API}
+\label{app:api-docs}
+
+Este apéndice presenta la documentación detallada de los endpoints de la API REST desarrollada con FastAPI. Se incluyen los métodos HTTP, las rutas, los parámetros requeridos y las descripciones funcionales de cada operación.
+
+\section{Gestión de Hojas de Vida (HVs)}
+
+\begin{description}
+    \item[POST /cvs]
+    Procesa y guarda una nueva HV.
+    \begin{itemize}
+        \item \textbf{Descripción}: Recibe un archivo PDF, extrae el texto, lo estructura mediante IA y lo almacena en la base de datos.
+        \item \textbf{Entrada}: Archivo.
+        \item \textbf{Salida}: JSON con el ID de la HV, resumen (nombre, email, ubicación) y mensaje de confirmación.
+    \end{itemize}
+
+    \item[GET /cvs]
+    Lista todas las HVs registradas.
+    \begin{itemize}
+        \item \textbf{Descripción}: Devuelve una lista paginada de las HVs almacenadas.
+        \item \textbf{Parámetros}: skip (offset), limit (límite).
+        \item \textbf{Salida}: Lista de objetos con ID, nombre, email, ubicación y fecha de creación.
+    \end{itemize}
+
+    \item[GET /cvs/\{id\}]
+    Consulta el detalle de una HV.
+    \begin{itemize}
+        \item \textbf{Descripción}: Recupera toda la información estructurada de una HV específica.
+        \item \textbf{Parámetros}: id (entero).
+        \item \textbf{Salida}: Objeto completo con datos personales, educación, experiencia, habilidades, etc.
+    \end{itemize}
+
+    \item[GET /cvs/search/\{nombre\}]
+    Búsqueda de HVs por nombre.
+    \begin{itemize}
+        \item \textbf{Descripción}: Filtra los candidatos cuyo nombre coincida parcialmente con el término de búsqueda.
+        \item \textbf{Parámetros}: nombre (string).
+        \item \textbf{Salida}: Lista de resultados coincidentes.
+    \end{itemize}
+
+    \item[DELETE /cvs/\{id\}]
+    Elimina una HV.
+    \begin{itemize}
+        \item \textbf{Descripción}: Borra permanentemente una HV de la base de datos.
+        \item \textbf{Parámetros}: id (entero).
+        \item \textbf{Salida}: Mensaje de confirmación.
+    \end{itemize}
+\end{description}
+
+\section{Gestión de Descripciones de Trabajo (Jobs)}
+
+\begin{description}
+    \item[POST /jobs]
+    Registra una nueva descripción de trabajo.
+    \begin{itemize}
+        \item \textbf{Descripción}: Recibe un texto con la descripción de la vacante, lo estructura con IA y lo guarda.
+        \item \textbf{Entrada}: Formulario (description).
+        \item \textbf{Salida}: JSON con el ID del Job, título, empresa y resumen estructurado.
+    \end{itemize}
+
+    \item[GET /jobs]
+    Lista las ofertas de trabajo.
+    \begin{itemize}
+        \item \textbf{Descripción}: Devuelve la lista de descripciones de trabajo registradas.
+        \item \textbf{Parámetros}: skip, limit.
+        \item \textbf{Salida}: Lista con ID, título, empresa y ubicación.
+    \end{itemize}
+
+    \item[GET /jobs/\{id\}]
+    Consulta el detalle de una oferta.
+    \begin{itemize}
+        \item \textbf{Descripción}: Obtiene la información completa estructurada de un Job.
+        \item \textbf{Parámetros}: id (entero).
+        \item \textbf{Salida}: Objeto completo con requisitos, responsabilidades, beneficios, etc.
+    \end{itemize}
+
+    \item[GET /jobs/search/\{titulo\}]
+    Búsqueda de ofertas por título.
+    \begin{itemize}
+        \item \textbf{Descripción}: Filtra ofertas por palabras clave en el título.
+        \item \textbf{Parámetros}: titulo (string).
+        \item \textbf{Salida}: Lista de ofertas coincidentes.
+    \end{itemize}
+
+    \item[DELETE /jobs/\{id\}]
+    Elimina una oferta de trabajo.
+    \begin{itemize}
+        \item \textbf{Descripción}: Borra el registro de la base de datos.
+        \item \textbf{Parámetros}: id (entero).
+        \item \textbf{Salida}: Mensaje de confirmación.
+    \end{itemize}
+\end{description}
+
+\section{Análisis y Recomendaciones}
+
+\begin{description}
+    \item[POST /analyze/\{cv\_id\}/\{job\_id\}]
+    Ejecuta el análisis de compatibilidad.
+    \begin{itemize}
+        \item \textbf{Descripción}: Compara una HV y un Job específicos, calculando scores por aspecto y un puntaje global ponderado.
+        \item \textbf{Entrada (Opcional)}: JSON con pesos personalizados (weights). Si se omite, usa los valores por defecto.
+        \item \textbf{Salida}: Objeto con score (0-1), desglose por aspectos (score\_breakdown) y justificación detallada.
+    \end{itemize}
+
+    \item[GET /analyses]
+    Historial de análisis.
+    \begin{itemize}
+        \item \textbf{Descripción}: Lista todos los análisis realizados en el sistema.
+        \item \textbf{Salida}: Lista con ID, candidato, trabajo, score calculado y fecha.
+    \end{itemize}
+
+    \item[GET /analyses/\{id\}]
+    Detalle de un análisis.
+    \begin{itemize}
+        \item \textbf{Descripción}: Recupera el resultado completo de un análisis previo, incluyendo las explicaciones generadas por la IA.
+        \item \textbf{Salida}: JSON detallado con scores, razones y pesos utilizados.
+    \end{itemize}
+
+    \item[GET /jobs/\{id\}/top-candidatos]
+    Ranking de candidatos.
+    \begin{itemize}
+        \item \textbf{Descripción}: Obtiene los candidatos mejor calificados para una vacante específica.
+        \item \textbf{Parámetros}: id (Job ID), limit (cantidad de resultados).
+        \item \textbf{Salida}: Lista ordenada descendentemente por score.
+    \end{itemize}
+
+    \item[GET /stats]
+    Estadísticas del sistema.
+    \begin{itemize}
+        \item \textbf{Descripción}: Provee métricas generales de uso.
+        \item \textbf{Salida}: Total de HVs, Jobs, Análisis y promedio global de compatibilidad.
+    \end{itemize}
+\end{description}
+
