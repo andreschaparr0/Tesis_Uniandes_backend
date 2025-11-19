@@ -12,8 +12,7 @@ import os
 import time
 
 from api.database import init_db, get_db
-from api.repositories import CVRepository, JobRepository, AnalysisRepository
-from api.services import CVService, JobService, RecommendationService
+from api.services import CVService, JobService, RecommendationService, AnalysisService
 
 
 # ==================== MODELOS PYDANTIC ====================
@@ -72,6 +71,7 @@ app.add_middleware(
 cv_service = CVService()
 job_service = JobService()
 recommendation_service = RecommendationService()
+analysis_service = AnalysisService()
 
 # Carpeta temporal
 TEMP_FOLDER = "temp_uploads"
@@ -129,8 +129,8 @@ def crear_cv(
         # Procesar CV (Service)
         cv_data = cv_service.process_cv_from_file(file_path)
         
-        # Guardar en BD (Repository)
-        cv_record = CVRepository.create(db, cv_data)
+        # Guardar en BD (Service)
+        cv_record = cv_service.create_cv(db, cv_data)
         
         # Extraer resumen
         summary = cv_service.extract_summary(cv_data)
@@ -156,7 +156,7 @@ def listar_cvs(
     db: Session = Depends(get_db)
 ):
     """Lista todos los CVs guardados"""
-    cvs = CVRepository.get_all(db, skip, limit)
+    cvs = cv_service.get_all_cvs(db, skip, limit)
     return [{
         "id": cv.id,
         "nombre": cv.nombre,
@@ -169,7 +169,7 @@ def listar_cvs(
 @app.get("/cvs/{cv_id}")
 def obtener_cv(cv_id: int, db: Session = Depends(get_db)):
     """Obtiene un CV específico con todos sus datos"""
-    cv = CVRepository.get_by_id(db, cv_id)
+    cv = cv_service.get_cv_by_id(db, cv_id)
     if not cv:
         raise HTTPException(status_code=404, detail="CV no encontrado")
     
@@ -187,7 +187,7 @@ def obtener_cv(cv_id: int, db: Session = Depends(get_db)):
 @app.get("/cvs/search/{nombre}")
 def buscar_cvs(nombre: str, db: Session = Depends(get_db)):
     """Busca CVs por nombre"""
-    cvs = CVRepository.search_by_name(db, nombre)
+    cvs = cv_service.search_cvs_by_name(db, nombre)
     return [{
         "id": cv.id,
         "nombre": cv.nombre,
@@ -199,7 +199,7 @@ def buscar_cvs(nombre: str, db: Session = Depends(get_db)):
 @app.delete("/cvs/{cv_id}")
 def eliminar_cv(cv_id: int, db: Session = Depends(get_db)):
     """Elimina un CV"""
-    success = CVRepository.delete(db, cv_id)
+    success = cv_service.delete_cv(db, cv_id)
     if not success:
         raise HTTPException(status_code=404, detail="CV no encontrado")
     return {"message": f"CV {cv_id} eliminado"}
@@ -223,8 +223,8 @@ def crear_job(
         # Procesar Job (Service)
         job_data = job_service.process_job_from_text(description)
         
-        # Guardar en BD (Repository)
-        job_record = JobRepository.create(db, job_data)
+        # Guardar en BD (Service)
+        job_record = job_service.create_job(db, job_data)
         
         # Extraer resumen
         summary = job_service.extract_summary(job_data)
@@ -247,7 +247,7 @@ def listar_jobs(
     db: Session = Depends(get_db)
 ):
     """Lista todos los Jobs guardados"""
-    jobs = JobRepository.get_all(db, skip, limit)
+    jobs = job_service.get_all_jobs(db, skip, limit)
     return [{
         "id": job.id,
         "titulo": job.titulo,
@@ -260,7 +260,7 @@ def listar_jobs(
 @app.get("/jobs/{job_id}")
 def obtener_job(job_id: int, db: Session = Depends(get_db)):
     """Obtiene un Job específico con todos sus datos"""
-    job = JobRepository.get_by_id(db, job_id)
+    job = job_service.get_job_by_id(db, job_id)
     if not job:
         raise HTTPException(status_code=404, detail="Job no encontrado")
     
@@ -277,7 +277,7 @@ def obtener_job(job_id: int, db: Session = Depends(get_db)):
 @app.get("/jobs/search/{titulo}")
 def buscar_jobs(titulo: str, db: Session = Depends(get_db)):
     """Busca Jobs por título"""
-    jobs = JobRepository.search_by_title(db, titulo)
+    jobs = job_service.search_jobs_by_title(db, titulo)
     return [{
         "id": job.id,
         "titulo": job.titulo,
@@ -289,7 +289,7 @@ def buscar_jobs(titulo: str, db: Session = Depends(get_db)):
 @app.delete("/jobs/{job_id}")
 def eliminar_job(job_id: int, db: Session = Depends(get_db)):
     """Elimina un Job"""
-    success = JobRepository.delete(db, job_id)
+    success = job_service.delete_job(db, job_id)
     if not success:
         raise HTTPException(status_code=404, detail="Job no encontrado")
     return {"message": f"Job {job_id} eliminado"}
@@ -327,13 +327,13 @@ def analizar(
     """
     start_time = time.time()
     
-    # Obtener CV (Repository)
-    cv = CVRepository.get_by_id(db, cv_id)
+    # Obtener CV (Service)
+    cv = cv_service.get_cv_by_id(db, cv_id)
     if not cv:
         raise HTTPException(status_code=404, detail="CV no encontrado")
     
-    # Obtener Job (Repository)
-    job = JobRepository.get_by_id(db, job_id)
+    # Obtener Job (Service)
+    job = job_service.get_job_by_id(db, job_id)
     if not job:
         raise HTTPException(status_code=404, detail="Job no encontrado")
     
@@ -346,8 +346,8 @@ def analizar(
         
         processing_time = time.time() - start_time
         
-        # Guardar análisis (Repository)
-        analysis = AnalysisRepository.create(
+        # Guardar análisis (Service)
+        analysis = analysis_service.create_analysis(
             db=db,
             cv_id=cv_id,
             job_id=job_id,
@@ -385,7 +385,7 @@ def listar_analyses(
     db: Session = Depends(get_db)
 ):
     """Lista todos los análisis realizados"""
-    analyses = AnalysisRepository.get_all(db, skip, limit)
+    analyses = analysis_service.get_all_analyses(db, skip, limit)
     return [{
         "id": a.id,
         "cv_id": a.cv_id,
@@ -400,7 +400,7 @@ def listar_analyses(
 @app.get("/analyses/{analysis_id}")
 def obtener_analysis(analysis_id: int, db: Session = Depends(get_db)):
     """Obtiene un análisis específico con todos los detalles"""
-    analysis = AnalysisRepository.get_by_id(db, analysis_id)
+    analysis = analysis_service.get_analysis_by_id(db, analysis_id)
     if not analysis:
         raise HTTPException(status_code=404, detail="Análisis no encontrado")
     
@@ -422,7 +422,7 @@ def obtener_analysis(analysis_id: int, db: Session = Depends(get_db)):
 @app.get("/cvs/{cv_id}/analyses")
 def analyses_por_cv(cv_id: int, db: Session = Depends(get_db)):
     """Obtiene todos los análisis de un CV específico"""
-    analyses = AnalysisRepository.get_by_cv(db, cv_id)
+    analyses = analysis_service.get_analyses_by_cv(db, cv_id)
     return [{
         "id": a.id,
         "job_id": a.job_id,
@@ -435,7 +435,7 @@ def analyses_por_cv(cv_id: int, db: Session = Depends(get_db)):
 @app.get("/jobs/{job_id}/analyses")
 def analyses_por_job(job_id: int, db: Session = Depends(get_db)):
     """Obtiene todos los análisis de un Job específico"""
-    analyses = AnalysisRepository.get_by_job(db, job_id)
+    analyses = analysis_service.get_analyses_by_job(db, job_id)
     return [{
         "id": a.id,
         "cv_id": a.cv_id,
@@ -455,7 +455,7 @@ def top_candidatos(
     Obtiene los mejores candidatos para un Job.
     Ordenados por score (mayor a menor).
     """
-    analyses = AnalysisRepository.get_top_candidates(db, job_id, limit)
+    analyses = analysis_service.get_top_candidates(db, job_id, limit)
     return [{
         "rank": idx + 1,
         "analysis_id": a.id,
@@ -469,7 +469,7 @@ def top_candidatos(
 @app.delete("/analyses/{analysis_id}")
 def eliminar_analysis(analysis_id: int, db: Session = Depends(get_db)):
     """Elimina un análisis específico"""
-    success = AnalysisRepository.delete(db, analysis_id)
+    success = analysis_service.delete_analysis(db, analysis_id)
     if not success:
         raise HTTPException(status_code=404, detail="Análisis no encontrado")
     return {"message": f"Análisis {analysis_id} eliminado"}
@@ -478,7 +478,7 @@ def eliminar_analysis(analysis_id: int, db: Session = Depends(get_db)):
 @app.get("/stats")
 def estadisticas(db: Session = Depends(get_db)):
     """Estadísticas generales del sistema"""
-    stats = AnalysisRepository.get_statistics(db)
+    stats = analysis_service.get_statistics(db)
     return {
         "total_cvs": stats["total_cvs"],
         "total_jobs": stats["total_jobs"],
