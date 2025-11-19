@@ -1,6 +1,65 @@
 \chapter{Diseño, Arquitectura e Implementación}
 \label{chap:diseno-implementacion}
 
-% Capítulo unificado (contenido a desarrollar)
+\section{Visión general del sistema}
+
+La aplicación implementada permite que un profesional de recursos humanos cargue hojas de vida en PDF y descripciones de trabajo en texto, las estructure automáticamente mediante modelos de lenguaje y obtenga, en cuestión de segundos, un score de compatibilidad por candidato acompañado de un desglose explicativo por aspectos clave (experiencia, habilidades, educación, entre otros). Detrás de esta interacción sencilla se articula una arquitectura en capas que separa la interfaz de usuario, la lógica de negocio, el motor de recomendación y la persistencia de datos, lo que facilita la trazabilidad de cada decisión y la evolución independiente de los componentes.
+
+Este capítulo describe cómo se materializó la metodología propuesta, desde el diseño de la arquitectura del sistema hasta los aspectos centrales de su implementación. Se parte de una vista global que muestra cómo el usuario interactúa con la aplicación, cómo el frontend se comunica con la API y cómo esta, a su vez, orquesta servicios, núcleo de recomendación y acceso a datos. A continuación se muestra la figura que resume esta arquitectura por capas y servirá como referencia visual a lo largo del capítulo.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Arquitectura_aplicacion.png}
+    \caption{Arquitectura de la aplicación}
+    \label{fig:diagram-arquitectura}
+\end{figure}
+
+\subsection{Arquitectura general y flujo de usuario}
+
+La arquitectura propuesta sigue un patrón cliente–servidor en el que el usuario de recursos humanos interactúa con un frontend web desarrollado en React. Este frontend consume una API REST construida con FastAPI, encargada de recibir las solicitudes (subir HVs, registrar descripciones de trabajo, lanzar análisis y consultar resultados) y delegar la lógica de negocio a una capa de servicios. Los servicios coordinan dos elementos principales del backend: por un lado, el \emph{core} del sistema, donde se ubican la limpieza de texto, la estructuración basada en modelos de lenguaje (LLM) y el motor de recomendación por aspectos; por otro lado, la capa de datos, compuesta por repositorios y una base de datos SQLite que almacena HVs, descripciones y análisis. De esta forma, el flujo típico es: usuario \(\rightarrow\) frontend \(\rightarrow\) API \(\rightarrow\) servicios \(\rightarrow\) core y datos, y de regreso hacia el usuario con un score final y explicaciones asociadas.
+
+La Figura \ref{fig:diagram-arquitectura} se organiza en cuatro componentes principales. En primer lugar, el \textbf{frontend}, que ofrece la interfaz donde se cargan documentos y se consultan análisis. En el backend, se distinguen tres bloques: (i) la \textbf{capa de aplicación}, que agrupa API y servicios y define los flujos de casos de uso; (ii) la \textbf{capa de datos}, compuesta por repositorios y la base de datos responsable de la persistencia; y (iii) el \textbf{core} de la aplicación, donde residen el pipeline de NLP (limpieza y estructuración) y el motor de recomendación con sus comparadores por aspecto. Esta separación permite razonar sobre el sistema tanto desde la perspectiva de arquitectura de software como desde la perspectiva de flujo de información.
+
+\subsection{Estructura del capítulo}
+
+Para facilitar la lectura, el resto del capítulo se organiza siguiendo la descomposición que sugiere la arquitectura. Primero se presenta en detalle el backend por capas, comenzando por la API y los servicios, continuando con los repositorios y el modelo de datos, despues se profundiza en el core del sistema conectando estos elementos con las decisiones metodológicas descritas en el capítulo anterior. Finalmente, se describe el rol del frontend y su interacción con la API, resaltando cómo se materializa el flujo de usuario en la interfaz y cómo se presentan los resultados de manera que apoyen la toma de decisiones en el primer filtro de selección.
+
+\section{Vista general del backend}
+
+El backend del sistema implementa la lógica de negocio necesaria para transformar documentos en estructuras comparables, ejecutar el motor de recomendación y almacenar de forma persistente los resultados. Está organizado en capas bien definidas que separan el API y la logica de negocio (servicios), el núcleo de procesamiento (limpieza, estructuración y comparación) y el acceso a datos (repositorios y base de datos). Esta separación favorece la mantenibilidad y permite razonar sobre cada responsabilidad de forma aislada, al tiempo que facilita la reutilización de componentes en distintos flujos de la aplicación.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Arquitectura_aplicacion_backend.png}
+    \caption{Arquitectura por capas del backend}
+    \label{fig:arquitectura_backend}
+\end{figure}
+Desde el punto de vista de la comunicación interna, la API recibe las solicitudes provenientes del frontend y delega en la capa de servicios tareas como procesar un nuevo CV, registrar una oferta o ejecutar un análisis. Los servicios, a su vez, invocan el core para limpiar y estructurar texto, o para calcular puntajes de compatibilidad, y utilizan los repositorios para leer y escribir en la base de datos SQLite. Como se aprecia en la Figura \ref{fig:arquitectura_backend}, las llamadas fluyen de API a servicios, de servicios al core, y de allí a los repositorios, cerrando el ciclo al devolver al usuario información enriquecida (scores, breakdowns y resúmenes) a través de la misma API.
+
+\section{Capa de aplicación: API y servicios}
+
+\subsection{Introducción a la capa de aplicación}
+La capa de aplicación es el punto de entrada del backend: recibe las peticiones HTTP provenientes del frontend, las valida y las traduce en operaciones de negocio concretas. En ella se ubican la API, implementada con FastAPI, y la capa de servicios, responsable de coordinar el pipeline de limpieza, estructuración, recomendación y acceso a datos. De esta forma, la lógica de negocio queda encapsulada en servicios reutilizables, mientras que la API se limita a exponer endpoints bien definidos y a gestionar aspectos transversales como serialización, manejo de errores y documentación.
+
+En términos de flujo, el frontend invoca los endpoints de la API para subir un CV, registrar una descripción de trabajo o solicitar un análisis; la API delega en el servicio correspondiente (CVService, JobService o RecommendationService), que a su vez invoca el core (DataCleaner, DataStructurer, RecommendationEngine) y los repositorios necesarios. Las figuras de secuencia incluidas en el apéndice de figuras (Figuras \ref{fig:seq-subir-cv}, \ref{fig:seq-crear-job} y \ref{fig:seq-analizar}) ilustran estos flujos paso a paso para los casos de uso principales.
+
+\subsection{API REST: endpoints y tecnologías}
+La API se implementó utilizando FastAPI sobre Python 3.11, aprovechando su soporte para tipado estático, validación automática con Pydantic y generación de documentación OpenAPI. El servidor de desarrollo se levanta con Uvicorn, exponiendo la aplicación en \texttt{http://localhost:8000}, con documentación interactiva disponible en \texttt{/docs}. La configuración de CORS en desarrollo permite el acceso desde el frontend en \texttt{http://localhost:3000}, mientras que en un entorno productivo se recomienda restringir orígenes y habilitar HTTPS.
+
+Los endpoints se organizan por recurso:
+\begin{itemize}
+  \item \textbf{CVs}: \texttt{POST /cvs} recibe un archivo PDF (\texttt{multipart/form-data}) y devuelve un identificador y un resumen del CV estructurado; \texttt{GET /cvs} y \texttt{GET /cvs/\{id\}} permiten listar y consultar detalles; \texttt{GET /cvs/search/\{nombre\}} implementa búsqueda básica por nombre; \texttt{DELETE /cvs/\{id\}} elimina registros; \texttt{GET /cvs/\{id\}/analyses} lista los análisis asociados.
+  \item \textbf{Jobs}: \texttt{POST /jobs} recibe una descripción en texto (\texttt{application/x-www-form-urlencoded}) y devuelve un identificador y resumen del trabajo estructurado; \texttt{GET /jobs} y \texttt{GET /jobs/\{id\}} exponen listados y detalles; \texttt{GET /jobs/search/\{titulo\}} ofrece búsqueda por título; \texttt{DELETE /jobs/\{id\}} permite eliminar; \texttt{GET /jobs/\{id\}/analyses} y \texttt{GET /jobs/\{id\}/top-candidatos} permiten consultar análisis y rankings de candidatos por trabajo.
+  \item \textbf{Análisis y estadísticas}: \texttt{POST /analyze/\{cv\_id\}/\{job\_id\}} ejecuta el análisis de compatibilidad, aceptando opcionalmente un cuerpo JSON con pesos personalizados; \texttt{GET /analyses} y \texttt{GET /analyses/\{id\}} listan y detallan análisis; \texttt{DELETE /analyses/\{id\}} elimina registros; \texttt{GET /stats} entrega métricas agregadas (totales y score promedio) y \texttt{GET /health} expone un \emph{health-check} básico.
+\end{itemize}
+Cada endpoint declara explícitamente sus tipos de entrada y salida, lo que facilita tanto la validación automática como la integración con el frontend (a través de clientes Axios) y con herramientas de prueba (Swagger UI, cURL). La lógica de negocio no reside en los controladores de la API, sino que estos se limitan a invocar los servicios correspondientes y a gestionar respuestas HTTP y códigos de error apropiados (\texttt{200}, \texttt{404}, \texttt{422}, \texttt{500}).
+
+\subsection{Servicios y lógica de negocio}
+La capa de servicios sigue un patrón de \emph{application services} que encapsulan la lógica de negocio alrededor de casos de uso específicos. Tres servicios principales estructuran el backend:
+\begin{itemize}
+  \item \textbf{CVService}: orquesta la ingestión de HVs en PDF. Recibe la ruta del archivo, invoca a \texttt{DataCleaner} para extraer y limpiar el texto y a \texttt{DataStructurer} para estructurarlo según el esquema definido en la metodología. Luego utiliza \texttt{CVRepository} para persistir el CV estructurado y devuelve un resumen legible (nombre, correo, teléfono, ubicación) a la API.
+  \item \textbf{JobService}: coordina la ingestión de descripciones de trabajo en texto plano. Llama a \texttt{DataStructurer} para producir el JSON estructurado y a \texttt{JobRepository} para almacenarlo, devolviendo información básica (título del cargo, empresa, modalidad, ubicación).
+  \item \textbf{RecommendationService}: implementa el caso de uso central de análisis CV--Job. Dado un par \texttt{(cv\_id, job\_id)}, recupera los datos estructurados desde los repositorios, invoca al \texttt{RecommendationEngine} para ejecutar comparaciones por aspecto y generar el score final y, finalmente, utiliza \texttt{AnalysisRepository} para guardar el resultado completo (score, breakdown, resumen, tiempos) antes de devolver una respuesta resumida a la API.
+\end{itemize}
+Este patrón permite que los controladores de la API permanezcan delgados y facilita la prueba unitaria de la lógica de negocio, ya que los servicios pueden ejercitarse de forma aislada sustituyendo dependencias (por ejemplo, simulando repositorios o respuestas del motor de recomendación). Además, al concentrar la lógica de orquestación en los servicios, se reduce el acoplamiento entre el core (comparadores, limpiadores y estructuradores) y la interfaz HTTP, lo que deja abierta la posibilidad de exponer futuras interfaces (por ejemplo, tareas batch o colas de mensajes) reutilizando el mismo núcleo de negocio.
 
 

@@ -11,6 +11,10 @@ El procesamiento de lenguaje natural (NLP) es una disciplina que combina lingü�
 
 La extracción y limpieza de texto son procesos fundamentales en el análisis automático de documentos. La extracción se refiere a recuperar el contenido textual de un archivo, el cual puede encontrarse estructurado o representar texto a través de imágenes que requieren técnicas de reconocimiento óptico de caracteres. Una vez obtenido el contenido, la etapa de limpieza busca normalizarlo y eliminar inconsistencias propias de la digitalización o del formato, como caracteres irregulares, fragmentación de palabras o elementos considerados ruido. Estas transformaciones permiten obtener un texto coherente y uniforme que pueda ser utilizado en posteriores tareas de procesamiento y análisis.
 
+\subsection{Pipeline de procesamiento}
+
+ El término \emph{pipeline} se utiliza para describir la cadena de etapas que transforma entradas crudas que pueden estar en diferentes formatos (p.\,ej., imágenes en PDF o texto plano), en salidas útiles para la toma de decisiones. En sistemas de procesamiento de lenguaje natural y recomendación, un pipeline típico comienza con la extracción y limpieza de texto, continúa con la estructuración de la información (p.\,ej., conversión de texto libre a representaciones con campos definidos) y culmina en algún tipo de análisis o comparación (clasificación, ranking, cálculo de scores, etc.). Pensar el sistema como un pipeline permite razonar sobre cada etapa de forma modular---qué insumos recibe, qué transforma y qué entrega a la siguiente capa---y facilita tanto la depuración (identificar en qué punto se introducen errores) como la reproducibilidad (repetir el mismo flujo sobre nuevos datos manteniendo configuraciones constantes).
+
 
 \section{Modelos de Lenguaje y Extracción de Información}
 
