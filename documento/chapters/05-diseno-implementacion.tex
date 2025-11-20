@@ -145,11 +145,124 @@ El \textit{Core} del sistema representa el componente central donde reside la in
     \label{fig:arquitectura_backe_core}
 \end{figure}
 
-\section{IA: Pion el nombre a esta section de la estructuracion}
+\section{Motor de Estructuración y Procesamiento de Lenguaje Natural}
+
+El componente de estructuración es responsable de transformar documentos no estructurados —como hojas de vida en formato PDF y descripciones de trabajo en texto libre— en objetos de datos estandarizados (JSON) que el sistema pueda procesar algorítmicamente. Este módulo actúa como puente entre la entrada de usuario y el motor de recomendación, garantizando que la información heterogénea sea normalizada bajo un esquema común.
+
+\subsection{Arquitectura del componente de estructuración}
+
+Como se ilustra en la Figura \ref{fig:arquitectura_estructuracion}, el flujo de información comienza en la capa de servicios, donde `CVService` y `JobService` actúan como orquestadores. Dependiendo del tipo de entrada, la solicitud se enruta hacia uno de los dos pipelines especializados: el `Pipeline HV` para el procesamiento de documentos PDF, o el `Pipeline Descripción` para textos de ofertas laborales. Ambos pipelines convergen en el módulo central de estructuración, que encapsula la lógica de interacción con los modelos de lenguaje.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{DiagramaEstructuraciones.png}
-    \caption{Enter Caption}
-    \label{fig:placeholder}
+    \caption{Arquitectura del componente de estructuración}
+    \label{fig:arquitectura_estructuracion}
 \end{figure}
+
+El diseño desacopla la recepción del archivo de su procesamiento cognitivo. Mientras que los servicios gestionan la carga y persistencia preliminar, el núcleo de estructuración se encarga exclusivamente de la extracción de entidades, validación de esquemas y limpieza de datos. Esto permite que, aunque las fuentes de datos sean distintas (.pdf vs .txt), el resultado final sea siempre una estructura coherente y lista para ser consumida por los algoritmos de comparación.
+
+\subsection{Pipeline de procesamiento de hojas de vida}
+\label{subsec:pipeline-hv}
+
+El procesamiento de hojas de vida constituye uno de los flujos críticos del sistema, dado que transforma documentos PDF no estructurados en datos procesables. Como se detalla en la Figura \ref{fig:pipeline_hv}, este proceso se orquesta secuencialmente a través de tres fases principales: extracción, estructuración cognitiva y validación.
+
+\begin{samepage}
+\noindent
+\begin{minipage}[t]{0.62\textwidth}
+\vspace{0pt}
+\indent El flujo inicia con la recepción del archivo PDF, el cual ingresa a la \textbf{Fase 1: Extracción y Limpieza}. En esta etapa, se utiliza la librería PyMuPDF para extraer el contenido textual crudo, el cual es sometido inmediatamente a un proceso de normalización (detallado en la Sección \ref{subsec:fase-limpieza}) para eliminar ruido y caracteres no deseados, resultando en un texto limpio apto para el procesamiento.
+
+\medskip
+
+\indent Posteriormente, en la \textbf{Fase 2: Estructuración de Elementos}, el sistema emplea una estrategia iterativa de segmentación semántica. En lugar de procesar el documento en un único paso, se construyen prompts específicos para cada sección clave (información personal, experiencia, educación, entre otros) y se invocan modelos de lenguaje (GPT-4o-mini) para extraer cada componente por separado. Esta estrategia, que profundizaremos en la Sección \ref{subsec:fase-estructuracion-ia}, maximiza la precisión de la extracción al reducir la ventana de contexto necesaria para cada consulta.
+
+\medskip
+
+\indent Finalmente, la \textbf{Fase 3: Consolidación y Validación} se encarga de ensamblar las respuestas parciales. Las salidas del modelo son depuradas de marcas de formato (markdown), unificadas en un único objeto JSON y sometidas a una validación estricta de esquema para garantizar la integridad de los datos, proceso que se describe en la Sección \ref{subsec:fase-validacion}. El resultado es un JSON estructurado final, listo para ser almacenado y utilizado por el motor de recomendación.
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.35\textwidth}
+    \vspace{0pt}
+    \centering
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{Pipeline_Estructuracion_CV.png}
+        \caption{Pipeline de estructuración de hojas de vida}
+        \label{fig:pipeline_hv}
+    \end{figure}
+\end{minipage}
+\end{samepage}
+\subsubsection{Fase 1: Extracción y limpieza de texto}
+\label{subsec:fase-limpieza}
+
+La primera fase del pipeline tiene como objetivo transformar el archivo PDF binario en una cadena de texto normalizada, libre de ruido que pueda interferir con el procesamiento del modelo de lenguaje. Como se observa en la Figura \ref{fig:limpieza_cv}, este proceso se divide en dos etapas: la extracción inicial mediante herramientas de bajo nivel y un pipeline de limpieza sintáctica.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Fase_Limpieza_Pipeline_CV.png}
+    \caption{Proceso de limpieza y normalización de texto}
+    \label{fig:limpieza_cv}
+\end{figure}
+
+Inicialmente, el sistema utiliza \textit{PyMuPDF} para extraer el contenido textual de todas las páginas del documento, concatenándolas en una única cadena de ("Texto Crudo") como se ve en la figura \ref{. Este texto suele contener irregularidades derivadas del formato PDF, como saltos de línea arbitrarios, caracteres de control o problemas de codificación. Para mitigar esto, el texto pasa por una serie de funciones de limpieza secuenciales implementadas en el módulo `limpieza.py`:
+
+\begin{enumerate}
+    \item \textbf{Normalización de caracteres (Quitar Tildes):} Se convierten caracteres acentuados a sus equivalentes ASCII (ej: 'á' $\rightarrow$ 'a') para estandarizar la entrada, reduciendo la variabilidad léxica sin perder el significado semántico esencial.
+    \item \textbf{Filtrado de ruido (Quitar Símbolos Raros):} Se eliminan caracteres no alfanuméricos o símbolos de formato problemáticos (como §, ï, o bullets personalizados) que suelen aparecer al extraer texto de documentos con diseño complejo.
+    \item \textbf{Reconstrucción léxica (Unir Letras Separadas):} Se aplica una heurística basada en expresiones regulares para detectar y corregir palabras que aparecen con espaciado inter-carácter (ej: "T I T U L O" $\rightarrow$ "TITULO"), un artefacto común en encabezados de hojas de vida.
+    \item \textbf{Limpieza final:} Se eliminan caracteres especiales restantes y puntuación excesiva, y se convierte todo el texto a minúsculas para garantizar consistencia en el procesamiento posterior.
+\end{enumerate}
+
+A modo de ilustración, el siguiente ejemplo muestra la transformación que sufre un fragmento de texto típico tras pasar por este pipeline:
+
+\begin{quotation}
+    \small
+    \noindent \textbf{Entrada (Texto Crudo):} "D E S A R R O L L A D O R -- FULL STACK. ¡Experiencia en: Python, SQL & Java! (2023)." \\
+    \noindent \textbf{Salida (Texto Limpio):} "desarrollador full stack experiencia en python sql java 2023"
+\end{quotation}
+
+El resultado ("Texto Limpio") en la Figura \ref{fig:limpieza_cv} es una representación simplificada y uniforme del contenido del CV, optimizada para ser tokenizada eficientemente por el modelo de IA en la siguiente fase.
+
+\subsubsection{Fase 2: Estrategia de prompting y estructuración}
+\label{subsec:fase-estructuracion-ia}
+
+Una vez obtenido el texto limpio, el sistema inicia la fase de estructuración cognitiva. A diferencia de enfoques tradicionales que intentan extraer toda la información en una sola consulta (lo cual suele saturar la ventana de contexto del modelo y generar alucinaciones), esta implementación utiliza una estrategia secuencial y modular basada en la segmentación por tópicos.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\linewidth]{Fase_Estructuracion_Pipeline_CV.png}
+    \caption{Proceso iterativo de estructuración con LLMs}
+    \label{fig:estructuracion_iterativa}
+\end{figure}
+
+Como se ilustra en la Figura \ref{fig:estructuracion_iterativa}, el texto completo del CV se inyecta repetidamente en un ciclo de consultas, donde en cada iteración se utiliza un \textit{prompt} específico diseñado para extraer una única categoría de información (Información Personal, Educación, Experiencia, Habilidades, etc.). Esta metodología combina tres estrategias de \textit{Prompt Engineering} definidas en el marco teórico:
+
+\begin{itemize}
+    \item \textbf{Role Prompting:} Se instruye al modelo explícitamente: \textit{"Eres un experto en extraer información estructurada de hojas de vida"}. Esta técnica, identificada como el patrón de Persona \cite{white2023prompt}, condiciona la atención del modelo a entidades y terminología relevantes del dominio de reclutamiento.
+    \item \textbf{Structured Output Prompting:} Se define un esquema JSON rígido dentro del prompt y se prohíbe la generación de texto conversacional adicional. Esta restricción es fundamental para garantizar la interoperabilidad con el sistema backend \cite{liu2023pre}.
+    \item \textbf{Zero-Shot Prompting:} No se proveen ejemplos de CVs previos en el contexto; el modelo opera basándose únicamente en las instrucciones semánticas y el esquema objetivo, aprovechando su capacidad de generalización pre-entrenada \cite{brown2020language}.
+\end{itemize}
+
+A continuación se presenta un ejemplo real de la estructura de prompt utilizada para la extracción de información personal, tal como se implementa en la clase `SimpleCVExtractor`:
+
+\begin{quotation}
+    \small
+    \noindent \textbf{System Message:} "Eres un experto en extraer información estructurada de hojas de vida. IMPORTANTE: Responde ÚNICAMENTE con la estructura que se te pide, sin texto adicional." \\
+    \noindent \textbf{User Message:} "Extrae únicamente la información personal básica del siguiente CV. Responde en formato JSON con esta estructura exacta:
+    \begin{verbatim}
+    {
+        "name": "nombre completo",
+        "email": "correo electrónico",
+        "phone": "número de teléfono",
+        "location": "ubicación/ciudad"
+    }
+    \end{verbatim}
+    Si no encuentras alguna información, deja el campo como DESCONOCIDO. Texto del CV: [CONTENIDO\_DEL\_PDF]"
+\end{quotation}
+
+Este enfoque granular permite validar y corregir cada sección de forma independiente (ver Apéndice \ref{tab:prompts-cv} para el listado completo de prompts utilizados). Si el modelo falla al extraer la experiencia, no afecta la extracción de la educación, lo que aumenta significativamente la robustez del sistema frente a documentos con formatos atípicos.
+
+\subsubsection{Fase 3: Consolidación y validación de datos}
+\label{subsec:fase-validacion}
+[Contenido pendiente...]

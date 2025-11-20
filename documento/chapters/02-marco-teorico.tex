@@ -32,6 +32,19 @@ El \emph{prompt engineering} consiste en diseñar instrucciones que guían a los
 
 
 
+\subsection{Estrategias de Prompting}
+
+Existen diversas técnicas para diseñar prompts efectivos dependiendo de la tarea a realizar. A continuación se describen las estrategias fundamentales utilizadas en sistemas de extracción de información:
+
+\subsubsection{Role Prompting (Asignación de Roles)}
+Esta técnica consiste en asignar una identidad o función específica al modelo al inicio de la interacción (p.\,ej., "Eres un experto en recursos humanos"). Al definir un rol, se condiciona el tono, el vocabulario y el enfoque de la respuesta, alineando la generación del modelo con las expectativas del dominio específico de la tarea \cite{jurafsky2023speech}.
+
+\subsubsection{Zero-Shot Prompting}
+En el \emph{zero-shot prompting}, se presenta al modelo una tarea sin proveer ejemplos previos de la solución esperada. El modelo debe inferir cómo resolver el problema basándose únicamente en su entrenamiento previo y en la descripción textual de la instrucción. Esta estrategia es efectiva con modelos de gran capacidad (LLMs) que han generalizado conocimiento sobre múltiples tareas durante su fase de entrenamiento.
+
+\subsubsection{Structured Output Prompting (Salida Estructurada)}
+Esta estrategia se enfoca en restringir el formato de la respuesta generada. En lugar de solicitar texto libre, se instruye al modelo para que genere su salida siguiendo un esquema rígido, comúnmente JSON o XML. Esto es crítico para integrar modelos de lenguaje en sistemas de software automatizados, ya que permite que la salida del modelo sea parseada y validada programáticamente sin necesidad de post-procesamiento complejo de lenguaje natural.
+
 \subsection{LangChain}
 
 LangChain es un framework diseñado para facilitar la construcción de aplicaciones basadas en modelos de lenguaje mediante la definición de cadenas de procesamiento, plantillas de prompts reutilizables y mecanismos de estandarización de entradas y salidas. Además, incorpora herramientas para validar formatos de salida, integrar proveedores externos de modelos y gestionar parámetros de ejecución de forma consistente. Estas características lo convierten en una plataforma adecuada para desarrollar sistemas que requieran orquestar interacciones complejas con modelos de lenguaje de manera reproducible y controlada.\cite{langchain}
