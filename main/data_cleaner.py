@@ -60,7 +60,7 @@ class DataCleaner:
         except Exception as e:
             raise Exception(f"Error al procesar el archivo PDF {image_path}: {str(e)}")
     
-    def clean_job_description(self, description_path: str) -> str:
+    def clean_job_description(self, description: str) -> str:
         """
         Limpia y extrae el texto de una descripción de trabajo.
         
@@ -73,16 +73,12 @@ class DataCleaner:
         Raises:
             FileNotFoundError: Si el archivo no existe
         """
-        if not os.path.exists(description_path):
-            raise FileNotFoundError(f"El archivo {description_path} no existe")
-        
+
         try:
-            # Leer el archivo
-            with open(description_path, 'r', encoding='utf-8') as file:
-                content = file.read()
+            
             
             # Limpiar el texto usando la función específica del proyecto
-            cleaned_text = clean_text(content)
+            cleaned_text = clean_text(description)
             
             return cleaned_text
             

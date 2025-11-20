@@ -220,6 +220,7 @@ def crear_job(
     - Retorna ID del Job guardado
     """
     try:
+        
         # Procesar Job (Service)
         job_data = job_service.process_job_from_text(description)
         

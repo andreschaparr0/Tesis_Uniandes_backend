@@ -73,15 +73,16 @@ class JobService:
     
     def __init__(self):
         self.structurer = DataStructurer()
-    
+        self.cleaner = DataCleaner()
     def process_job_from_text(self, description: str) -> Dict[str, Any]:
         """
         Procesa una descripción de trabajo.
         Retorna el job estructurado.
         """
+        # Limpiar y extraer texto
+        description_text = self.cleaner.clean_job_description(description)
         # Estructurar con IA
-        job_structured = self.structurer.structure_job_description(description)
-        
+        job_structured = self.structurer.structure_job_description(description_text)
         return job_structured
     
     def extract_summary(self, job_data: Dict[str, Any]) -> Dict[str, str]:
