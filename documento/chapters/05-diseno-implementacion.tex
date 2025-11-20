@@ -55,8 +55,7 @@ En términos de flujo, como se puede observar en la siguiente Figura \ref{fig:Ca
     \includegraphics[width=0.5\linewidth]{Capa_de_aplicacion.png}
     \caption{Arquitectura de la capa de aplicación}
     \label{fig:Capa_de_aplicacion}
-\end{figure}
-\subsection{API REST: endpoints y tecnologías}
+\end{figure}\subsection{API REST: endpoints y tecnologías}
 
 La API se implementó utilizando FastAPI sobre Python 3.11, aprovechando su soporte para tipado estático y generación automática de documentación. El servidor de desarrollo se levanta con Uvicorn, exponiendo la aplicación en local, mientras que la configuración de CORS permite el acceso controlado desde el cliente web. Adicionalmente, la documentación interactiva detallada de todos los endpoints, incluyendo esquemas de entrada y salida, se genera automáticamente y puede consultarse en tiempo real accediendo a la ruta \texttt{/docs} del servidor (por defecto \texttt{http://localhost:8000/docs}).
 
