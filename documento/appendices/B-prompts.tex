@@ -1,72 +1,223 @@
 \chapter{Prompts utilizados}
 
+Este apéndice documenta los prompts completos utilizados en el sistema para la estructuración de hojas de vida, descripciones de trabajo y evaluación de compatibilidad. Todos los prompts emplean una arquitectura de dos mensajes: un \textbf{System Message} (que define el rol del modelo) y un \textbf{Human Message} (que contiene la instrucción específica y el texto a procesar).
 
-\section*{Estructuración de CVs (\texttt{cv\_simple\_extractor.py})}
+
+\section*{Estructuración de CVs}
+
+\subsection*{System Message (Rol común para todos los prompts de CV)}
+\begin{tcolorbox}[colback=gray!5!white, colframe=gray!75!black, title=System Message]
+\texttt{Eres un experto en extraer información estructurada de hojas de vida. IMPORTANTE: Responde ÚNICAMENTE con la estructura que se te pide, sin texto adicional, sin explicaciones, sin bloques de código markdown (```json).}
+\end{tcolorbox}
+
+\textit{Nota:} Cada prompt se complementa con \texttt{Texto del CV: \{text\}}, donde \texttt{\{text\}} es el texto limpio extraído del PDF.
+
+
+\subsection*{Prompts específicos por campo}
+
 \begin{table}[H]
   \centering
-  \caption{Prompts de estructuración de CV}
+  \caption{Prompts completos de estructuración de CV}
   \label{tab:prompts-cv}
-  \footnotesize
-  \begin{tabular}{@{}lp{11cm}@{}}
+  \scriptsize
+  \begin{tabular}{@{}lp{10cm}@{}}
     \toprule
-    \textbf{Parámetro} & \textbf{Prompt (resumen truncado)} \\
+    \textbf{Campo} & \textbf{Prompt (Human Message)} \\
     \midrule
-    Personal & Extrae únicamente la información personal. Responde JSON exacto: \texttt{\{"name","email","phone","location"\}}. Si falta, usar \texttt{"DESCONOCIDO"}. \\
-    Educación & Extrae únicamente la información educativa. Responde JSON array de objetos: \texttt{\{"degree","institution","year","field"\}}. \\
-    Experiencia & Extrae únicamente la experiencia laboral. Responde JSON array: \texttt{\{"position","company","duration","description"\}}. \\
-    Habilidades técnicas & Extrae únicamente las habilidades técnicas. Responde array \texttt{["hab1","hab2",...]}. \\
-    Habilidades blandas & Extrae únicamente las habilidades blandas. Responde array \texttt{["hab1","hab2",...]}. \\
-    Certificaciones & Extrae únicamente las certificaciones. Responde JSON array: \texttt{\{"name","issuer","year"\}}. \\
-    Idiomas & Extrae únicamente los idiomas. Responde JSON objeto \texttt{\{"idioma":"nivel",...\}}. \\
+    
+    \textbf{Personal} & 
+    Extrae únicamente la información personal básica del siguiente CV. Responde en formato JSON con esta estructura exacta: \texttt{\{``name'': ``nombre completo'', ``email'': ``correo electrónico'', ``phone'': ``número de teléfono'', ``location'': ``ubicación/ciudad''\}}. Si no encuentras alguna información, deja el campo como DESCONOCIDO (\texttt{``DESCONOCIDO''}). \\
+    \addlinespace
+    
+    \textbf{Educación} & 
+    Extrae únicamente la información educativa del siguiente CV. Responde en formato JSON como un array de objetos con esta estructura: \texttt{[ \{``degree'': ``título obtenido'', ``institution'': ``nombre de la institución'', ``year'': ``año de graduación'', ``field'': ``campo de estudio''\} ]}. Si no hay información educativa, devuelve un array vacío \texttt{[]}. \\
+    \addlinespace
+    
+    \textbf{Experiencia} & 
+    Extrae únicamente la experiencia laboral del siguiente CV. Responde en formato JSON como un array de objetos con esta estructura: \texttt{[ \{``position'': ``cargo o puesto'', ``company'': ``nombre de la empresa'', ``duration'': ``duración del trabajo'', ``description'': ``descripción breve de responsabilidades''\} ]}. Si no hay experiencia laboral, devuelve un array vacío \texttt{[]}. \\
+    \addlinespace
+    
+    \textbf{Habilidades técnicas} & 
+    Extrae únicamente las habilidades técnicas (technical\_skills) del siguiente CV. Responde en formato array \texttt{[]} de strings: \texttt{[``habilidad1'', ``habilidad2'', ``habilidad3'']}. Si no hay habilidades técnicas, devuelve un array vacío \texttt{[]}. \\
+    \addlinespace
+    
+    \textbf{Habilidades blandas} & 
+    Extrae únicamente las habilidades blandas (soft\_skills) del siguiente CV. Responde en formato array \texttt{[]} de strings: \texttt{[``habilidad1'', ``habilidad2'', ``habilidad3'']}. Si no hay habilidades blandas, devuelve un array vacío \texttt{[]}. \\
+    \addlinespace
+    
+    \textbf{Certificaciones} & 
+    Extrae únicamente las certificaciones del siguiente CV. Responde en formato JSON como un array de objetos con esta estructura: \texttt{[ \{``name'': ``nombre de la certificación'', ``issuer'': ``institución que la emitió'', ``year'': ``año de obtención''\} ]}. Si no hay certificaciones, devuelve un array vacío \texttt{[]}. \\
+    \addlinespace
+    
+    \textbf{Idiomas} & 
+    Extrae únicamente los idiomas del siguiente texto. Responde en formato JSON como un objeto donde las llaves son los idiomas y los valores son los niveles: \texttt{\{``idioma1'': ``nivel1'', ``idioma2'': ``nivel2''\}}. Si no hay idiomas, devuelve un objeto vacío \texttt{\{\}}. \\
+    
     \bottomrule
   \end{tabular}
 \end{table}
 
 
-\section*{Estructuración de Jobs (\texttt{job\_description\_extractor.py})}
+
+\section*{Estructuración de Jobs}
+
+\subsection*{System Message (Rol común para todos los prompts de Job)}
+\begin{tcolorbox}[colback=gray!5!white, colframe=gray!75!black, title=System Message]
+\texttt{Eres un experto en extraer información estructurada de descripciones de trabajo. IMPORTANTE: Responde ÚNICAMENTE con la estructura que se te pide, sin texto adicional, sin explicaciones, sin bloques de código markdown (```json).}
+\end{tcolorbox}
+\textit{Nota:} Cada prompt se complementa con \texttt{Texto del CV: \{text\}}, donde \texttt{\{text\}} es el texto limpio extraído de la descripción de trabajo.
+\subsection*{Prompts específicos por campo}
+
 \begin{table}[H]
   \centering
-  \caption{Prompts de estructuración de descripciones de trabajo}
+  \caption{Prompts completos de estructuración de descripciones de trabajo}
   \label{tab:prompts-job}
-  \footnotesize
-  \begin{tabular}{@{}lp{11cm}@{}}
+  \scriptsize
+  \begin{tabular}{@{}lp{10cm}@{}}
     \toprule
-    \textbf{Parámetro} & \textbf{Prompt (resumen truncado)} \\
+    \textbf{Campo} & \textbf{Prompt (Human Message)} \\
     \midrule
-    Información básica & Extrae únicamente la información básica. Responde JSON: \texttt{\{"job title","company name","work modality"","salary","summary"\}}. Usa \texttt{"DESCONOCIDO"} si falta. \\
-    Responsabilidades & Extrae únicamente las responsabilidades. Responde array \verb|["resp1","resp2",...]|. \\
-    Ubicación & Extrae únicamente la ubicación. Responde \texttt{\{"location":"..."\}}. Usa \texttt{"DESCONOCIDO"} si falta. \\
-    Educación & Extrae únicamente los requisitos educativos. Responde \texttt{\{"education":"..."\}}. Usa \texttt{"DESCONOCIDO"} si falta. \\
-    Experiencia & Extrae únicamente los requisitos de experiencia. Responde \texttt{\{"experience":"..."\}}. Usa \texttt{"DESCONOCIDO"} si falta. \\
-    Habilidades técnicas & Extrae únicamente las habilidades técnicas. Responde array \texttt{["hab1","hab2",...]}. \\
-    Habilidades blandas & Extrae únicamente las habilidades blandas. Responde array \texttt{["hab1","hab2",...]}. \\
-    Certificaciones & Extrae únicamente las certificaciones requeridas. Responde array \texttt{["cert1","cert2",...]}. \\
-    Idiomas & Extrae únicamente los requisitos de idiomas. Responde \texttt{\{"idioma":"nivel",...\}}. \\
-    Beneficios & Extrae únicamente los beneficios. Responde array \texttt{["ben1","ben2",...]}. \\
-    Inferencia soft skills & Infiere solo las \emph{soft skills} críticas desde las responsabilidades (máx. 3--5). Devuelve array \texttt{["soft1","soft2",...]}. \\
-    Detección de idioma & Detecta el idioma principal del texto. Devuelve \texttt{\{"idioma":"Intermedio"\}}. \\
+    
+    \textbf{Información básica} & 
+    Extrae únicamente la información básica del trabajo del siguiente texto. Responde en formato JSON con esta estructura exacta: \texttt{\{``job\_title'': ``título del puesto'', ``company\_name'': ``nombre de la empresa'', ``work\_modality'': ``modalidad de trabajo (presencial, remoto, híbrido)'', ``contract\_type'': ``tipo de contrato (tiempo completo, medio tiempo, etc.)'', ``salary'': ``información salarial'', ``summary'': ``resumen breve del puesto''\}}. Si no encuentras alguna información, deja el campo como DESCONOCIDO (\texttt{``DESCONOCIDO''}). \\
+    \addlinespace
+    
+    \textbf{Responsabilidades} & 
+    Extrae únicamente las responsabilidades y funciones del cargo del siguiente texto. Responde en formato array \texttt{[]} de strings: \texttt{[``responsabilidad1'', ``responsabilidad2'', ``responsabilidad3'']}. Si no hay responsabilidades, devuelve un array vacío \texttt{[]}. \\
+    \addlinespace
+    
+    \textbf{Ubicación} & 
+    Extrae únicamente la ubicación del trabajo del siguiente texto. Responde en formato JSON con esta estructura: \texttt{\{``location'': ``ubicación del trabajo''\}}. Si no encuentras la ubicación, devuelve \texttt{\{``location'': ``DESCONOCIDO''\}}. \\
+    \addlinespace
+    
+    \textbf{Educación} & 
+    Extrae únicamente los requisitos educativos del siguiente texto. Responde en formato JSON con esta estructura: \texttt{\{``education'': ``requisitos educativos''\}}. Si no encuentras requisitos educativos, devuelve \texttt{\{``education'': ``DESCONOCIDO''\}}. \\
+    \addlinespace
+    
+    \textbf{Experiencia} & 
+    Extrae únicamente los requisitos de experiencia del siguiente texto. Responde en formato JSON con esta estructura: \texttt{\{``experience'': ``requisitos de experiencia''\}}. Si no encuentras requisitos de experiencia, devuelve \texttt{\{``experience'': ``DESCONOCIDO''\}}. \\
+    \addlinespace
+    
+    \textbf{Habilidades técnicas} & 
+    Extrae únicamente las habilidades técnicas requeridas del siguiente texto. Responde en formato array \texttt{[]} de strings: \texttt{[``habilidad1'', ``habilidad2'', ``habilidad3'']}. Si no hay habilidades técnicas, devuelve un array vacío \texttt{[]}. \\
+    \addlinespace
+    
+    \textbf{Habilidades blandas} & 
+    Extrae únicamente las habilidades blandas requeridas del siguiente texto. Responde en formato array \texttt{[]} de strings: \texttt{[``habilidad1'', ``habilidad2'', ``habilidad3'']}. Si no hay habilidades blandas, devuelve un array vacío \texttt{[]}. \\
+    \addlinespace
+    
+    \textbf{Certificaciones} & 
+    Extrae únicamente las certificaciones requeridas del siguiente texto. Responde en formato array \texttt{[]} de strings: \texttt{[``certificado1'', ``certificado2'', ``certificado3'']}. Si no encuentras certificaciones, devuelve un array vacío \texttt{[]}. \\
+    \addlinespace
+    
+    \textbf{Idiomas} & 
+    Extrae únicamente los requisitos de idiomas del siguiente texto. Responde en formato JSON como un objeto donde las llaves son los idiomas y los valores son los niveles: \texttt{\{``idioma1'': ``nivel1'', ``idioma2'': ``nivel2''\}}. Si no hay requisitos de idiomas, devuelve un objeto vacío \texttt{\{\}}. \\
+    \addlinespace
+    
+    \textbf{Beneficios} & 
+    Extrae únicamente los beneficios ofrecidos del siguiente texto. Responde en formato array \texttt{[]} de strings: \texttt{[``beneficio1'', ``beneficio2'', ``beneficio3'']}. Si no hay beneficios, devuelve un array vacío \texttt{[]}. \\
+    
     \bottomrule
   \end{tabular}
 \end{table}
 
-\section*{Comparadores (\texttt{algoritmo\_recomendacion/comparators})}
+
+
+\subsection*{Prompts de Inferencia Cognitiva para descripciones }
+
+Estos prompts se activan automáticamente solo cuando la extracción directa no encuentra información.
+
 \begin{table}[H]
   \centering
-  \caption{Prompts de comparadores por aspecto}
-  \label{tab:prompts-comp}
-  \footnotesize
-  \begin{tabular}{@{}lp{11cm}@{}}
+  \caption{Prompts de fallback para inferencia cognitiva}
+  \label{tab:prompts-job-fallback}
+  \scriptsize
+  \begin{tabular}{@{}lp{10cm}@{}}
     \toprule
-    \textbf{Comparación} & \textbf{Prompt (resumen truncado)} \\
+    \textbf{Campo} & \textbf{Prompt (Human Message)} \\
     \midrule
-    Habilidades técnicas & Eres un experto en evaluar compatibilidad de habilidades técnicas. Responde solo JSON con \texttt{\{"score":0--1,"reason":"..."\}}. Compara el CV con las habilidades requeridas. \\
-    Experiencia & Eres un experto en evaluar experiencia laboral. Responde solo JSON \texttt{\{"score":0--1,"reason":"..."\}} considerando años, roles y tecnologías. \\
-    Responsabilidades & Eres un experto en compatibilidad entre responsabilidades y experiencia. Responde solo JSON \texttt{\{"score":0--1,"reason":"..."\}}. \\
-    Educación & Eres un experto en compatibilidad educativa. Responde solo JSON \texttt{\{"score":0--1,"reason":"..."\}}. \\
-    Idiomas & Eres un experto en niveles de idioma. Responde solo JSON \texttt{\{"compatible":true,"score":0--1,"reason":"..."\}}. \\
-    Ubicación & Eres un experto en ubicaciones geográficas. Responde solo JSON \texttt{\{"score":0--1,"reason":"..."\}}. La misma ciudad o país equivale a 1.0; países lejanos a 0.0. \\
-    Habilidades blandas & Eres un experto en evaluar habilidades blandas. Responde solo JSON \texttt{\{"score":0--1,"reason":"..."\}}. \\
-    Certificaciones & Eres un experto en evaluar certificaciones técnicas. Responde solo JSON \texttt{\{"score":0--1,"reason":"..."\}} comparando su relevancia frente a los requisitos o habilidades. \\
+    
+    \textbf{Inferencia soft skills} & 
+    \textbf{Contexto:} Se activa solo si la extracción directa de soft skills devuelve una lista vacía. \par
+    \textbf{Prompt:} Eres un experto en recursos humanos. Analiza las responsabilidades de este trabajo e infiere SOLO las soft skills MÁS CRÍTICAS y NECESARIAS. \par
+    Título del trabajo: \texttt{\{job\_title\}} \par
+    Responsabilidades: \texttt{- \{responsabilidad1\}, - \{responsabilidad2\}, ...} \par
+    IMPORTANTE: Infiere MÁXIMO 3-5 soft skills (no más), si es necesario no pongas ninguna. Solo las MÁS IMPORTANTES y EVIDENTES. NO inventes soft skills genéricas. Basate únicamente en lo que las responsabilidades requieren claramente. \par
+    Responde ÚNICAMENTE con un array JSON de strings (nombres de soft skills en español): \texttt{[``soft skill 1'', ``soft skill 2'', ``soft skill 3'']}. Sin bloques de código markdown. \par
+     \\
+    \addlinespace
+    
+    \textbf{Detección de idioma} & 
+    \textbf{Contexto:} Se activa solo si la extracción directa de idiomas devuelve un objeto vacío. \par
+    \textbf{Prompt:} Detecta el idioma principal en el que está escrito el siguiente texto. Responde ÚNICAMENTE con un objeto JSON donde la clave es el nombre del idioma en español y el valor es ``Intermedio'' (como nivel básico requerido). \par
+    Formato: \texttt{\{``idioma'': ``Intermedio''\}} \par
+    Texto: \texttt{\{primeros 1000 caracteres del texto\}} \par
+    Responde solo con el JSON, sin bloques de código markdown. \par
+    \\
+    
     \bottomrule
   \end{tabular}
 \end{table}
+
+
+\section*{Comparadores}
+
+Los comparadores utilizan prompts de Role Prompting para evaluar la compatibilidad entre CVs y ofertas laborales en distintas dimensiones. A diferencia de los extractores, cada comparador define su propio System Message específico según el aspecto a evaluar.
+
+\textit{Nota:} Todos los comparadores reciben como entrada el CV completo estructurado y la descripción de trabajo completa estructurada en formato JSON.
+
+\subsection*{Prompts de comparadores por aspecto}
+
+\begin{table}[H]
+  \centering
+  \caption{Prompts completos de comparadores por aspecto}
+  \label{tab:prompts-comp}
+  \scriptsize
+  \begin{tabular}{@{}lp{10cm}@{}}
+    \toprule
+    \textbf{Aspecto} & \textbf{System Message y Prompt} \\
+    \midrule
+    
+    \textbf{Habilidades técnicas} & 
+    \textbf{System Message:} Eres un experto en evaluar compatibilidad de habilidades técnicas entre candidatos y ofertas de trabajo. \par
+    \textbf{Prompt:} Compara las habilidades técnicas del CV con las requeridas en la oferta. Considera coincidencias exactas, tecnologías similares y habilidades transferibles. Responde solo con JSON: \texttt{\{``score'': 0--1, ``reason'': ``justificación''\}}. \\
+    \addlinespace
+    
+    \textbf{Experiencia} & 
+    \textbf{System Message:} Eres un experto en evaluar experiencia laboral relevante. \par
+    \textbf{Prompt:} Evalúa la compatibilidad entre la experiencia del candidato y los requisitos del puesto, considerando años de experiencia, roles previos similares y tecnologías utilizadas. Responde solo con JSON: \texttt{\{``score'': 0--1, ``reason'': ``justificación''\}}. \\
+    \addlinespace
+    
+    \textbf{Responsabilidades} & 
+    \textbf{System Message:} Eres un experto en analizar compatibilidad entre responsabilidades de cargo y experiencia profesional. \par
+    \textbf{Prompt:} Compara las responsabilidades del puesto con la experiencia del candidato. Evalúa si las funciones previas del candidato se alinean con las responsabilidades requeridas. Responde solo con JSON: \texttt{\{``score'': 0--1, ``reason'': ``justificación''\}}. \\
+    \addlinespace
+    
+    \textbf{Educación} & 
+    \textbf{System Message:} Eres un experto en evaluar compatibilidad educativa entre perfiles y requisitos. \par
+    \textbf{Prompt:} Evalúa si la formación académica del candidato cumple con los requisitos educativos del puesto. Considera nivel de titulación, campo de estudio y relevancia. Responde solo con JSON: \texttt{\{``score'': 0--1, ``reason'': ``justificación''\}}. \\
+    \addlinespace
+    
+    \textbf{Idiomas} & 
+    \textbf{System Message:} Eres un experto en evaluar niveles de idioma y compatibilidad lingüística. \par
+    \textbf{Prompt:} Compara los idiomas y niveles de dominio del candidato con los requeridos por el puesto. Evalúa si el nivel del candidato cumple o supera el nivel requerido para cada idioma. Responde solo con JSON: \texttt{\{``compatible'': true/false, ``score'': 0--1, ``reason'': ``justificación''\}}. \\
+    \addlinespace
+    
+    \textbf{Ubicación} & 
+    \textbf{System Message:} Eres un experto en evaluar compatibilidad geográfica. \par
+    \textbf{Prompt:} Evalúa la proximidad geográfica entre la ubicación del candidato y la ubicación del trabajo. Considera: misma ciudad = 1.0, mismo país = 0.7, países cercanos = 0.3--0.5, países lejanos = 0.0--0.3. Responde solo con JSON: \texttt{\{``score'': 0--1, ``reason'': ``justificación''\}}. \\
+    \addlinespace
+    
+    \textbf{Habilidades blandas} & 
+    \textbf{System Message:} Eres un experto en evaluar habilidades blandas y competencias interpersonales. \par
+    \textbf{Prompt:} Compara las habilidades blandas del candidato con las requeridas en el puesto. Evalúa coincidencias directas y habilidades complementarias. Responde solo con JSON: \texttt{\{``score'': 0--1, ``reason'': ``justificación''\}}. \\
+    \addlinespace
+    
+    \textbf{Certificaciones} & 
+    \textbf{System Message:} Eres un experto en evaluar certificaciones técnicas y profesionales. \par
+    \textbf{Prompt:} Evalúa la relevancia y alineación de las certificaciones del candidato con los requisitos o habilidades técnicas del puesto. Considera certificaciones exactas, relacionadas y su vigencia. Responde solo con JSON: \texttt{\{``score'': 0--1, ``reason'': ``justificación''\}}. \\
+    
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+

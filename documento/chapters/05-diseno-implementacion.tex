@@ -145,7 +145,7 @@ El \textit{Core} del sistema representa el componente central donde reside la in
     \label{fig:arquitectura_backe_core}
 \end{figure}
 
-\section{Motor de Estructuración y Procesamiento de Lenguaje Natural}
+\section{Motor de Estructuración }
 
 El componente de estructuración es responsable de transformar documentos no estructurados —como hojas de vida en formato PDF y descripciones de trabajo en texto libre— en objetos de datos estandarizados (JSON) que el sistema pueda procesar algorítmicamente. Este módulo actúa como puente entre la entrada de usuario y el motor de recomendación, garantizando que la información heterogénea sea normalizada bajo un esquema común.
 
@@ -162,7 +162,8 @@ Como se ilustra en la Figura \ref{fig:arquitectura_estructuracion}, el flujo de 
 
 El diseño desacopla la recepción del archivo de su procesamiento cognitivo. Mientras que los servicios gestionan la carga y persistencia preliminar, el núcleo de estructuración se encarga exclusivamente de la extracción de entidades, validación de esquemas y limpieza de datos. Esto permite que, aunque las fuentes de datos sean distintas (.pdf vs .txt), el resultado final sea siempre una estructura coherente y lista para ser consumida por los algoritmos de comparación.
 
-\subsection{Pipeline de procesamiento de hojas de vida}
+\section{Pipeline de procesamiento de hojas de vida}
+
 \label{subsec:pipeline-hv}
 
 El procesamiento de hojas de vida constituye uno de los flujos críticos del sistema, dado que transforma documentos PDF no estructurados en datos procesables. Como se detalla en la Figura \ref{fig:pipeline_hv}, este proceso se orquesta secuencialmente a través de tres fases principales: extracción, estructuración cognitiva y validación.
@@ -193,7 +194,7 @@ El procesamiento de hojas de vida constituye uno de los flujos críticos del sis
     \end{figure}
 \end{minipage}
 \end{samepage}
-\subsubsection{Fase 1: Extracción y limpieza de texto}
+\subsection{Fase 1: Extracción y limpieza de texto}
 \label{subsec:fase-limpieza}
 
 La primera fase del pipeline tiene como objetivo transformar el archivo PDF binario en una cadena de texto normalizada, libre de ruido que pueda interferir con el procesamiento del modelo de lenguaje. Como se observa en la Figura \ref{fig:limpieza_cv}, este proceso se divide en dos etapas: la extracción inicial mediante herramientas de bajo nivel y un pipeline de limpieza sintáctica.
@@ -224,7 +225,7 @@ A modo de ilustración, el siguiente ejemplo muestra la transformación que sufr
 
 El resultado ("Texto Limpio") en la Figura \ref{fig:limpieza_cv} es una representación simplificada y uniforme del contenido del CV, optimizada para ser tokenizada eficientemente por el modelo de IA en la siguiente fase.
 
-\subsubsection{Fase 2: Estrategia de prompting y estructuración}
+\subsection{Fase 2: Estrategia de prompting y estructuración}
 \label{subsec:fase-estructuracion-ia}
 
 Una vez obtenido el texto limpio, el sistema inicia la fase de estructuración cognitiva. A diferencia de enfoques tradicionales que intentan extraer toda la información en una sola consulta (lo cual suele saturar la ventana de contexto del modelo y generar alucinaciones), esta implementación utiliza una estrategia secuencial y modular basada en la segmentación por tópicos.
@@ -239,17 +240,19 @@ Una vez obtenido el texto limpio, el sistema inicia la fase de estructuración c
 Como se ilustra en la Figura \ref{fig:estructuracion_iterativa}, el texto completo del CV se inyecta repetidamente en un ciclo de consultas, donde en cada iteración se utiliza un \textit{prompt} específico diseñado para extraer una única categoría de información (Información Personal, Educación, Experiencia, Habilidades, etc.). Esta metodología combina tres estrategias de \textit{Prompt Engineering} definidas en el marco teórico:
 
 \begin{itemize}
-    \item \textbf{Role Prompting:} Se instruye al modelo explícitamente: \textit{"Eres un experto en extraer información estructurada de hojas de vida"}. Esta técnica, identificada como el patrón de Persona \cite{white2023prompt}, condiciona la atención del modelo a entidades y terminología relevantes del dominio de reclutamiento.
-    \item \textbf{Structured Output Prompting:} Se define un esquema JSON rígido dentro del prompt y se prohíbe la generación de texto conversacional adicional. Esta restricción es fundamental para garantizar la interoperabilidad con el sistema backend \cite{liu2023pre}.
-    \item \textbf{Zero-Shot Prompting:} No se proveen ejemplos de CVs previos en el contexto; el modelo opera basándose únicamente en las instrucciones semánticas y el esquema objetivo, aprovechando su capacidad de generalización pre-entrenada \cite{brown2020language}.
+    \item \textbf{Role Prompting:} Se instruye al modelo explícitamente: \textit{``Eres un experto en extraer información estructurada de hojas de vida''}. Esta técnica, identificada como el patrón de Persona \cite{promptguide2024}, condiciona la atención del modelo a entidades y terminología relevantes del dominio de reclutamiento.
+    \item \textbf{Structured Output Prompting:} Se define un esquema JSON rígido dentro del prompt y se prohíbe la generación de texto conversacional adicional. Esta restricción es fundamental para garantizar la interoperabilidad con el sistema backend \cite{promptguide2024}.
+    \item \textbf{Zero-Shot Prompting:} No se proveen ejemplos de CVs previos en el contexto; el modelo opera basándose únicamente en las instrucciones semánticas y el esquema objetivo, aprovechando su capacidad de generalización pre-entrenada \cite{promptguide2024}.
 \end{itemize}
 
-A continuación se presenta un ejemplo real de la estructura de prompt utilizada para la extracción de información personal, tal como se implementa en la clase `SimpleCVExtractor`:
+A continuación se presenta un ejemplo de la estructura de prompt utilizada para la extracción de información personal:
 
 \begin{quotation}
     \small
-    \noindent \textbf{System Message:} "Eres un experto en extraer información estructurada de hojas de vida. IMPORTANTE: Responde ÚNICAMENTE con la estructura que se te pide, sin texto adicional." \\
-    \noindent \textbf{User Message:} "Extrae únicamente la información personal básica del siguiente CV. Responde en formato JSON con esta estructura exacta:
+        \noindent \textbf{System Message:} ``Eres un experto en extraer información estructurada de hojas de vida. IMPORTANTE: Responde ÚNICAMENTE con la estructura que se te pide, sin texto adicional.'' \\
+        \noindent \textbf{User Message:} ``Extrae únicamente la información personal básica del siguiente CV. Responde en formato JSON con esta estructura exacta:'' 
+
+
     \begin{verbatim}
     {
         "name": "nombre completo",
@@ -258,11 +261,92 @@ A continuación se presenta un ejemplo real de la estructura de prompt utilizada
         "location": "ubicación/ciudad"
     }
     \end{verbatim}
-    Si no encuentras alguna información, deja el campo como DESCONOCIDO. Texto del CV: [CONTENIDO\_DEL\_PDF]"
+    Si no encuentras alguna información, deja el campo como DESCONOCIDO"
 \end{quotation}
 
 Este enfoque granular permite validar y corregir cada sección de forma independiente (ver Apéndice \ref{tab:prompts-cv} para el listado completo de prompts utilizados). Si el modelo falla al extraer la experiencia, no afecta la extracción de la educación, lo que aumenta significativamente la robustez del sistema frente a documentos con formatos atípicos.
-
-\subsubsection{Fase 3: Consolidación y validación de datos}
+\subsection{Fase 3: Consolidación y validación de datos}
 \label{subsec:fase-validacion}
-[Contenido pendiente...]
+
+La etapa final del pipeline asegura que la información generada por el modelo sea sintácticamente válida y estructuralmente coherente antes de ser almacenada. Como se muestra en la Figura \ref{fig:validacion_json}, este proceso aborda uno de los desafíos más comunes al trabajar con LLMs: la inestabilidad en el formato de salida.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Fase_Validacion_Pipeline_Descripcion.png}
+    \caption{Flujo de consolidación y validación de datos}
+    \label{fig:validacion_json}
+\end{figure}
+
+El flujo implementado ejecuta las siguientes operaciones:
+
+\begin{enumerate}
+    \item \textbf{Limpieza de Markdown:} Los modelos de chat tienden a envolver el código en bloques de formato (ej: ```json ... ```). El sistema detecta y elimina estos delimitadores para extraer el objeto JSON puro.
+    \item \textbf{Parsing Seguro:} Se utiliza un decodificador JSON robusto que captura errores de sintaxis. Si el modelo genera un JSON malformado, el sistema captura la excepción y retorna una estructura vacía por defecto en lugar de romper la ejecución del servicio.
+    \item \textbf{Unificación de Fragmentos:} Los objetos JSON parciales obtenidos en la Fase 2 (uno por cada sección: personal, educación, etc.) se fusionan en un único diccionario maestro que guarda la informacion de todos los elementos.
+    \item \textbf{Validación de Schema (Inyección de Defaults):} Se verifica que todas las claves obligatorias existan. Si el modelo omitió algún campo (por ejemplo, no encontró certificaciones), el sistema inyecta automáticamente un valor por defecto (lista vacía o cadena vacía), garantizando que el objeto final cumpla estrictamente con la estructura esperada por el motor de recomendación.
+\subsection{Pipeline de procesamiento de descripciones de trabajo}
+\label{subsec:pipeline-jobs}
+
+
+
+\begin{samepage}
+\noindent
+\begin{minipage}[t]{0.62\textwidth}
+\vspace{0pt}
+\indent De manera análoga al procesamiento de CVs, el sistema implementa un flujo especializado para transformar las descripciones de vacantes en estructuras de datos normalizadas. Como se observa en la Figura \ref{fig:pipeline_job}, este pipeline comparte la arquitectura secuencial de tres fases, adaptando sus componentes internos a la naturaleza textual y semántica de las ofertas laborales.
+\medskip
+
+\indent El proceso comienza con la recepción del texto de la oferta laboral. En la \textbf{Fase 1}, se realiza una limpieza preliminar similar a la descrita anteriormente, aunque simplificada, dado que la entrada suele ser texto plano en lugar de un documento binario complejo.
+
+\medskip
+
+\indent La \textbf{Fase 2} constituye el núcleo diferencial de este pipeline. Aquí, la estrategia de segmentación se ajusta para identificar secciones propias de una vacante, como responsabilidades, beneficios y información basica. Además, se incorporan capacidades de inferencia deductiva (p.ej., deducir habilidades blandas a partir de las funciones del cargo), un aspecto que se detallará en la Sección \ref{subsec:fase-estructuracion-job}.
+
+\medskip
+
+\indent Finalmente, la \textbf{Fase 3} replica el mecanismo de consolidación y validación, asegurando que el objeto JSON resultante cumpla con el esquema requerido para la comparación bidireccional con los candidatos.
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.22\textwidth}
+    \vspace{0pt}
+    \centering
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.95\textwidth, height=0.65\textheight, keepaspectratio]{Pipeline_Estructuracion_Descripcion.png}
+        \caption{Pipeline de estructuración de descripciones de trabajo}
+        \label{fig:pipeline_job}
+    \end{figure}
+\end{minipage}
+\end{samepage}
+
+\subsubsection{Fase 1: Limpieza y normalización}
+Aunque la entrada es texto plano y no requiere extracción óptica o binaria compleja (como PyMuPDF), se aplica el mismo módulo de limpieza sintáctica descrito en la Sección \ref{subsec:fase-limpieza}. Esto garantiza que caracteres especiales, problemas de codificación o espaciados irregulares sean corregidos antes de invocar al modelo de lenguaje, manteniendo la consistencia en la calidad de los datos de entrada.
+
+\subsubsection{Fase 2: Estrategia de prompting y estructuración}
+\label{subsec:fase-estructuracion-job}
+
+En esta fase se materializa la inteligencia del sistema para comprender los requisitos de una vacante. Siguiendo el patrón de segmentación semántica utilizado en el pipeline de CVs, el texto de la descripción se procesa iterativamente utilizando prompts especializados para extraer componentes como información básica, responsabilidades, educación y beneficios (Figura \ref{fig:estructuracion_job}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\linewidth]{Fase_Estructuracion_Pipeline_Descripcion.png}
+    \caption{Estrategia de estructuración de ofertas laborales}
+    \label{fig:estructuracion_job}
+\end{figure}
+
+Sin embargo, este pipeline introduce dos capacidades cognitivas adicionales que lo diferencian de la extracción literal:
+
+\begin{itemize}
+    \item \textbf{Deducción de Habilidades Blandas (ver Figura \ref{fig:Flujo_Inferir_Habilidades_Blandas}):} A menudo, las ofertas laborales no listan explícitamente las habilidades blandas requeridas, pero estas se encuentran implícitas en las responsabilidades (p.\,ej., ``liderar equipos ágiles'' implica ``liderazgo'' y ``comunicación''). El sistema primero intenta extraer habilidades blandas explícitas mediante el prompt correspondiente. En caso de que no se encuentren, se activa automáticamente un mecanismo de inferencia que analiza semánticamente las funciones del cargo mediante las responsabilidades extraías por el LLM y deduce las 3-5 habilidades blandas más críticas, enriqueciendo el perfil de la vacante más allá del texto literal. Este flujo se puede observar en el diagrama de flujos mostrado en el indice en la Figura \ref{fig:Flujo_Inferir_Habilidades_Blandas}.
+    
+    \item \textbf{Detección de Idioma Contextual (ver Figura \ref{fig:Flujo_Inferir_Lenguaje}):} El sistema prioriza la extracción de requisitos de idioma explícitos mediante el prompt de idiomas estándar. Sin embargo, si la oferta no especifica idiomas (retorna lista vacía), se activa un mecanismo de recuperación que emplea un prompt de clasificación zero-shot para identificar el idioma en el que está redactado el texto completo de la oferta. Si se detecta, por ejemplo, que la oferta está en inglés, el sistema infiere automáticamente un requisito de ``Inglés - Nivel Intermedio'', asegurando que el motor de recomendación filtre candidatos aptos lingüísticamente incluso ante descripciones incompletas. Este flujo se puede observar en el diagrama de flujos mostrado en el indice en la Figura \ref{fig:Flujo_Inferir_Lenguaje}.
+\end{itemize}
+
+Estas estrategias transforman el proceso de una simple extracción de texto a una comprensión semántica de la necesidad del empleador, generando un perfil de vacante más robusto para el emparejamiento posterior. Los prompts específicos utilizados para estas inferencias se detallan en el Apéndice \ref{tab:prompts-job}, filas ``Inferencia soft skills'' y ``Detección de idioma''.
+
+\subsubsection{Fase 3: Consolidación y validación}
+Esta fase es funcionalmente idéntica a la descrita en la Sección \ref{subsec:fase-validacion}. Se ejecutan los mismos procesos de limpieza de markdown, unificación de fragmentos JSON y validación de esquema con inyección de valores por defecto. La única diferencia radica en el esquema objetivo, que en este caso corresponde a la estructura de una oferta laboral (incluyendo campos como rango salarial, modalidad de trabajo y beneficios).
+
+
+
+
