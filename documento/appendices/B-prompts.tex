@@ -220,4 +220,100 @@ Los comparadores utilizan prompts de Role Prompting para evaluar la compatibilid
   \end{tabular}
 \end{table}
 
+% =====================================================
+% Tablas de resultados de evaluación del modelo (Fase 1)
+% =====================================================
 
+\section*{Resultados de evaluación del modelo - Fase 1}
+
+Las siguientes tablas resumen los resultados cuantitativos de la primera simulación del modelo de comparación por aspectos (vacante Pragma Java Junior), contrastando los \textit{scores} producidos por el modelo y por el evaluador de RR.\,HH. para cada candidato y criterio.
+
+% Tabla 1: Andres Felipe Chaparro Diaz y Juan Esteban Lopez
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Evaluación de candidatos - Fase 1 (Parte 1)}
+    \label{tab:fase1-eval-parte1}
+    \begin{tabular}{|l|c|c|c|c|}
+        \hline
+        \textbf{Criterio} & \multicolumn{2}{c|}{\textbf{Andrés F. Chaparro}} & \multicolumn{2}{c|}{\textbf{Juan E. López}} \\
+        \cline{2-5}
+         & \textbf{Score Modelo} & \textbf{Score RR.\,HH.} & \textbf{Score Modelo} & \textbf{Score RR.\,HH.} \\
+        \hline
+        Experience        & 0\%   & 0\%   & 0\%   & 0\%   \\ \hline
+        Technical Skills  & 70\%  & 70\%  & 50\%  & 40\%  \\ \hline
+        Education         & 90\%  & 40\%  & 90\%  & 40\%  \\ \hline
+        Responsibilities  & 0\%   & 5\%   & 10\%  & 5\%   \\ \hline
+        Certifications    & -1    & -1    & -1    & 80\%  \\ \hline
+        Soft Skills       & -1    & 86\%  & -1    & 67\%  \\ \hline
+        Languages         & -1    & 100\% & -1    & 100\% \\ \hline
+        Location          & 0\%   & 100\% & 0\%   & 100\% \\ \hline
+        \textbf{Score Final} & \textbf{31\%} & \textbf{35\%} & \textbf{29\%} & \textbf{33\%} \\ \hline
+    \end{tabular}
+\end{table}
+
+% Tabla 2: Javier Barrera y Gabriel Gomez
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Evaluación de candidatos - Fase 1 (Parte 2)}
+    \label{tab:fase1-eval-parte2}
+    \begin{tabular}{|l|c|c|c|c|}
+        \hline
+        \textbf{Criterio} & \multicolumn{2}{c|}{\textbf{Javier Barrera}} & \multicolumn{2}{c|}{\textbf{Gabriel Gómez}} \\
+        \cline{2-5}
+         & \textbf{Score Modelo} & \textbf{Score RR.\,HH.} & \textbf{Score Modelo} & \textbf{Score RR.\,HH.} \\
+        \hline
+        Experience        & 0\%   & 0\%   & 60\%  & 80\%  \\ \hline
+        Technical Skills  & 20\%  & 0\%   & 60\%  & 70\%  \\ \hline
+        Education         & 90\%  & 10\%  & 100\% & 100\% \\ \hline
+        Responsibilities  & 20\%  & 5\%   & 60\%  & 70\%  \\ \hline
+        Certifications    & -1    & -1    & -1    & -1    \\ \hline
+        Soft Skills       & -1    & 15\%  & -1    & 67\%  \\ \hline
+        Languages         & -1    & 100\% & -1    & 100\% \\ \hline
+        Location          & 0\%   & 100\% & 0\%   & 100\% \\ \hline
+        \textbf{Score Final} & \textbf{25\%} & \textbf{12\%} & \textbf{65\%} & \textbf{80\%} \\ \hline
+    \end{tabular}
+\end{table}
+
+% Tabla 3: Juanchito Bernal
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Evaluación de candidatos - Fase 1 (Parte 3)}
+    \label{tab:fase1-eval-parte3}
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{Criterio} & \multicolumn{2}{c|}{\textbf{Juanchito Bernal}} \\
+        \cline{2-3}
+         & \textbf{Score Modelo} & \textbf{Score RR.\,HH.} \\
+        \hline
+        Experience        & 30\%  & 30\%  \\ \hline
+        Technical Skills  & 50\%  & 70\%  \\ \hline
+        Education         & 80\%  & 90\%  \\ \hline
+        Responsibilities  & 60\%  & 70\%  \\ \hline
+        Certifications    & -1    & -1    \\ \hline
+        Soft Skills       & -1    & 67\%  \\ \hline
+        Languages         & -1    & 100\% \\ \hline
+        Location          & 0\%   & 95\%  \\ \hline
+        \textbf{Score Final} & \textbf{48\%} & \textbf{62\%} \\ \hline
+    \end{tabular}
+\end{table}
+
+% Tabla resumen comparativa
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Resumen comparativo de scores finales - Fase 1}
+    \label{tab:fase1-eval-resumen}
+    \begin{tabular}{|l|c|c|}
+        \hline
+        \textbf{Candidato} & \textbf{Score Modelo} & \textbf{Score RR.\,HH.} \\
+        \hline
+        Andrés F. Chaparro      & 31\% & 35\% \\ \hline
+        Juan E. López           & 29\% & 33\% \\ \hline
+        Javier Barrera          & 25\% & 12\% \\ \hline
+        Gabriel Gómez           & 65\% & 80\% \\ \hline
+        Juanchito Bernal        & 48\% & 62\% \\ \hline
+    \end{tabular}
+\end{table}

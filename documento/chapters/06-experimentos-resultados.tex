@@ -137,7 +137,7 @@ Las Tablas \ref{tab:resultados-cv-1} y \ref{tab:resultados-cv-2} presentan la ma
 \end{table}
 
 \begin{itemize}
-    \item \textbf{Habilidades Blandas (Soft Skills):} Se observó una mejora sustancial gracias a la estrategia de deducción implementada en el sub-capítulo \ref{subsec:pipeline-jobs}. En la mayoría de los casos, el sistema logró inferir correctamente habilidades implícitas que no estaban listadas textualmente. Sin embargo, en 3 de los 10 casos, el modelo fue excesivamente conservador y no reportó habilidades que, aunque no explícitas, podrían haberse intuido del contexto, resultando en puntajes del 80\%.
+    \item \textbf{Habilidades Blandas (Soft Skills):} En la mayoría de los casos, el sistema logró inferir correctamente habilidades implícitas que no estaban listadas textualmente. Sin embargo, en 3 de los 10 casos, el modelo fue excesivamente conservador y no reportó habilidades que, aunque no explícitas, podrían haberse intuido del contexto, resultando en puntajes del 80\%.
     
     \item \textbf{Experiencia Laboral:} Este fue el rubro que presentó los desafíos más complejos. Si bien la mayoría de extracciones fueron correctas (100\%), el modelo mostró una tendencia a alucinar o sobre-interpretar información en perfiles junior. En casos específicos como el de Gabriel Gómez (35\%) o Juanchito Bernal (50\%), el sistema clasificó proyectos académicos de portafolio o voluntariados como experiencia laboral formal. Aunque semánticamente relavante, esto constituye un error estructural que infla la trayectoria del candidato al mezclar experiencia real con académica.
     
@@ -188,15 +188,92 @@ A continuación, la Tabla \ref{tab:resultados-jobs} presenta el detalle de la ev
 
 Los hallazgos principales de esta evaluación indican:
 \begin{itemize}
-    \item \textbf{Responsabilidades y Ubicación:} Estos fueron los campos con el desempeño más sólido y constante, logrando una precisión del 100\% en todos los casos. El modelo demostró gran capacidad de adaptación semántica, identificando correctamente las secciones equivalentes a responsabilidades independientemente del título utilizado en la oferta (ej. "Qué retos te enfrentarás", "What You'll Do" o "Tu misión").
+    \item \textbf{Responsabilidades y Ubicación:} Estos fueron los campos con el desempeño más sólido y constante, logrando una precisión del 100\% en todos los casos. El modelo demostró gran capacidad de adaptación semántica, identificando correctamente las secciones equivalentes a responsabilidades independientemente del título utilizado en la oferta.
     
-    \item \textbf{Experiencia:} Al igual que en las hojas de vida, este rubro presentó las mayores dificultades. En las vacantes de practicantes, el modelo marcó correctamente la experiencia como "Desconocida" (score 80\%), aunque una interpretación ideal hubiera explicitado que "no se requiere experiencia". El error más significativo (20\%) ocurrió en la vacante junior de Sezzle, donde el sistema extrajo únicamente la cantidad de años requeridos, omitiendo el contexto técnico crucial sobre en qué tecnologías debía tenerse dicha experiencia.
+    \item \textbf{Experiencia:} Al igual que en las hojas de vida, este rubro presentó las mayores dificultades. En las vacantes de practicantes, el modelo marcó correctamente la experiencia como Desconocida (score 80\%), aunque una interpretación ideal hubiera explicitado que "no se requiere experiencia". El error más significativo (20\%) ocurrió en la vacante junior de Sezzle, donde el sistema extrajo únicamente la cantidad de años requeridos, omitiendo el contexto técnico crucial sobre en qué tecnologías debía tenerse dicha experiencia.
     
     \item \textbf{Información Básica y Educación:} La extracción fue altamente confiable (mayoría 100\%). Destaca positivamente la capacidad del modelo para inferir requisitos educativos implícitos; por ejemplo, en las ofertas de Sezzle, aunque no se listaba una carrera específica, el sistema dedujo correctamente que el perfil requería estudios en Ciencias de la Computación o afines.
     
-    \item \textbf{Habilidades Técnicas, Blandas y Certificaciones:} La precisión fue excelente en estos apartados. En habilidades técnicas y certificaciones no se registraron errores (100\%). En habilidades blandas, el sistema aplicó exitosamente la lógica de inferencia, deduciendo tres competencias transversales pertinentes para cada cargo a partir de las responsabilidades descritas.
+    \item \textbf{Habilidades Técnicas, Blandas y Certificaciones:} La precisión fue excelente en estos apartados. En habilidades técnicas y certificaciones no se registraron errores (100\%). En habilidades blandas, el sistema aplicó exitosamente la lógica de inferencia de la sub-seccion \ref{subsec:pipeline-jobs}, deduciendo tres competencias transversales pertinentes para cada cargo a partir de las responsabilidades descritas.
     
-    \item \textbf{Idiomas:} Se validó exitosamente la funcionalidad de detección automática. En los 4 casos, ante la ausencia de un requisito explícito, el modelo dedujo correctamente el idioma base de la oferta (Español para Pragma, Inglés para Sezzle) y asignó un nivel intermedio por defecto, garantizando que el criterio lingüístico no quedara vacío.
+    \item \textbf{Idiomas:} Se validó exitosamente la funcionalidad de detección automática de la sub-seccion \ref{subsec:pipeline-jobs}. En los 4 casos, ante la ausencia de un requisito explícito, el modelo dedujo correctamente el idioma base de la oferta (Español para Pragma, Inglés para Sezzle) y asignó un nivel intermedio por defecto, garantizando que el criterio lingüístico no quedara vacío.
     
-    \item \textbf{Beneficios:} Aunque en general el desempeño fue correcto, se registró un error puntual grave (10\%) en la vacante de practicante de Pragma. El sistema confundió el "auxilio de sostenimiento" (que corresponde al salario o compensación base en contratos de aprendizaje) clasificándolo erróneamente como un "beneficio" adicional, lo que revela una dificultad para distinguir matices contractuales específicos de la legislación laboral local.
+    \item \textbf{Beneficios:} Aunque en general el desempeño fue correcto, se registró un error puntual grave (10\%) en la vacante de practicante de Pragma. El sistema confundió el salario clasificándolo erróneamente como un beneficio, cuando este elemento salario deberia aparecer en la información basica, lo que revela una dificultad para distinguir matices contractuales específicos de la legislación laboral local.
 \end{itemize}
+\section{Evaluación del modelo}
+\label{sec:evaluacion-modelo}
+
+\subsection{Protocolo de validación experta y métricas comparativas}
+\label{subsec:protocolo-validacion}
+
+Para determinar si el sistema emite juicios de valor alineados con el criterio profesional, se diseñó una evaluación basada en cuatro simulaciones de procesos de selección. Cada simulación consistió en el análisis de una descripción de trabajo específica frente a un subconjunto de cinco hojas de vida seleccionadas del dataset, creando escenarios controlados de competencia por una vacante.
+
+La validación cualitativa fue realizada por Juan Pablo Chaparro, profesional de Recursos Humanos con experiencia en reclutamiento. Su rol consistió en actuar como un juez y, posteriormente, como auditor del sistema. Para cada simulación, el experto analizó los mismos documentos que el algoritmo y generó su propia valoración. Las métricas de éxito se definieron en función de la convergencia entre el criterio humano y el artificial a través de tres dimensiones:
+
+\begin{itemize}
+    \item \textbf{Comparación de Rankings:} Se contrasta el orden de idoneidad de los candidatos generado por el modelo frente al ranking construido por el evaluador humano. Esto permite medir si el sistema prioriza correctamente a los mejores perfiles.
+    \item \textbf{Consistencia de Puntajes:} Se evalúa la correlación entre el \textit{score} de compatibilidad calculado por el algoritmo y la valoración subjetiva (en escala 0-100) asignada por el experto.
+    \item \textbf{Validación Semántica de las Razones:} El experto revisa las justificaciones textuales generadas por la IA para cada aspecto (ej. "¿Por qué la experiencia es compatible?"), calificando si la explicación es coherente, precisa y útil para la toma de decisiones.
+\end{itemize}
+
+\subsection{Fases de ejecución y refinamiento iterativo}
+\label{subsec:fases-evaluacion}
+
+Con el objetivo de asegurar no solo la evaluación sino también la mejora continua del prototipo, el proceso experimental se dividió en dos fases operativas:
+
+\begin{itemize}
+    \item \textbf{Fase 1 - Prueba Piloto:} Se ejecutó la primera simulación utilizando la vacante Junior Java Developer de la empresa Pragma. Los resultados de este primer análisis fueron sometidos a una sesión de revisión detallada con el experto de RR.\,HH. Esta etapa permitió identificar divergencias tempranas en la interpretación de ciertos criterios (particularmente en la gestión de certificaciones y habilidades), lo que derivó en ajustes puntuales a la lógica de los comparadores y a los pesos del sistema.
+    
+    \item \textbf{Fase 2 - Evaluación Final:} Tras implementar las correcciones derivadas de la reunión de retroalimentación, se procedió a ejecutar las tres simulaciones restantes. En esta fase se consolidaron los resultados definitivos reportados en este capítulo, permitiendo medir el desempeño del sistema ya calibrado frente a escenarios de distinta complejidad (roles de practicante vs. roles junior).
+\end{itemize}
+
+\subsection{Resultados de la Fase 1}
+\label{subsec:resultados-fase1}
+
+La primera simulación se realizó utilizando una vacante real de Desarrollador Java Junior para la empresa Pragma. El objetivo de esta fase no fue solo medir la precisión, sino estresar el modelo para identificar comportamientos divergentes respecto al juicio humano.
+
+\subsubsection*{Análisis de Ranking y Puntajes}
+
+A nivel de ordenamiento (ranking), el sistema demostró un desempeño sobresaliente. A pesar de que las magnitudes de los puntajes difirieron, el modelo ordenó a los candidatos exactamente en la misma secuencia que el experto de RR.\,HH., identificando correctamente al mejor candidato (Gabriel Gómez) y discriminando adecuadamente a los perfiles con menor ajuste. La Tabla \ref{tab:ranking-fase1} presenta esta comparación. El detalle completo de los \textit{scores} por criterio y candidato puede consultarse en las Tablas \ref{tab:fase1-eval-parte1}, \ref{tab:fase1-eval-parte2} y \ref{tab:fase1-eval-parte3} del Apéndice de prompts, mientras que la Tabla \ref{tab:fase1-eval-resumen} resume los puntajes finales de modelo y RR.\,HH. para los cinco candidatos evaluados.
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Comparación de Rankings - Fase 1 (Pragma Java Junior)}
+    \label{tab:ranking-fase1}
+    \begin{tabular}{|c|l|l|c|}
+    \hline
+    \textbf{Posición} & \textbf{Ranking Modelo (IA)} & \textbf{Ranking Experto (RR.HH.)} \\ \hline
+    1 & Gabriel Gómez & Gabriel Gómez \\ \hline
+    2 & Juanchito Bernal & Juanchito Bernal  \\ \hline
+    3 & Andrés Chaparro & Andrés Chaparro  \\ \hline
+    4 & Juan E. López & Juan E. López \\ \hline
+    5 & Javier Barrera & Javier Barrera \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection*{Hallazgos y discrepancias detectadas}
+
+Posterior a la simulación, se realizó una sesión de retroalimentación con el evaluador para analizar por qué, aunque el ranking coincidía, existían diferencias notables en la evaluación de ciertos rubros específicos. Se identificaron cinco hallazgos críticos:
+
+\begin{itemize}
+    \item \textbf{Sesgo por ``Datos No Evaluados'' (-1):} El modelo fue excesivamente literal. Si la descripción del trabajo no tenía una sección explícita de Certificaciones, Idiomas o Habilidades Blandas, el sistema marcaba estos rubros como \texttt{-1} (No Evaluado). El experto, en cambio, siempre evaluaba estos aspectos: intuía el idioma por la redacción de la oferta e infería habilidades blandas del contexto. Esto generó una brecha significativa de cobertura en la evaluación.
+    
+    \item \textbf{Rigurosidad en Educación:} El evaluador humano penalizó fuertemente a los candidatos que no habían culminado sus estudios (no graduados), considerándolo un criterio excluyente para el cargo. El modelo, aunque valoró la educación, fue más laxo al puntuar perfiles en curso.
+    
+    \item \textbf{Inconsistencia en Responsabilidades:} Se detectó un sesgo en la interpretación de experiencias académicas. Tanto el candidato Juan Esteban López como Andrés Chaparro listaban monitorias académicas; sin embargo, el modelo solo validó positivamente esta experiencia para Juan Esteban, ignorándola para Andrés, lo que evidenció una falta de robustez en la detección de roles equivalentes.
+    
+    \item \textbf{Fallas en Ubicación:} El comparador de ubicación falló sistemáticamente (0\% de acierto), incapaz de relacionar semánticamente las ubicaciones o de manejar la flexibilidad de trabajo remoto con la misma destreza que el humano.
+    
+    \item \textbf{Valoración de Certificaciones:} El experto indicó que, aunque una oferta no pida certificaciones explícitamente, la presencia de certificados relevantes en la HV (como AWS o Java) debe sumar puntos positivos como un diferenciador, algo que el modelo ignoraba si el campo de requisitos estaba vacío.
+\end{itemize}
+
+\subsubsection*{Ajustes implementados para la Fase 2}
+
+A partir de estos \textit{insights}, se realizaron modificaciones estructurales en el \textit{core} del sistema antes de proceder con las siguientes simulaciones:
+
+\begin{enumerate}
+    \item \textbf{Comparador de Certificaciones Mejorado:} Se modificó la lógica para que, en ausencia de requisitos de certificación explícitos, el sistema compare las certificaciones del candidato contra las habilidades técnicas requeridas. Este cambio se explica a mayor detalle en \ref{subsec:pipeline-comparacion}.
+    \item \textbf{Detección Automática de Idioma:} Se implementó un paso previo que detecta el idioma de la oferta laboral. Si la oferta está en inglés (aunque no pida Inglés explícitamente), el sistema ahora infiere el requisito. Este cambio se explica a mayor detalle en \ref{subsec:pipeline-jobs}.
+    \item \textbf{Inferencia de Habilidades Blandas:} Se añadió una capa de razonamiento que deduce las habilidades blandas implícitas en las responsabilidades del cargo, evitando que este rubro quede sin evaluar. Este cambio se explica a mayor detalle en \ref{subsec:pipeline-jobs}.
+\end{enumerate}
