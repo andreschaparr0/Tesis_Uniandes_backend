@@ -1,13 +1,202 @@
-\chapter{Experimentos y Resultados}
-\label{chap:experimentos}
+\chapter{Evaluación y Resultados}
+\label{chap:evaluaciones}
 
 \section{Diseño Experimental}
-Datasets, particiones, métricas y configuración de pruebas.
+\label{sec:diseno-experimental}
 
-\section{Resultados}
-Tablas y figuras con resultados principales y análisis.
+Esta sección detalla el diseño de las pruebas realizadas para validar la utilidad y precisión del sistema propuesto. El protocolo experimental se construyó para evaluar tanto la capacidad del sistema para interpretar información no estructurada como su competencia para emitir juicios de valor comparables a los de un reclutador humano.
 
-\section{Ablaciones y Sensibilidad}
-Impacto de pesos por aspecto y variantes de comparadores.
+\subsection{Visión general del protocolo de experimentación}
 
+El proceso de validación se estructuró en torno a dos ejes fundamentales definidos en la metodología. En primer lugar, se evaluó la calidad de la \textbf{estructuración de datos}, verificando si los modelos de lenguaje lograban extraer y normalizar correctamente la información contenida en las hojas de vida (PDF) y las descripciones de trabajo (texto). Esta etapa es crítica, pues la fiabilidad de cualquier recomendación posterior depende directamente de la integridad de los datos de entrada.
 
+En segundo lugar, se evaluó el desempeño del \textbf{motor de recomendación}. Para esto, se diseñó un escenario de prueba que simula procesos de selección reales, donde el sistema procesa un conjunto de candidatos frente a vacantes específicas. Los resultados generados (scores de compatibilidad, desgloses por aspecto y rankings) fueron sometidos a una revisión cualitativa por parte de un profesional de Recursos Humanos, quien contrastó el criterio de la inteligencia artificial con su propio juicio experto. Este enfoque mixto permite medir no solo la precisión técnica, sino la utilidad práctica de la herramienta como sistema de apoyo a la decisión.
+
+\subsection{Delimitación del dominio: El nicho tecnológico}
+
+Para garantizar la validez interna de las evaluaciones y permitir un análisis profundo de los resultados, el alcance del modelo se acotó específicamente al sector de tecnología y desarrollo de software. Esta decisión se fundamenta en el perfil académico del autor (Ingeniería de Sistemas y Computación), lo que otorga un criterio técnico sólido para validar si las correspondencias halladas entre habilidades (por ejemplo, frameworks, lenguajes de programación y herramientas) son semánticamente correctas.
+
+\subsection{Conformación del dataset}
+
+El conjunto de datos utilizado para las pruebas está compuesto por un total de 10 hojas de vida y 4 descripciones de trabajo, todas pertenecientes al sector tecnológico. Las hojas de vida fueron recolectadas mediante una convocatoria controlada entre conocidos y colegas del entorno académico, quienes autorizaron el uso de sus documentos con fines académicos.
+
+La muestra de candidatos refleja el contexto universitario y de ingreso al mercado laboral, con una mayoría de participantes vinculados a la Universidad de los Andes. En términos de experiencia, se obtuvo una distribución equilibrada:
+\begin{itemize}
+    \item Cerca del 40\% corresponde a estudiantes de últimos semestres o recién egresados, cuyos perfiles se basan principalmente en proyectos académicos y prácticas profesionales.
+    \item El 60\% restante corresponde a profesionales con experiencia que oscila entre perfiles junior y candidatos con hasta seis años de trayectoria en la industria.
+\end{itemize}
+
+Las 4 descripciones de trabajo se seleccionaron para cubrir distintos niveles dentro del desarrollo de software, buscando variedad en responsabilidades y en el nivel de experiencia solicitado. Para cada una de las dos empresas consideradas, se incluyó tanto una vacante orientada a candidatos con experiencia profesional como una oportunidad de prácticas dirigida a perfiles en formación. Esta combinación permitió evaluar cómo responde el modelo frente a ofertas que difieren en complejidad, nivel de detalle y expectativas técnicas, sin introducir sesgos hacia un único tipo de rol.
+
+\section{Evaluación de Estructuración}
+\label{sec:evaluacion-estructuracion}
+
+\subsection{Metodología de verificación técnica}
+Esta fase de evaluación tiene como objetivo medir la fidelidad con la que el sistema transforma documentos no estructurados en objetos JSON. La evaluación de la estructuración es una tarea de verificación fáctica: comprobar si la información presente en el documento original fue capturada correctamente, si hubo omisiones o si el modelo alucinó datos inexistentes. Por esto mismo, esta etapa la evaluó una persona con conocimiento del contexto del proyecto (sin requerir especialidad en RR. HH.). 
+
+Se procesaron las 10 hojas de vida y las 4 descripciones de trabajo a través de los pipelines de estructuración descritos en el capítulo anterior. Posteriormente, se realizó una revisión manual ítem por ítem, comparando el contenido del archivo fuente (PDF o texto) contra el resultado estructurado generado por el sistema.
+
+\subsection{Instrumentos y métricas de calidad}
+Para evaluar de forma consistente la calidad de la estructuración, se definieron dos instrumentos: uno para hojas de vida y otro para descripciones de trabajo. Cada campo se califica según dos criterios: un \textit{Score} en porcentaje, que mide qué tan completa y precisa fue la extracción (100\% indica extracción correcta y 0\% un fallo total), y una \textit{Razón}, donde se explica brevemente el motivo del puntaje asignado.
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Plantilla de evaluación de estructuración de Hoja de Vida (CV)}
+    \label{tab:plantilla-eval-cv}
+    \begin{tabular}{|l|p{3cm}|p{6cm}|}
+    \hline
+    Aspecto (Campo JSON) & CV\_Score (0\% - 100\%) & CV\_Razón (Justificación) \\ \hline
+    \texttt{personal} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{education} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{experience} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{technical\_skills} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{soft\_skills} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{certifications} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{languages} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \end{tabular}
+\end{table}
+
+De manera análoga, la Tabla \ref{tab:plantilla-eval-job} muestra el instrumento aplicado a las descripciones de trabajo, incluyendo campos específicos de vacantes como beneficios y responsabilidades.
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Plantilla de evaluación de estructuración de Descripción de Trabajo (Job)}
+    \label{tab:plantilla-eval-job}
+    \begin{tabular}{|l|p{3cm}|p{6cm}|}
+    \hline
+    Aspecto (Campo JSON) & Job\_Score (0\% - 100\%) & Job\_Razón (Justificación) \\ \hline
+    \texttt{basic\_info} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{responsibilities} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{location} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{education} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{experience} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{technical\_skills} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{soft\_skills} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{certifications} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{languages} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \texttt{benefits} & [0\% - 100\%] & Razón del score asociado \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Resultados de estructuración de Hojas de Vida}
+
+Tras aplicar el instrumento de evaluación sobre las 10 hojas de vida, se obtuvieron un total de 70 resultados (7 rubros por cada uno de los 10 candidatos). El desempeño general del motor de estructuración fue altamente satisfactorio. A continuación, se presenta la distribución de los puntajes obtenidos:
+
+\begin{itemize}
+    \item \textbf{100\%:} 51 veces (Extracción perfecta).
+    \item \textbf{80\% - 99\%:} 12 veces (Errores menores de formato o incompletitud leve).
+    \item \textbf{50\% - 79\%:} 3 veces (Errores parciales o confusión de categorías).
+    \item \textbf{20\% - 49\%:} 1 vez (Error significativo de interpretación).
+    \item \textbf{0\% - 19\%:} 0 veces (Fallo total).
+\end{itemize}
+
+El análisis cualitativo de estos resultados permite identificar fortalezas claras y áreas de mejora específicas en el pipeline de procesamiento:
+
+\subsubsection*{Desempeño por rubros y hallazgos clave}
+
+Las Tablas \ref{tab:resultados-cv-1} y \ref{tab:resultados-cv-2} presentan la matriz completa de evaluación para los 10 candidatos, detallando el score y la razón en cada rubro.
+
+\begin{table}[H]
+    \centering
+    \scriptsize
+    \caption{Resultados de estructuración de Hojas de Vida (Candidatos 1-5)}
+    \label{tab:resultados-cv-1}
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabular}{|l|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|}
+    \hline
+    \textbf{Rubro} & \textbf{Andrés Chaparro} & \textbf{Carlos Santoyo} & \textbf{Gabriel Gómez} & \textbf{Javier Barrera} & \textbf{Juan E. López} \\ \hline
+    \textbf{Personal} & \textbf{100\%} \newline Bien & \textbf{95\%} \newline Faltaron símbolos en el correo & \textbf{100\%} \newline Bien & \textbf{95\%} \newline Faltaron símbolos en el correo & \textbf{95\%} \newline Faltaron símbolos en el correo \\ \hline
+    \textbf{Educación} & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{60\%} \newline Puso mal la univ. (Andes vs Javeriana) & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Experiencia} & \textbf{100\%} \newline Bien & \textbf{80\%} \newline Faltó poner que call centers fueron bilingües & \textbf{35\%} \newline Confundió proy. con exp. y añadió de más & \textbf{100\%} \newline Bien & \textbf{90\%} \newline Faltó especificar clase de monitoría \\ \hline
+    \textbf{Tech Skills} & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Soft Skills} & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{80\%} \newline Bien pero faltaron algunas & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Certif.} & \textbf{100\%} \newline Bien & \textbf{90\%} \newline Puso año 2023 no aclarado en CV & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Idiomas} & \textbf{100\%} \newline Bien & \textbf{70\%} \newline Puso el lenguaje bilingüe & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \scriptsize
+    \caption{Resultados de estructuración de Hojas de Vida (Candidatos 6-10)}
+    \label{tab:resultados-cv-2}
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabular}{|l|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|}
+    \hline
+    \textbf{Rubro} & \textbf{Juanchito Bernal} & \textbf{Julián Galindo} & \textbf{María Ramírez} & \textbf{Stiven Viedman} & \textbf{William Xavier} \\ \hline
+    \textbf{Personal} & \textbf{95\%} \newline Faltaron símbolos en el correo & \textbf{95\%} \newline Faltaron símbolos en el correo & \textbf{95\%} \newline Faltaron símbolos en el correo & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Educación} & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Experiencia} & \textbf{50\%} \newline Correcta pero añadió proyectos portafolio & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Tech Skills} & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{50\%} \newline Capta todas pero pone de más \\ \hline
+    \textbf{Soft Skills} & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{80\%} \newline No puso, se podría intuir & \textbf{80\%} \newline No puso, se podría intuir & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Certif.} & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{50\%} \newline Puso cursos de educ. como certif. \\ \hline
+    \textbf{Idiomas} & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{70\%} \newline No hay, se puede intuir \\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{itemize}
+    \item \textbf{Habilidades Blandas (Soft Skills):} Se observó una mejora sustancial gracias a la estrategia de deducción implementada en el sub-capítulo \ref{subsec:pipeline-jobs}. En la mayoría de los casos, el sistema logró inferir correctamente habilidades implícitas que no estaban listadas textualmente. Sin embargo, en 3 de los 10 casos, el modelo fue excesivamente conservador y no reportó habilidades que, aunque no explícitas, podrían haberse intuido del contexto, resultando en puntajes del 80\%.
+    
+    \item \textbf{Experiencia Laboral:} Este fue el rubro que presentó los desafíos más complejos. Si bien la mayoría de extracciones fueron correctas (100\%), el modelo mostró una tendencia a alucinar o sobre-interpretar información en perfiles junior. En casos específicos como el de Gabriel Gómez (35\%) o Juanchito Bernal (50\%), el sistema clasificó proyectos académicos de portafolio o voluntariados como experiencia laboral formal. Aunque semánticamente relavante, esto constituye un error estructural que infla la trayectoria del candidato al mezclar experiencia real con académica.
+    
+    \item \textbf{Información Personal y Educación:} Estos campos mostraron la mayor estabilidad. Los errores encontrados fueron marginales (scores del 95\%), limitándose principalmente a detalles de formato, como la omisión de símbolos en correos electrónicos (observado en 5 candidatos) o, en un único caso, la atribución errónea de la universidad en un título de pregrado.
+    
+    \item \textbf{Habilidades Técnicas y Certificaciones:} La extracción fue precisa en casi la totalidad de la muestra (generalmente 100\%). Se registró un caso aislado (William Xavier, 50\%) donde el modelo interpretó cursos listados en educación como certificaciones independientes, y otro donde incluyó habilidades técnicas excedentes.
+    
+    \item \textbf{Idiomas:} El desempeño fue sólido (mayoría 100\%), con excepciones puntuales relacionadas con la inferencia del lenguaje ``bilinguismo'' o la falta de deducción del idioma nativo cuando este no se declaraba explícitamente.
+
+\end{itemize}
+
+En conclusión, el motor de estructuración demostró una alta fiabilidad para los fines del sistema de recomendación, con una tasa de éxito superior al 90\% en la mayoría de los campos. Los errores identificados, principalmente en la distinción entre proyectos y experiencia laboral, son consistentes con la ambigüedad propia de los perfiles junior en el sector tecnológico.
+
+\subsection{Resultados de estructuración de Descripciones de Trabajo}
+La evaluación de la estructuración de las descripciones de trabajo (Jobs) se realizó sobre 4 vacantes distribuidas entre las empresas Pragma y Sezzle. Se obtuvieron un total de 40 puntos de control (10 rubros por vacante). Al igual que con las hojas de vida, los resultados fueron predominantemente positivos, con una alta incidencia de extracciones perfectas.
+
+\begin{itemize}
+    \item \textbf{100\%:} 30 veces.
+    \item \textbf{80\% - 99\%:} 8 veces.
+    \item \textbf{50\% - 79\%:} 0 veces.
+    \item \textbf{20\% - 49\%:} 1 vez.
+    \item \textbf{0\% - 19\%:} 1 vez.
+\end{itemize}
+
+A continuación, la Tabla \ref{tab:resultados-jobs} presenta el detalle de la evaluación.
+
+\begin{table}[H]
+    \centering
+    \scriptsize
+    \caption{Resultados detallados de estructuración de Descripciones de Trabajo}
+    \label{tab:resultados-jobs}
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabular}{|l|p{3.0cm}|p{3.0cm}|p{3.0cm}|p{3.0cm}|}
+    \hline
+    \textbf{Rubro} & \textbf{Pragma Dev Java} & \textbf{Pragma Practicante} & \textbf{Sezzle AI Intern} & \textbf{Sezzle Jr Engineer} \\ \hline
+    \textbf{Info. Básica} & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Responsab.} & \textbf{100\%} \newline Excelente, extrajo bien de "Retos" & \textbf{100\%} \newline Excelente, extrajo bien de "Retos" & \textbf{100\%} \newline Excelente, extrajo de "What You'll Do" & \textbf{100\%} \newline Excelente, extrajo de "What You'll Do" \\ \hline
+    \textbf{Ubicación} & \textbf{100\%} \newline Correctas las 3 ubicaciones & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Educación} & \textbf{80\%} \newline Se desconoce pero infiere Comp. Science & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Infiere bien aunque no sea explícito & \textbf{100\%} \newline Infiere bien aunque no sea explícito \\ \hline
+    \textbf{Experiencia} & \textbf{90\%} \newline Faltó exp. en caché (Redis/Memcached) & \textbf{80\%} \newline Pone "Desconocido" (correcto) pero mejor decir "no necesario" & \textbf{80\%} \newline Pone "Desconocido" (correcto) pero mejor decir "no necesario" & \textbf{20\%} \newline Solo pone años, no especifica en qué \\ \hline
+    \textbf{Tech Skills} & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Soft Skills} & \textbf{100\%} \newline Intuye 3 habilidades con sentido & \textbf{100\%} \newline Intuye 3 habilidades con sentido & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Certif.} & \textbf{100\%} \newline Bien (Desconocido) & \textbf{100\%} \newline Bien (Desconocido) & \textbf{100\%} \newline Bien & \textbf{100\%} \newline Bien \\ \hline
+    \textbf{Idiomas} & \textbf{90\%} \newline Infiere Español intermedio & \textbf{90\%} \newline Infiere Español intermedio & \textbf{90\%} \newline Infiere Inglés & \textbf{90\%} \newline Infiere Inglés \\ \hline
+    \textbf{Beneficios} & \textbf{100\%} \newline Bien (Desconocido) & \textbf{10\%} \newline Confunde salario con beneficio & \textbf{100\%} \newline Bien (Desconocido) & \textbf{100\%} \newline Bien (Desconocido) \\ \hline
+    \end{tabular}
+\end{table}
+
+Los hallazgos principales de esta evaluación indican:
+\begin{itemize}
+    \item \textbf{Responsabilidades y Ubicación:} Estos fueron los campos con el desempeño más sólido y constante, logrando una precisión del 100\% en todos los casos. El modelo demostró gran capacidad de adaptación semántica, identificando correctamente las secciones equivalentes a responsabilidades independientemente del título utilizado en la oferta (ej. "Qué retos te enfrentarás", "What You'll Do" o "Tu misión").
+    
+    \item \textbf{Experiencia:} Al igual que en las hojas de vida, este rubro presentó las mayores dificultades. En las vacantes de practicantes, el modelo marcó correctamente la experiencia como "Desconocida" (score 80\%), aunque una interpretación ideal hubiera explicitado que "no se requiere experiencia". El error más significativo (20\%) ocurrió en la vacante junior de Sezzle, donde el sistema extrajo únicamente la cantidad de años requeridos, omitiendo el contexto técnico crucial sobre en qué tecnologías debía tenerse dicha experiencia.
+    
+    \item \textbf{Información Básica y Educación:} La extracción fue altamente confiable (mayoría 100\%). Destaca positivamente la capacidad del modelo para inferir requisitos educativos implícitos; por ejemplo, en las ofertas de Sezzle, aunque no se listaba una carrera específica, el sistema dedujo correctamente que el perfil requería estudios en Ciencias de la Computación o afines.
+    
+    \item \textbf{Habilidades Técnicas, Blandas y Certificaciones:} La precisión fue excelente en estos apartados. En habilidades técnicas y certificaciones no se registraron errores (100\%). En habilidades blandas, el sistema aplicó exitosamente la lógica de inferencia, deduciendo tres competencias transversales pertinentes para cada cargo a partir de las responsabilidades descritas.
+    
+    \item \textbf{Idiomas:} Se validó exitosamente la funcionalidad de detección automática. En los 4 casos, ante la ausencia de un requisito explícito, el modelo dedujo correctamente el idioma base de la oferta (Español para Pragma, Inglés para Sezzle) y asignó un nivel intermedio por defecto, garantizando que el criterio lingüístico no quedara vacío.
+    
+    \item \textbf{Beneficios:} Aunque en general el desempeño fue correcto, se registró un error puntual grave (10\%) en la vacante de practicante de Pragma. El sistema confundió el "auxilio de sostenimiento" (que corresponde al salario o compensación base en contratos de aprendizaje) clasificándolo erróneamente como un "beneficio" adicional, lo que revela una dificultad para distinguir matices contractuales específicos de la legislación laboral local.
+\end{itemize}
