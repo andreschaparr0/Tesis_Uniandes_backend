@@ -417,7 +417,7 @@ La imagen muestra la primera fase del proceso, que consiste en cargar los datos 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{Fase_Comparacion_General_Pipeline_comparacion.png}
+    \includegraphics[width=0.35\linewidth]{Fase_Comparacion_General_Pipeline_comparacion.png}
     \caption{Vista general de la comparación de elementos por aspecto}
     \label{fig:fase2-comparacion-general}
 \end{figure}
@@ -445,9 +445,9 @@ Este patrón se replica para el resto de comparadores, adaptando únicamente el 
 
 \subsubsection{Casos excepcionales en la comparación}
 
-En la Figura \ref{fig:fase2-comparacion} se puede observar dos casos especiales donde el sistema aplica reglas adicionales para no perder señales relevantes.
+En la Figura \ref{fig:fase2-comparacion} se puede observar dos casos especiales donde el sistema aplica reglas adicionales para no perder señales relevantes que son los dos casos donde hay dos lineas conectandose en vez de una.
 
-En \textbf{certificaciones}, cuando la descripción de trabajo no declara certificaciones obligatorias pero sí define habilidades técnicas, se activa una lógica: si el CV tampoco tiene certificaciones o el Job no tiene habilidades técnicas, el aspecto se marca como ignorado; pero si el candidato sí reporta certificaciones y el Job sí define habilidades técnicas, las certificaciones del CV se comparan semánticamente contra esas habilidades técnicas mediante un prompt específico. Este flujo de decisiones se resume en la Figura \ref{fig:placeholder}, y esta logica se implemento dado una recomendación del evaluador RR.HH. del modelo que se hablara en secciones mas adelante.
+En \textbf{certificaciones}, cuando la descripción de trabajo no declara certificaciones obligatorias pero sí define habilidades técnicas, se activa una lógica: si el CV tampoco tiene certificaciones o el Job no tiene habilidades técnicas, el aspecto se marca como ignorado; pero si el candidato sí reporta certificaciones y el Job sí define habilidades técnicas, las certificaciones del CV se comparan semánticamente contra esas habilidades técnicas mediante un prompt específico. Este flujo de decisiones se resume en la Figura \ref{fig:flujo-comparacion-certificaciones}, y esta lógica se implementó dado una recomendación del evaluador de RR.HH. del modelo, que se detalla en secciones posteriores.
 
 En \textbf{responsabilidades}, el problema es inverso: la descripción de trabajo sí trae una lista explícita de responsabilidades, pero el esquema estructurado del CV no tiene un campo dedicado a este concepto. Para no perder esta dimensión, se reutiliza la \textit{experiencia laboral} como entrada y la compara con las responsabilidades del puesto usando el prompt descrito en la Tabla \ref{tab:prompts-comp}. Así, el sistema puede estimar hasta qué punto las tareas realizadas por el candidato se alinean con lo que el rol exige, aun cuando dicha alineación no esté modelada como un campo de responsabilidades dentro del JSON del CV.
 \subsubsection{Fase 3: Agregación y Scoring}
@@ -497,56 +497,36 @@ S_{\text{final}} =
 \noindent Finalmente, el motor de comparaciones construye un objeto JSON de salida que consolida toda la información relevante para el usuario. Este resultado incluye el \textit{score} global \(S_{\text{final}}\), el detalle de scores por aspecto (experiencia, educación, habilidades, certificaciones, idiomas, ubicación y responsabilidades), las razones textuales generadas por los distintos prompts y una síntesis narrativa del nivel de ajuste entre el perfil del candidato y la vacante. De este modo, el sistema no solo entrega un valor numérico interpretable, sino también una explicación estructurada y trazable que facilita la toma de decisiones en el proceso de selección.
 
 \section{Vista general del Frontend}
-\subsection{Rol del frontend en el sistema}
-\noindent La interfaz web constituye el punto de entrada principal para los usuarios del sistema (reclutadores, analistas o investigadores). Desde el navegador, el usuario carga hojas de vida y descripciones de trabajo, configura los parámetros básicos del proceso de evaluación y consulta los resultados de compatibilidad generados por el motor de estructuración y comparación descrito en las secciones anteriores. De esta forma, el frontend actúa como una capa de presentación que abstrae la complejidad del procesamiento con modelos de lenguaje y expone un flujo de trabajo simple y guiado.
+\subsection{Rol del frontend y alcance de la sección}
+\noindent El frontend se concibió como una capa de presentación ligera cuyo objetivo principal es hacer accesible el motor de estructuración y comparación a usuarios no técnicos (reclutadores, analistas o investigadores). En lugar de profundizar en detalles de implementación o tecnologías específicas, esta sección se centra en describir las vistas clave de la interfaz y cómo éstas materializan el flujo de uso del sistema: desde la carga de información hasta la interpretación de los resultados de compatibilidad.
 
-\subsection{Arquitectura general y comunicación con el backend}
-\noindent El frontend se implementa como una aplicación web que se comunica con la API REST de FastAPI mediante peticiones HTTP que intercambian datos en formato JSON. Cada acción relevante del usuario (por ejemplo, subir un CV, registrar una descripción de trabajo o solicitar un análisis de compatibilidad) se traduce en llamadas a endpoints específicos del backend, que activan los pipelines de estructuración y de comparación documentados previamente. El estado de la aplicación (archivos cargados, resultados obtenidos, errores) se mantiene en el navegador, actualizando dinámicamente la interfaz en función de las respuestas del servidor.
+\subsection{Flujo general de navegación}
+\noindent La navegación comienza en una \textbf{vista de inicio} que resume las principales acciones disponibles y guía al usuario a través del proceso. Como se muestra en la Figura \ref{fig:frontend-carga}, la pantalla presenta accesos rápidos para subir nuevos CVs, crear ofertas de trabajo y lanzar análisis, además de una breve guía de ``cómo empezar'' que explica el orden recomendado de los pasos.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\linewidth]{Arquitectura_Frontend_Backend.png}
-    \caption{Arquitectura general cliente-servidor entre frontend y backend}
-    \label{fig:frontend-arquitectura}
-\end{figure}
-
-\noindent La Figura \ref{fig:frontend-arquitectura} ilustra este esquema cliente-servidor: el navegador envía solicitudes al backend, el cual orquesta los motores de estructuración y comparación, y finalmente retorna al frontend un JSON con scores y explicaciones que luego se transforman en visualizaciones comprensibles para el usuario.
-
-\subsection{Vistas y flujos principales}
-\noindent A nivel de interacción, la aplicación se organiza en un pequeño conjunto de vistas que reflejan el flujo natural de uso: cargar información, ejecutar el análisis y revisar los resultados. Esto permite que el usuario recorra el proceso de forma secuencial, con validaciones y mensajes claros en cada paso.
-
-\subsubsection{Carga de hojas de vida y descripciones de trabajo}
-\noindent En la primera vista, el usuario puede seleccionar y cargar uno o varios archivos de hoja de vida (en formato PDF) y registrar la descripción de trabajo correspondiente, ya sea pegando el texto o subiendo un archivo. La interfaz realiza una validación básica (formatos permitidos, campos obligatorios) antes de enviar los datos al backend, mostrando indicadores de progreso mientras se ejecutan los pipelines de extracción y limpieza de texto.
+\noindent A partir de esta vista inicial, el usuario puede acceder a tres grandes grupos de funcionalidades: (i) gestión de hojas de vida, (ii) gestión de descripciones de trabajo y (iii) análisis y revisión de resultados. Cada grupo cuenta con vistas de listado, formularios de creación y pantallas de detalle que permiten explorar la información estructurada generada por el backend.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\linewidth]{Vista_Carga_Documentos.png}
-    \caption{Vista de carga de hojas de vida y descripciones de trabajo}
+    \includegraphics[width=0.6\linewidth]{Vista_Inicio.png}
+    \caption{Interfaz: vista de inicio del sistema}
     \label{fig:frontend-carga}
 \end{figure}
 
-\subsubsection{Ejecución del análisis y configuración básica}
-\noindent Una vez cargados los documentos, el usuario puede iniciar el proceso de análisis desde una vista de resumen donde se muestran los CVs y la descripción de trabajo seleccionados. En esta pantalla se pueden exponer opciones simples de configuración, como la selección del puesto objetivo o el ajuste de algunos parámetros de evaluación (por ejemplo, habilitar o deshabilitar ciertos aspectos de comparación). Al confirmar, el frontend envía la solicitud al endpoint correspondiente y presenta un estado de ``procesando'' hasta recibir la respuesta del motor de comparaciones.
+\subsection{Gestión de Hojas de Vida}
+\noindent La sección de hojas de vida permite cargar nuevos documentos PDF y consultar los que ya han sido procesados. La \textbf{vista de carga de CV} (Figura \ref{fig:ui-subir-cv}) guía al usuario en la selección del archivo y muestra mensajes claros durante el procesamiento. Una vez estructurado el documento, la \textbf{vista de listado de CVs} (Figura \ref{fig:ui-listar-cvs}) presenta cada candidato en forma de tarjeta, con opciones para acceder al detalle o eliminar registros que ya no sean relevantes.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.75\linewidth]{Vista_Ejecucion_Analisis.png}
-    \caption{Vista de ejecución del análisis de compatibilidad}
-    \label{fig:frontend-analisis}
-\end{figure}
+\noindent Al seleccionar un candidato, el sistema muestra un conjunto de \textbf{vistas de detalle} organizadas por pestañas, donde se exponen las entidades extraídas por el motor de estructuración: información personal (Figura \ref{fig:ui-cv-info-personal}), educación (Figura \ref{fig:ui-cv-educacion}), experiencia laboral (Figura \ref{fig:ui-cv-experiencia}), habilidades técnicas (Figura \ref{fig:ui-cv-habilidades}), certificaciones (Figura \ref{fig:ui-cv-certificaciones}) e idiomas (Figura \ref{fig:ui-cv-idiomas}). Además, una vista adicional muestra el historial de análisis asociados a ese CV (Figura \ref{fig:ui-cv-analisis-realizados}), conectando directamente el perfil estructurado del candidato con las evaluaciones realizadas frente a distintas vacantes.
 
-\subsubsection{Visualización de resultados y explicaciones}
-\noindent La vista final se centra en presentar el score de compatibilidad global junto con el desglose por aspecto (experiencia, habilidades, educación, certificaciones, idiomas, ubicación y responsabilidades). Además de los valores numéricos, se muestran las explicaciones generadas por los modelos de lenguaje para que el usuario pueda entender por qué un candidato fue mejor evaluado en ciertos aspectos que en otros. Esta pantalla sirve como herramienta de apoyo a la decisión, permitiendo comparar rápidamente distintos candidatos frente a una misma vacante.
+\subsection{Gestión de Descripciones de Trabajo}
+\noindent De forma análoga, la interfaz ofrece un flujo dedicado para registrar y administrar descripciones de trabajo. La \textbf{vista de creación de oferta} (Figura \ref{fig:ui-crear-job}) permite pegar o escribir el texto libre de la vacante, que luego es enviado al backend para su estructuración. La \textbf{vista de listado de descripciones} (Figura \ref{fig:ui-listar-jobs}) organiza las ofertas existentes y facilita el acceso a su detalle o la eliminación de registros obsoletos.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.75\linewidth]{Vista_Resultados_Comparacion.png}
-    \caption{Vista de resultados y desglose por aspecto}
-    \label{fig:frontend-resultados}
-\end{figure}
+\noindent En el detalle de cada oferta se muestran las secciones estructuradas relevantes (información general, requisitos, responsabilidades, beneficios, entre otras), como se observa en las Figuras \ref{fig:ui-job-informacion-general} y \ref{fig:placeholder}, y se habilita una pestaña específica de \textbf{``Top candidatos''} donde se visualiza el ranking de candidatos mejor posicionados para ese rol (Figura \ref{fig:ui-ranking}). Esta vista sirve como punto de entrada natural para explorar en profundidad los análisis individuales generados por el motor de comparaciones.
 
-\subsection{Manejo de errores y mensajes al usuario}
-\noindent Dado que el frontend está acoplado a procesos intensivos de procesamiento de lenguaje natural, se diseñó un manejo explícito de errores y estados intermedios. Cuando se produce un fallo en la carga de archivos, un error de validación o un problema en la comunicación con la API, la interfaz muestra mensajes claros y accionables, evitando que el usuario quede en un estado de incertidumbre. Asimismo, durante la ejecución de los pipelines se utilizan indicadores de progreso y estados de ``cargando'' para informar que el sistema sigue trabajando en segundo plano.
+\subsection{Análisis de compatibilidad y resultados}
+\noindent El tercer bloque funcional agrupa las vistas relacionadas con la ejecución y revisión de análisis. La \textbf{vista de análisis CV vs Job} (Figura \ref{fig:ui-analizar}) permite seleccionar un candidato y una oferta concreta, así como configurar, de manera sencilla, si se utilizarán pesos predeterminados o personalizados en la agregación de resultados. Tras lanzar el proceso, la interfaz muestra estados de carga hasta que el backend retorna el análisis completo.
 
-\subsection{Consideraciones de usabilidad y diseño}
-\noindent Por último, el diseño del frontend prioriza la simplicidad y la transparencia. Las vistas se organizan en un flujo lineal (carga \(\rightarrow\) análisis \(\rightarrow\) resultados), se evita sobrecargar al usuario con opciones avanzadas y se hace énfasis en mostrar no solo el score numérico, sino también las razones detrás de cada decisión. Esta combinación de visualización clara y explicaciones detalladas busca que el sistema sea útil tanto en contextos operativos de selección de personal como en escenarios de análisis académico y prototipado de motores de recomendación basados en modelos de lenguaje.
+\noindent Una vez disponible el resultado, el usuario puede consultarlo en una vista con dos niveles. En primer lugar, una \textbf{vista de resumen del análisis} (Figura \ref{fig:ui-resumen-analisis}) destaca el score global de compatibilidad y presenta un resumen textual generado por IA que sintetiza las principales fortalezas y brechas del candidato frente a la vacante. En segundo lugar, la \textbf{vista de resultados detallados y desglose por aspecto} (Figura \ref{fig:frontend-resultados}) profundiza en cada dimensión evaluada (experiencia, habilidades técnicas y blandas, educación, certificaciones, idiomas, ubicación y responsabilidades), mostrando tanto el score como la razón asociada a cada comparador.
+
+\noindent Complementariamente, la aplicación incorpora una \textbf{vista de historial de análisis} (Figura \ref{fig:ui-historial-analisis}) donde se listan, en orden cronológico, las evaluaciones realizadas, permitiendo al usuario revisar rápidamente resultados pasados, acceder al detalle de cada uno o eliminarlos si ya no son necesarios.
+
+\noindent Además, dado que el objetivo principal del sistema es facilitar la toma de decisiones en procesos de selección, el frontend refuerza los resultados numéricos con representaciones visuales. La \textbf{vista de gráfica de análisis} (Figura \ref{fig:ui-grafica-score}) muestra, para una oferta concreta, una gráfica de dispersión que relaciona el score obtenido por cada candidato con el porcentaje de criterios efectivamente evaluados, ayudando a identificar casos donde un score alto podría ser engañoso por basarse en poca información.
