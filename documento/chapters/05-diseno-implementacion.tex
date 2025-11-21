@@ -272,7 +272,7 @@ La etapa final del pipeline asegura que la información generada por el modelo s
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\linewidth]{Fase_Validacion_Pipeline_Descripcion.png}
+    \includegraphics[width=0.35\linewidth]{Fase_Validacion_Pipeline_Descripcion.png}
     \caption{Flujo de consolidación y validación de datos}
     \label{fig:validacion_json}
 \end{figure}
@@ -348,5 +348,205 @@ Estas estrategias transforman el proceso de una simple extracción de texto a un
 Esta fase es funcionalmente idéntica a la descrita en la Sección \ref{subsec:fase-validacion}. Se ejecutan los mismos procesos de limpieza de markdown, unificación de fragmentos JSON y validación de esquema con inyección de valores por defecto. La única diferencia radica en el esquema objetivo, que en este caso corresponde a la estructura de una oferta laboral (incluyendo campos como rango salarial, modalidad de trabajo y beneficios).
 
 
+\section{Motor de Comparaciones e Inteligencia de Matching}
+\label{sec:motor-comparaciones}
 
+Una vez que tanto las hojas de vida como las ofertas laborales han sido estructuradas en formato JSON, el sistema debe ejecutar la evaluación de compatibilidad entre candidatos y vacantes. Este proceso es orquestado por el \textbf{Motor de Comparaciones}, un componente del core que integra ocho algoritmos especializados de evaluación, cada uno diseñado para analizar una dimensión específica del ajuste candidato-puesto.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{Diagrama_Comparaciones.png}
+    \caption{Arquitectura del Motor de Comparaciones}
+    \label{fig:Diagrama_Comparaciones}
+\end{figure}
+
+Como se observa en la Figura \ref{fig:Diagrama_Comparaciones}, el motor recibe como entrada los documentos estructurados (archivos \texttt{.txt} para ofertas de trabajo y \texttt{.pdf} para CVs, previamente procesados por el motor de estructuración) y los canaliza hacia el módulo \texttt{Comparador Main}, implementado en. Este orquestador secuencial invoca a cada uno de los comparadores especializados, que a su vez emplean Azure OpenAI (GPT-4o-mini) para realizar evaluaciones semánticas de alto nivel. Las siguientes subsecciones detallan el pipeline de comparación y la arquitectura de los comparadores individuales.
+
+\subsection{Pipeline de Comparación y Scoring}
+\label{subsec:pipeline-comparacion}
+
+\begin{samepage}
+\noindent
+\begin{minipage}[t]{0.60\textwidth}
+\vspace{0pt}
+\indent El proceso de evaluación de compatibilidad se ejecuta en tres etapas secuenciales que transforman dos documentos JSON estructurados en un análisis multidimensional con justificación explícita. 
+
+\medskip
+
+\indent El flujo inicia en la \textbf{Fase 1: Carga y Validación}, donde se recibe las rutas de los dos archivos JSON estructurados (CV y Job) generados por los pipelines de estructuración. El sistema carga ambos documentos mediante el método que incluye manejo robusto de excepciones para detectar JSON malformados o archivos faltantes. 
+
+\medskip
+
+\indent Posteriormente, en la \textbf{Fase 2: Comparación de Elementos}, se ejecuta el núcleo del motor de matching. El orquestador invoca secuencialmente ocho comparadores especializados, cada uno diseñado para evaluar un elemento: Experiencia, Habilidades Técnicas, Habilidades Blandas, Educación, Certificaciones, Lenguaje, Ubicación y Responsabilidades. Este procesamiento iterativo genera un diccionario de resultados que mapea cada aspecto evaluado a su score y razón correspondiente, detalle que se profundizará en subsecciones posteriores.
+
+\medskip
+
+\indent Finalmente, la \textbf{Fase 3: Agregación y Scoring} consolida los resultados individuales en un análisis unificado. Se aplica un algoritmo de ponderación configurable que asigna pesos específicos a cada dimensión evaluada elemento. El sistema maneja los casos donde no hay datos disponibles y normalización para el score final. El resultado final es un objeto JSON completo que incluye el score final ponderado, el desglose detallado por aspecto, el resumen narrativo y los aspectos ignorados, información que se almacena en la base de datos SQLite para consultas futuras.
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.35\textwidth}
+    \vspace{0pt}
+    \centering
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.95\textwidth, height=0.80\textheight, keepaspectratio]{Pipeline_Comparacion.png}
+        \caption{Pipeline del motor de comparaciones}
+        \label{fig:pipeline-comparacion}
+    \end{figure}
+\end{minipage}
+\end{samepage}
+
+\subsubsection{Fase 1: Carga y validación de datos estructurados}
+\label{subsubsec:fase1-comparacion}
+
+Antes de iniciar cualquier evaluación de compatibilidad, el sistema debe garantizar que los datos de entrada sean válidos y estén disponibles en el formato correcto. Esta fase, ilustrada en la Figura \ref{fig:fase1-carga-comparacion}, implementa un mecanismo de validación defensiva que previene errores en etapas posteriores del pipeline.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\linewidth]{Fase_Carga_Pipeline_Comparacion.png}
+    \caption{Proceso de carga y validación de documentos estructurados}
+    \label{fig:fase1-carga-comparacion}
+\end{figure}
+
+La imagen muestra la primera fase del proceso, que consiste en cargar los datos y validar que los archivos JSON estén en buen estado antes de continuar. Primero se leen los dos archivos necesarios (el CV y la descripción del trabajo), luego se revisa que su contenido sea correcto y tenga la estructura mínima esperada. Cuando ambas verificaciones se superan, se consideran como JSON’s válidos. Esta fase funciona como un filtro inicial que asegura que el sistema solo trabaje con información limpia y confiable.
+
+\subsubsection{Fase 2: Comparación semántica por aspectos}
+\label{subsubsec:fase2-comparacion}
+
+\noindent En la segunda fase del pipeline, representada de forma general en la Figura \ref{fig:fase2-comparacion-general}, el sistema toma los JSON ya validados del CV y de la descripción de trabajo y los recorre aspecto por aspecto (experiencia, habilidades técnicas y blandas, educación, certificaciones, idiomas, ubicación y responsabilidades). Para cada uno de estos elementos se construye un prompt de comparación que resume la información relevante y la envía al modelo GPT-4o-mini, el cual devuelve un score de compatibilidad y una breve justificación en formato estructurado. De esta manera, la imagen sintetiza cómo un mismo esquema de prompt se reutiliza iterativamente sobre los distintos componentes del perfil para producir evaluaciones consistentes y comparables entre sí.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Fase_Comparacion_General_Pipeline_comparacion.png}
+    \caption{Vista general de la comparación de elementos por aspecto}
+    \label{fig:fase2-comparacion-general}
+\end{figure}
+
+\noindent La Figura \ref{fig:fase2-comparacion} descompone esta fase mostrando cómo se emparejan los campos estructurados de la hoja de vida con los de la descripción de trabajo y qué peso por defecto aporta cada aspecto al cálculo global. Cada fila representa un comparador independiente (educación, experiencia, habilidades blandas y técnicas, certificaciones, idiomas, ubicación y beneficios/responsabilidades), todos ellos alimentados por el mismo esquema general de prompt y evaluados posteriormente con una ponderación específica.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{Fase_Comparacion_Pipeline_comparacion.png}
+    \caption{Emparejamiento de elementos y pesos por defecto en la Fase 2}
+    \label{fig:fase2-comparacion}
+\end{figure}
+
+Sobre esta base, la implementación reutiliza las mismas estrategias de \textit{Prompt Engineering} descritas en la Sección \ref{subsec:fase-estructuracion-ia} (rol, salida estructurada y enfoque zero-shot), pero ahora orientadas a la comparación entre dos objetos ya estructurados. Para cada fila de la Figura \ref{fig:fase2-comparacion}, el sistema construye un texto resumen a partir del JSON del CV y del Job (por ejemplo, las listas de habilidades, la experiencia o las certificaciones) y lo inyecta en un prompt especializado documentado en la Tabla \ref{tab:prompts-comp}. El modelo devuelve siempre un JSON con al menos un campo \texttt{score} en el rango \([0,1]\) (y, en algunos casos, banderas adicionales como \texttt{compatible}) y un campo \texttt{reason} con la justificación en lenguaje natural.
+
+Como ejemplo ilustrativo y conciso, el comparador de \textbf{idiomas} construye un prompt que verifica si el nivel reportado en el CV cumple o supera el requerido en la oferta. Simplificado, su estructura es la siguiente:
+
+\begin{quotation}
+    \small
+    \noindent \textbf{System Message:} ``Eres un experto en evaluar compatibilidad de niveles de idioma. Responde ÚNICAMENTE con JSON válido que contenga: 'compatible' (boolean), 'score' (0-1), 'reason' (string).'' \\
+    \noindent \textbf{User Message:} ``Compara estos niveles de idioma y determina si el nivel del CV cumple con el requerido: \par CV: \textless nivel\_cv\textgreater \par Requerido: \textless nivel\_requerido\textgreater \par Si el CV cumple o supera el requerido, el \texttt{score} debe ser 1.0; si no cumple, el \texttt{score} debe ser 0.0. Responde en formato JSON.'' 
+\end{quotation}
+
+Este patrón se replica para el resto de comparadores, adaptando únicamente el contenido del texto de entrada (experiencia, habilidades técnicas, habilidades blandas, certificaciones, ubicación, etc.), mientras que la estructura general del prompt y de la salida permanece uniforme en todo el motor de comparaciones.
+
+\subsubsection{Casos excepcionales en la comparación}
+
+En la Figura \ref{fig:fase2-comparacion} se puede observar dos casos especiales donde el sistema aplica reglas adicionales para no perder señales relevantes.
+
+En \textbf{certificaciones}, cuando la descripción de trabajo no declara certificaciones obligatorias pero sí define habilidades técnicas, se activa una lógica: si el CV tampoco tiene certificaciones o el Job no tiene habilidades técnicas, el aspecto se marca como ignorado; pero si el candidato sí reporta certificaciones y el Job sí define habilidades técnicas, las certificaciones del CV se comparan semánticamente contra esas habilidades técnicas mediante un prompt específico. Este flujo de decisiones se resume en la Figura \ref{fig:placeholder}, y esta logica se implemento dado una recomendación del evaluador RR.HH. del modelo que se hablara en secciones mas adelante.
+
+En \textbf{responsabilidades}, el problema es inverso: la descripción de trabajo sí trae una lista explícita de responsabilidades, pero el esquema estructurado del CV no tiene un campo dedicado a este concepto. Para no perder esta dimensión, se reutiliza la \textit{experiencia laboral} como entrada y la compara con las responsabilidades del puesto usando el prompt descrito en la Tabla \ref{tab:prompts-comp}. Así, el sistema puede estimar hasta qué punto las tareas realizadas por el candidato se alinean con lo que el rol exige, aun cuando dicha alineación no esté modelada como un campo de responsabilidades dentro del JSON del CV.
+\subsubsection{Fase 3: Agregación y Scoring}
+
+\noindent En esta fase, representada en la Figura \ref{fig:fase3-agregacion}, el sistema toma como entrada todos los resultados generados por los comparadores de la fase anterior (scores y justificaciones por experiencia, habilidades, educación, certificaciones, idiomas, ubicación y responsabilidades) y los consolida en un único análisis global. Esta etapa aplica un procedimiento ordenado que primero organiza los scores por aspecto, maneja explícitamente los casos con datos faltantes, calcula un score final de compatibilidad y, finalmente, genera un resumen explicativo que el usuario puede interpretar fácilmente. El resultado de este flujo es un JSON estructurado final que sintetiza el nivel de compatibilidad entre el candidato y la vacante, junto con la trazabilidad de cómo se llegó a ese resultado.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\linewidth]{Fase_Agregacion_Pipeline_Comparador.png}
+    \caption{Fase 3: Agregación y scoring del motor de comparaciones}
+    \label{fig:fase3-agregacion}
+\end{figure}
+\noindent La Figura \ref{fig:fase3-pesos} profundiza en el primer bloque de esta fase, mostrando cómo el motor de comparaciones aplica \textbf{pesos configurables} sobre cada aspecto evaluado. Para cada resultado parcial (por ejemplo, educación, experiencia, habilidades técnicas y blandas, certificaciones, idiomas o ubicación) se asocia un peso por defecto que refleja su importancia relativa en el cálculo del score global, aunque estos valores pueden ajustarse según las necesidades del proceso de selección. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{Detalle_Pesos_Pipeline_Comparador.png}
+    \caption{Detalle de pesos configurables por aspecto}
+    \label{fig:fase3-pesos}
+\end{figure}
+
+\subsubsection{Calculo de Score Final}
+\noindent A nivel de cálculo, cada aspecto evaluado \(i\) (experiencia, educación, habilidades, etc.) aporta un \textit{score} \(s_i \in [0,1]\) y cuenta con un peso configurable \(w_i > 0\). Si el usuario define pesos personalizados que no suman 1, el sistema los normaliza mediante
+\[
+\tilde{w}_i = \frac{w_i}{\sum_j w_j},
+\]
+de forma que siempre se cumple \(\sum_i \tilde{w}_i = 1\) antes de combinar los resultados.
+
+\noindent Luego, se calcula un \textit{score} ponderado bruto considerando únicamente los aspectos con información válida (es decir, aquellos cuyo \textit{score} no es \(-1.0\)):
+\[
+S_{\text{raw}} = \sum_{i \in U} s_i \cdot \tilde{w}_i,
+\]
+donde \(U\) es el conjunto de aspectos utilizados y
+\[
+W_{\text{used}} = \sum_{i \in U} \tilde{w}_i
+\]
+representa la suma de pesos efectivamente activos. Para evitar penalizar al candidato por dimensiones sin datos, el sistema normaliza el resultado dividiendo por \(W_{\text{used}}\):
+\[
+S_{\text{final}} =
+\begin{cases}
+\dfrac{S_{\text{raw}}}{W_{\text{used}}}, & \text{si } W_{\text{used}} > 0,\\[6pt]
+0, & \text{en caso contrario}.
+\end{cases}
+\]
+
+\noindent Este valor \(S_{\text{final}}\) constituye el \textit{score} global de compatibilidad, el cual se almacena en el JSON final junto con el desglose por aspecto y el resumen explicativo generado por el motor.
+\subsubsection{Generar resultado final}
+\noindent Finalmente, el motor de comparaciones construye un objeto JSON de salida que consolida toda la información relevante para el usuario. Este resultado incluye el \textit{score} global \(S_{\text{final}}\), el detalle de scores por aspecto (experiencia, educación, habilidades, certificaciones, idiomas, ubicación y responsabilidades), las razones textuales generadas por los distintos prompts y una síntesis narrativa del nivel de ajuste entre el perfil del candidato y la vacante. De este modo, el sistema no solo entrega un valor numérico interpretable, sino también una explicación estructurada y trazable que facilita la toma de decisiones en el proceso de selección.
+
+\section{Vista general del Frontend}
+\subsection{Rol del frontend en el sistema}
+\noindent La interfaz web constituye el punto de entrada principal para los usuarios del sistema (reclutadores, analistas o investigadores). Desde el navegador, el usuario carga hojas de vida y descripciones de trabajo, configura los parámetros básicos del proceso de evaluación y consulta los resultados de compatibilidad generados por el motor de estructuración y comparación descrito en las secciones anteriores. De esta forma, el frontend actúa como una capa de presentación que abstrae la complejidad del procesamiento con modelos de lenguaje y expone un flujo de trabajo simple y guiado.
+
+\subsection{Arquitectura general y comunicación con el backend}
+\noindent El frontend se implementa como una aplicación web que se comunica con la API REST de FastAPI mediante peticiones HTTP que intercambian datos en formato JSON. Cada acción relevante del usuario (por ejemplo, subir un CV, registrar una descripción de trabajo o solicitar un análisis de compatibilidad) se traduce en llamadas a endpoints específicos del backend, que activan los pipelines de estructuración y de comparación documentados previamente. El estado de la aplicación (archivos cargados, resultados obtenidos, errores) se mantiene en el navegador, actualizando dinámicamente la interfaz en función de las respuestas del servidor.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{Arquitectura_Frontend_Backend.png}
+    \caption{Arquitectura general cliente-servidor entre frontend y backend}
+    \label{fig:frontend-arquitectura}
+\end{figure}
+
+\noindent La Figura \ref{fig:frontend-arquitectura} ilustra este esquema cliente-servidor: el navegador envía solicitudes al backend, el cual orquesta los motores de estructuración y comparación, y finalmente retorna al frontend un JSON con scores y explicaciones que luego se transforman en visualizaciones comprensibles para el usuario.
+
+\subsection{Vistas y flujos principales}
+\noindent A nivel de interacción, la aplicación se organiza en un pequeño conjunto de vistas que reflejan el flujo natural de uso: cargar información, ejecutar el análisis y revisar los resultados. Esto permite que el usuario recorra el proceso de forma secuencial, con validaciones y mensajes claros en cada paso.
+
+\subsubsection{Carga de hojas de vida y descripciones de trabajo}
+\noindent En la primera vista, el usuario puede seleccionar y cargar uno o varios archivos de hoja de vida (en formato PDF) y registrar la descripción de trabajo correspondiente, ya sea pegando el texto o subiendo un archivo. La interfaz realiza una validación básica (formatos permitidos, campos obligatorios) antes de enviar los datos al backend, mostrando indicadores de progreso mientras se ejecutan los pipelines de extracción y limpieza de texto.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{Vista_Carga_Documentos.png}
+    \caption{Vista de carga de hojas de vida y descripciones de trabajo}
+    \label{fig:frontend-carga}
+\end{figure}
+
+\subsubsection{Ejecución del análisis y configuración básica}
+\noindent Una vez cargados los documentos, el usuario puede iniciar el proceso de análisis desde una vista de resumen donde se muestran los CVs y la descripción de trabajo seleccionados. En esta pantalla se pueden exponer opciones simples de configuración, como la selección del puesto objetivo o el ajuste de algunos parámetros de evaluación (por ejemplo, habilitar o deshabilitar ciertos aspectos de comparación). Al confirmar, el frontend envía la solicitud al endpoint correspondiente y presenta un estado de ``procesando'' hasta recibir la respuesta del motor de comparaciones.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{Vista_Ejecucion_Analisis.png}
+    \caption{Vista de ejecución del análisis de compatibilidad}
+    \label{fig:frontend-analisis}
+\end{figure}
+
+\subsubsection{Visualización de resultados y explicaciones}
+\noindent La vista final se centra en presentar el score de compatibilidad global junto con el desglose por aspecto (experiencia, habilidades, educación, certificaciones, idiomas, ubicación y responsabilidades). Además de los valores numéricos, se muestran las explicaciones generadas por los modelos de lenguaje para que el usuario pueda entender por qué un candidato fue mejor evaluado en ciertos aspectos que en otros. Esta pantalla sirve como herramienta de apoyo a la decisión, permitiendo comparar rápidamente distintos candidatos frente a una misma vacante.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{Vista_Resultados_Comparacion.png}
+    \caption{Vista de resultados y desglose por aspecto}
+    \label{fig:frontend-resultados}
+\end{figure}
+
+\subsection{Manejo de errores y mensajes al usuario}
+\noindent Dado que el frontend está acoplado a procesos intensivos de procesamiento de lenguaje natural, se diseñó un manejo explícito de errores y estados intermedios. Cuando se produce un fallo en la carga de archivos, un error de validación o un problema en la comunicación con la API, la interfaz muestra mensajes claros y accionables, evitando que el usuario quede en un estado de incertidumbre. Asimismo, durante la ejecución de los pipelines se utilizan indicadores de progreso y estados de ``cargando'' para informar que el sistema sigue trabajando en segundo plano.
+
+\subsection{Consideraciones de usabilidad y diseño}
+\noindent Por último, el diseño del frontend prioriza la simplicidad y la transparencia. Las vistas se organizan en un flujo lineal (carga \(\rightarrow\) análisis \(\rightarrow\) resultados), se evita sobrecargar al usuario con opciones avanzadas y se hace énfasis en mostrar no solo el score numérico, sino también las razones detrás de cada decisión. Esta combinación de visualización clara y explicaciones detalladas busca que el sistema sea útil tanto en contextos operativos de selección de personal como en escenarios de análisis académico y prototipado de motores de recomendación basados en modelos de lenguaje.
