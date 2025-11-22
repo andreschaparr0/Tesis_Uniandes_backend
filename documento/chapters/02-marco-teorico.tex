@@ -5,34 +5,44 @@ Este capítulo presenta los fundamentos teóricos que sustentan el desarrollo de
 
 \section{Procesamiento de lenguaje natural}
 
-El procesamiento de lenguaje natural (NLP) es una disciplina que combina lingüística, informática e inteligencia artificial para dotar a las máquinas de la capacidad de entender, interpretar y generar lenguaje humano \cite{jurafsky2023speech}. En el contexto de este trabajo, las técnicas de NLP son para transformar documentos no estructurados (HVs en formato PDF) en representaciones estructuradas que permitan análisis automatizado.
+El procesamiento de lenguaje natural (NLP) es una disciplina que combina lingüística, informática e inteligencia artificial para dotar a las máquinas de la capacidad de entender, interpretar y generar lenguaje humano \cite{jurafsky2023speech}.
 
 \subsection{Extracción y limpieza de texto}
 
-La extracción y limpieza de texto son procesos importantes en el análisis automático de documentos. La extracción se refiere a recuperar el contenido textual de un archivo, el cual puede encontrarse estructurado o representar texto a través de imágenes que requieren técnicas de reconocimiento óptico de caracteres. Una vez obtenido el contenido, la etapa de limpieza busca normalizarlo y eliminar inconsistencias propias de la digitalización o del formato, como caracteres irregulares, fragmentación de palabras o elementos considerados ruido. Estas transformaciones permiten obtener un texto coherente y uniforme que pueda ser utilizado en posteriores tareas de procesamiento y análisis.
+La extracción y limpieza de texto son procesos importantes en el análisis automático de documentos. La extracción se refiere a recuperar el contenido textual de un archivo, el cual puede encontrarse estructurado o representar texto a través de imágenes que requieren técnicas de reconocimiento óptico de caracteres (OCR). Una vez obtenido el contenido, la etapa de limpieza busca normalizarlo y eliminar inconsistencias propias de la digitalización o del formato, como caracteres irregulares, fragmentación de palabras o elementos considerados ruido \cite{vijayarani2015}. Estas transformaciones permiten obtener un texto coherente y uniforme que pueda ser utilizado en posteriores tareas de procesamiento y análisis.
 
 \subsection{Pipeline de procesamiento}
 
- El término \emph{pipeline} se utiliza para describir la cadena de etapas que transforma entradas crudas que pueden estar en diferentes formatos (p.\,ej., imágenes en PDF o texto plano), en salidas útiles para la toma de decisiones. En sistemas de procesamiento de lenguaje natural y recomendación, un pipeline típico comienza con la extracción y limpieza de texto, continúa con la estructuración de la información (p.\,ej., conversión de texto libre a representaciones con campos definidos) y culmina en algún tipo de análisis o comparación (clasificación, ranking, cálculo de scores, etc.). Pensar el sistema como un pipeline permite razonar sobre cada etapa de forma modular---qué recibe, qué transforma y qué entrega a la siguiente capa---y facilita tanto la depuración (identificar en qué punto se introducen errores) como la reproducibilidad (repetir el mismo flujo sobre nuevos datos manteniendo configuraciones constantes).
+El término pipeline se utiliza para describir la cadena de etapas que transforma entradas crudas que pueden estar en diferentes formatos en salidas útiles para la toma de decisiones. En sistemas de procesamiento de lenguaje natural y recomendación, un pipeline típico comienza con la extracción y limpieza de texto, continúa con la estructuración de la información y culmina en algún tipo de análisis \cite{sculley2015}. Pensar el sistema como un pipeline permite razonar sobre cada etapa de forma modular---qué recibe, qué transforma y qué entrega a la siguiente capa---y facilita tanto la depuración como la reproducibilidad.
 
 
 \section{Modelos de lenguaje y extracción de información}
 
-Esta sección describe cómo los modelos de lenguaje y las prácticas de diseño de \emph{prompts} permiten transformar texto libre en representaciones estructuradas útiles para el sistema: primero se presentan las capacidades de los LLMs para comprender contexto y semántica; luego se explica cómo, mediante \emph{prompt engineering} y un framework de python, se obtienen salidas en formatos controlados (p.\,ej., JSON) que alimentan los módulos de estructuración y comparaciónn.
-
+Esta sección describe los conceptos básicos de modelos de lenguaje, las practicas de diseño de prompts y como se integran estos dos mediante la herramienta LangChain.
 \subsection{Modelos de lenguaje grandes (LLMs)}
 
-Los modelos de lenguaje grandes son sistemas de aprendizaje profundo entrenados con grandes volúmenes de texto, capaces de aprender representaciones complejas del lenguaje y comprender su contexto y semántica. En este trabajo se emplea GPT-4o-mini, un modelo de la familia GPT (Generative Pre-trained Transformer) desarrollado por OpenAI y desplegado a través de Azure OpenAI Services. Estos modelos pueden generar respuestas estructuradas a partir de instrucciones bien definidas y adaptarse a distintos dominios o tareas con un ajuste mínimo.
-
+Los modelos de lenguaje grandes son sistemas de aprendizaje profundo entrenados con grandes volúmenes de texto, capaces de aprender representaciones complejas del lenguaje y comprender su contexto y semántica \cite{brown2020}. En este trabajo se emplea GPT-4o-mini, un modelo de la familia GPT (Generative Pre-trained Transformer) desarrollado por OpenAI y desplegado a través de Azure OpenAI Services. Estos modelos pueden generar respuestas estructuradas a partir de instrucciones bien definidas y adaptarse a distintos dominios o tareas con un ajuste mínimo \cite{vaswani2017}.
 
 \subsection{Prompt engineering y estrategias de prompting}
 
-El \emph{prompt engineering} consiste en diseñar instrucciones que guían a los modelos de lenguaje para generar resultados precisos y estructurados \cite{white2023prompt}. En tareas de extracción y organización de información, esta práctica permite definir con claridad el formato de salida, descomponer procesos complejos en pasos intermedios y mejorar la consistencia del modelo mediante la inclusión de ejemplos dentro del propio prompt. Para la orquestación de estas interacciones se emplea LangChain \cite{langchain}, un framework que facilita la gestión de plantillas de prompts, el uso de parsers para estructurar respuestas, el manejo de errores y la conexión con diferentes proveedores de modelos.
+El \emph{prompt engineering} consiste en diseñar instrucciones que guían a los modelos de lenguaje para generar resultados precisos y estructurados \cite{liu2023}. En tareas de extracción y organización de información, esta práctica permite definir con claridad el formato de salida, descomponer procesos complejos en pasos intermedios y mejorar la consistencia del modelo mediante la inclusión de ejemplos dentro del propio prompt. Para la orquestación de estas interacciones se emplea LangChain \cite{langchain2022}, un framework que facilita la gestión de plantillas de prompts, el uso de parsers para estructurar respuestas, el manejo de errores y la conexión con diferentes proveedores de modelos.
 
-Entre las estrategias más usadas se encuentran el \emph{role prompting}, donde se asigna al modelo una identidad o función específica que guía su tono y enfoque \cite{jurafsky2023speech}; el \emph{zero-shot prompting}, en el cual el modelo resuelve la tarea únicamente con base en la instrucción sin ejemplos previos; y el \emph{structured output prompting}, que impone un formato rígido de salida —como JSON o XML— para facilitar la integración con sistemas automatizados y la validación programática de las respuestas.
+Entre las estrategias más usadas se encuentran el \emph{role prompting}, donde se asigna al modelo una identidad o función específica que guía su tono, por otro lado la estrategia  \emph{zero-shot prompting}, en el cual el modelo resuelve la tarea únicamente con base en la instrucción sin ejemplos previos  y el \emph{structured output prompting}, que impone un formato rígido de salida —como JSON o XML— para facilitar la integración con sistemas automatizados y la validación programática de las respuestas. \cite{promptguide2024}
 
 
 \subsection{LangChain}
 
 LangChain es un framework diseñado para facilitar la construcción de aplicaciones basadas en modelos de lenguaje mediante la definición de cadenas de procesamiento, plantillas de prompts reutilizables y mecanismos de estandarización de entradas y salidas. Además, incorpora herramientas para validar formatos de salida, integrar proveedores externos de modelos y gestionar parámetros de ejecución de forma consistente. Estas características lo convierten en una plataforma adecuada para desarrollar sistemas que requieran orquestar interacciones complejas con modelos de lenguaje de manera reproducible y controlada.\cite{langchain}
 
+
+\section{Patrones de arquitectura y diseño de software}
+
+Para garantizar la mantenibilidad, separación de responsabilidades y calidad del proyecto en el desarrollo de la aplicación, es fundamental la adopción de patrones de arquitectura y patrones de diseño.
+\subsection{Arquitectura por capas}
+La arquitectura por capas (Layered Architecture) es un patrón estructural que organiza el sistema en grupos horizontales lógicos, donde cada capa tiene una responsabilidad específica y solo se comunica con sus capas adyacentes. Típicamente, se compone de una capa de presentación (interfaz de usuario), una capa de lógica de negocio (reglas del dominio) y una capa de acceso a datos (persistencia). Esta separación facilita el desarrollo independiente de componentes \cite{buschmann1996}.
+
+\subsection{Patrón Service Layer}
+El patrón de Capa de Servicios define un límite claro entre la aplicación y el dominio. Los \textit{services} actúan como fachadas que encapsulan la lógica de negocio y orquestan las operaciones de dominio, exponiendo un conjunto de operaciones disponibles para los clientes (como la API o la interfaz de usuario). Su función es coordinar las respuestas a las acciones del usuario, delegando la persistencia a los repositorios y el procesamiento a los modelos de dominio \cite{fowler2002}.
+
+\subsection{Patrón Repository}
+El patrón Repository actúa como una colección en memoria para objetos del dominio, abstrayendo la lógica de acceso a la base de datos. Su objetivo es desacoplar el dominio de los detalles de la infraestructura de persistencia, permitiendo que la lógica de negocio acceda a los datos mediante interfaces limpias  sin necesidad de conocer el lenguaje de consulta subyacente (SQL) o el mecanismo de almacenamiento específico \cite{evans2003}.
