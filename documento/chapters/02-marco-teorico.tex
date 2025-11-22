@@ -3,29 +3,29 @@
 
 Este capítulo presenta los fundamentos teóricos que sustentan el desarrollo del sistema de recomendación de hojas de vida. Se abordan conceptos clave para el desarrollo de la tesis principalmente en el procesamiento de lenguaje natural y en los modelos de lenguaje y extracción de información.
 
-\section{Procesamiento de Lenguaje Natural}
+\section{Procesamiento de lenguaje natural}
 
-El procesamiento de lenguaje natural (NLP) es una disciplina que combina lingüística, informática e inteligencia artificial para dotar a las máquinas de la capacidad de entender, interpretar y generar lenguaje humano \cite{jurafsky2023speech}. En el contexto de este trabajo, las técnicas de NLP son fundamentales para transformar documentos no estructurados (HVs en formato PDF) en representaciones estructuradas que permitan análisis automatizado.
+El procesamiento de lenguaje natural (NLP) es una disciplina que combina lingüística, informática e inteligencia artificial para dotar a las máquinas de la capacidad de entender, interpretar y generar lenguaje humano \cite{jurafsky2023speech}. En el contexto de este trabajo, las técnicas de NLP son para transformar documentos no estructurados (HVs en formato PDF) en representaciones estructuradas que permitan análisis automatizado.
 
-\subsection{Extracción y Limpieza de Texto}
+\subsection{Extracción y limpieza de texto}
 
-La extracción y limpieza de texto son procesos fundamentales en el análisis automático de documentos. La extracción se refiere a recuperar el contenido textual de un archivo, el cual puede encontrarse estructurado o representar texto a través de imágenes que requieren técnicas de reconocimiento óptico de caracteres. Una vez obtenido el contenido, la etapa de limpieza busca normalizarlo y eliminar inconsistencias propias de la digitalización o del formato, como caracteres irregulares, fragmentación de palabras o elementos considerados ruido. Estas transformaciones permiten obtener un texto coherente y uniforme que pueda ser utilizado en posteriores tareas de procesamiento y análisis.
+La extracción y limpieza de texto son procesos importantes en el análisis automático de documentos. La extracción se refiere a recuperar el contenido textual de un archivo, el cual puede encontrarse estructurado o representar texto a través de imágenes que requieren técnicas de reconocimiento óptico de caracteres. Una vez obtenido el contenido, la etapa de limpieza busca normalizarlo y eliminar inconsistencias propias de la digitalización o del formato, como caracteres irregulares, fragmentación de palabras o elementos considerados ruido. Estas transformaciones permiten obtener un texto coherente y uniforme que pueda ser utilizado en posteriores tareas de procesamiento y análisis.
 
 \subsection{Pipeline de procesamiento}
 
- El término \emph{pipeline} se utiliza para describir la cadena de etapas que transforma entradas crudas que pueden estar en diferentes formatos (p.\,ej., imágenes en PDF o texto plano), en salidas útiles para la toma de decisiones. En sistemas de procesamiento de lenguaje natural y recomendación, un pipeline típico comienza con la extracción y limpieza de texto, continúa con la estructuración de la información (p.\,ej., conversión de texto libre a representaciones con campos definidos) y culmina en algún tipo de análisis o comparación (clasificación, ranking, cálculo de scores, etc.). Pensar el sistema como un pipeline permite razonar sobre cada etapa de forma modular---qué insumos recibe, qué transforma y qué entrega a la siguiente capa---y facilita tanto la depuración (identificar en qué punto se introducen errores) como la reproducibilidad (repetir el mismo flujo sobre nuevos datos manteniendo configuraciones constantes).
+ El término \emph{pipeline} se utiliza para describir la cadena de etapas que transforma entradas crudas que pueden estar en diferentes formatos (p.\,ej., imágenes en PDF o texto plano), en salidas útiles para la toma de decisiones. En sistemas de procesamiento de lenguaje natural y recomendación, un pipeline típico comienza con la extracción y limpieza de texto, continúa con la estructuración de la información (p.\,ej., conversión de texto libre a representaciones con campos definidos) y culmina en algún tipo de análisis o comparación (clasificación, ranking, cálculo de scores, etc.). Pensar el sistema como un pipeline permite razonar sobre cada etapa de forma modular---qué recibe, qué transforma y qué entrega a la siguiente capa---y facilita tanto la depuración (identificar en qué punto se introducen errores) como la reproducibilidad (repetir el mismo flujo sobre nuevos datos manteniendo configuraciones constantes).
 
 
-\section{Modelos de Lenguaje y Extracción de Información}
+\section{Modelos de lenguaje y extracción de información}
 
 Esta sección describe cómo los modelos de lenguaje y las prácticas de diseño de \emph{prompts} permiten transformar texto libre en representaciones estructuradas útiles para el sistema: primero se presentan las capacidades de los LLMs para comprender contexto y semántica; luego se explica cómo, mediante \emph{prompt engineering} y un framework de python, se obtienen salidas en formatos controlados (p.\,ej., JSON) que alimentan los módulos de estructuración y comparaciónn.
 
-\subsection{Modelos de Lenguaje Grandes (LLMs)}
+\subsection{Modelos de lenguaje grandes (LLMs)}
 
 Los modelos de lenguaje grandes son sistemas de aprendizaje profundo entrenados con grandes volúmenes de texto, capaces de aprender representaciones complejas del lenguaje y comprender su contexto y semántica. En este trabajo se emplea GPT-4o-mini, un modelo de la familia GPT (Generative Pre-trained Transformer) desarrollado por OpenAI y desplegado a través de Azure OpenAI Services. Estos modelos pueden generar respuestas estructuradas a partir de instrucciones bien definidas y adaptarse a distintos dominios o tareas con un ajuste mínimo.
 
 
-\subsection{Prompt Engineering y Estrategias de Prompting}
+\subsection{Prompt engineering y estrategias de prompting}
 
 El \emph{prompt engineering} consiste en diseñar instrucciones que guían a los modelos de lenguaje para generar resultados precisos y estructurados \cite{white2023prompt}. En tareas de extracción y organización de información, esta práctica permite definir con claridad el formato de salida, descomponer procesos complejos en pasos intermedios y mejorar la consistencia del modelo mediante la inclusión de ejemplos dentro del propio prompt. Para la orquestación de estas interacciones se emplea LangChain \cite{langchain}, un framework que facilita la gestión de plantillas de prompts, el uso de parsers para estructurar respuestas, el manejo de errores y la conexión con diferentes proveedores de modelos.
 

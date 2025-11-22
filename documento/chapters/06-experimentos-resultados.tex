@@ -1,7 +1,7 @@
 \chapter{Evaluación y Resultados}
 \label{chap:evaluaciones}
 
-\section{Diseño Experimental}
+\section{Diseño experimental}
 \label{sec:diseno-experimental}
 
 Esta sección detalla el diseño de las pruebas realizadas para validar la utilidad y precisión del sistema propuesto. El protocolo experimental se construyó para evaluar tanto la capacidad del sistema para interpretar información no estructurada como su competencia para emitir juicios de valor comparables a los de un reclutador humano.
@@ -28,7 +28,7 @@ La muestra de candidatos refleja el contexto universitario y de ingreso al merca
 
 Las 4 descripciones de trabajo se seleccionaron para cubrir distintos niveles dentro del desarrollo de software, buscando variedad en responsabilidades y en el nivel de experiencia solicitado. Para cada una de las dos empresas consideradas, se incluyó tanto una vacante orientada a candidatos con experiencia profesional como una oportunidad de prácticas dirigida a perfiles en formación. Esta combinación permitió evaluar cómo responde el modelo frente a ofertas que difieren en complejidad, nivel de detalle y expectativas técnicas, sin introducir sesgos hacia un único tipo de rol.
 
-\section{Evaluación de Estructuración}
+\section{Evaluación de estructuración}
 \label{sec:evaluacion-estructuracion}
 
 \subsection{Metodología de verificación técnica}
@@ -80,7 +80,7 @@ De manera análoga, la Tabla \ref{tab:plantilla-eval-job} muestra el instrumento
     \end{tabular}
 \end{table}
 
-\subsection{Resultados de estructuración de Hojas de Vida}
+\subsection{Resultados de estructuración de hojas de vida}
 
 Tras aplicar el instrumento de evaluación sobre las 10 hojas de vida, se obtuvieron un total de 70 resultados (7 rubros por cada uno de los 10 candidatos). El desempeño general del motor de estructuración fue altamente satisfactorio. A continuación, se presenta la distribución de los puntajes obtenidos:
 
@@ -151,7 +151,7 @@ Las Tablas \ref{tab:resultados-cv-1} y \ref{tab:resultados-cv-2} presentan la ma
 
 En conclusión, el motor de estructuración demostró una alta fiabilidad para los fines del sistema de recomendación, con una tasa de éxito superior al 90\% en la mayoría de los campos. Los errores identificados, principalmente en la distinción entre proyectos y experiencia laboral, son consistentes con la ambigüedad propia de los perfiles junior en el sector tecnológico.
 
-\subsection{Resultados de estructuración de Descripciones de Trabajo}
+\subsection{Resultados de estructuración de descripciones de trabajo}
 La evaluación de la estructuración de las descripciones de trabajo (Jobs) se realizó sobre 4 vacantes distribuidas entre las empresas Pragma y Sezzle. Se obtuvieron un total de 40 puntos de control (10 rubros por vacante). Al igual que con las hojas de vida, los resultados fueron predominantemente positivos, con una alta incidencia de extracciones perfectas.
 
 \begin{itemize}
@@ -211,9 +211,9 @@ Para determinar si el sistema emite juicios de valor alineados con el criterio p
 La validación cualitativa fue realizada por Juan Pablo Chaparro, profesional de Recursos Humanos con experiencia en reclutamiento. Su rol consistió en actuar como un juez y, posteriormente, como auditor del sistema. Para cada simulación, el experto analizó los mismos documentos que el algoritmo y generó su propia valoración. Las métricas de éxito se definieron en función de la convergencia entre el criterio humano y el artificial a través de tres dimensiones:
 
 \begin{itemize}
-    \item \textbf{Comparación de Rankings:} Se contrasta el orden de idoneidad de los candidatos generado por el modelo frente al ranking construido por el evaluador humano. Esto permite medir si el sistema prioriza correctamente a los mejores perfiles.
-    \item \textbf{Consistencia de Puntajes:} Se evalúa la correlación entre el \textit{score} de compatibilidad calculado por el algoritmo y la valoración subjetiva (en escala 0-100) asignada por el experto.
-    \item \textbf{Validación Semántica de las Razones:} El experto revisa las justificaciones textuales generadas por la IA para cada aspecto (ej. "¿Por qué la experiencia es compatible?"), calificando si la explicación es coherente, precisa y útil para la toma de decisiones.
+    \item \textbf{Comparación de rankings:} Se contrasta el orden de idoneidad de los candidatos generado por el modelo frente al ranking construido por el evaluador humano. Esto permite medir si el sistema prioriza correctamente a los mejores perfiles.
+    \item \textbf{Consistencia de puntajes:} Se evalúa la correlación entre el \textit{score} de compatibilidad calculado por el algoritmo y la valoración subjetiva (en escala 0-100) asignada por el experto.
+    \item \textbf{Validación semántica de las razones:} El experto revisa las justificaciones textuales generadas por la IA para cada aspecto (ej. "¿Por qué la experiencia es compatible?"), calificando si la explicación es coherente, precisa y útil para la toma de decisiones.
 \end{itemize}
 
 \subsection{Fases de ejecución y refinamiento iterativo}
@@ -222,17 +222,17 @@ La validación cualitativa fue realizada por Juan Pablo Chaparro, profesional de
 Con el objetivo de asegurar no solo la evaluación sino también la mejora continua del prototipo, el proceso experimental se dividió en dos fases operativas:
 
 \begin{itemize}
-    \item \textbf{Fase 1 - Prueba Piloto:} Se ejecutó la primera simulación utilizando la vacante Junior Java Developer de la empresa Pragma. Los resultados de este primer análisis fueron sometidos a una sesión de revisión detallada con el experto de RR.\,HH. Esta etapa permitió identificar divergencias tempranas en la interpretación de ciertos criterios (particularmente en la gestión de certificaciones y habilidades), lo que derivó en ajustes puntuales a la lógica de los comparadores y a los pesos del sistema.
+    \item \textbf{Fase 1:} Se ejecutó la primera simulación utilizando la vacante Junior Java Developer de la empresa Pragma. Los resultados de este primer análisis fueron sometidos a una sesión de revisión detallada con el experto de RR.\,HH. Esta etapa permitió identificar divergencias tempranas en la interpretación de ciertos criterios (particularmente en la gestión de certificaciones y habilidades), lo que derivó en ajustes puntuales a la lógica de los comparadores y a los pesos del sistema.
     
-    \item \textbf{Fase 2 - Evaluación Final:} Tras implementar las correcciones derivadas de la reunión de retroalimentación, se procedió a ejecutar las tres simulaciones restantes. En esta fase se consolidaron los resultados definitivos reportados en este capítulo, permitiendo medir el desempeño del sistema ya calibrado frente a escenarios de distinta complejidad (roles de practicante vs. roles junior).
+    \item \textbf{Fase 2:} Tras implementar las correcciones derivadas de la reunión de retroalimentación, se procedió a ejecutar las tres simulaciones restantes. En esta fase se consolidaron los resultados definitivos reportados en este capítulo, permitiendo medir el desempeño del sistema ya calibrado frente a escenarios de distinta complejidad (roles de practicante vs. roles junior).
 \end{itemize}
 
-\subsection{Resultados de la Fase 1}
+\subsection{Resultados de la fase 1}
 \label{subsec:resultados-fase1}
 
 La primera simulación se realizó utilizando una vacante real de Desarrollador Java Junior para la empresa Pragma. El objetivo de esta fase no fue solo medir la precisión, sino estresar el modelo para identificar comportamientos divergentes respecto al juicio humano.
 
-\subsubsection*{Análisis de Ranking y Puntajes}
+\subsubsection*{Análisis de ranking y puntajes}
 
 A nivel de ordenamiento (ranking), el sistema demostró un desempeño sobresaliente. A pesar de que las magnitudes de los puntajes difirieron, el modelo ordenó a los candidatos exactamente en la misma secuencia que el experto de RR.\,HH., identificando correctamente al mejor candidato (Gabriel Gómez) y discriminando adecuadamente a los perfiles con menor ajuste. La Tabla \ref{tab:ranking-fase1} presenta esta comparación. El detalle completo de los \textit{scores} por criterio y candidato puede consultarse en las Tablas \ref{tab:fase1-eval-parte1}, \ref{tab:fase1-eval-parte2} y \ref{tab:fase1-eval-parte3} del Apéndice de prompts, mientras que la Tabla \ref{tab:fase1-eval-resumen} resume los puntajes finales de modelo y RR.\,HH. para los cinco candidatos evaluados.
 
@@ -273,7 +273,7 @@ Posterior a la simulación, se realizó una sesión de retroalimentación con el
 A partir de estos \textit{insights}, se realizaron modificaciones estructurales en el \textit{core} del sistema antes de proceder con las siguientes simulaciones:
 
 \begin{enumerate}
-    \item \textbf{Comparador de Certificaciones Mejorado:} Se modificó la lógica para que, en ausencia de requisitos de certificación explícitos, el sistema compare las certificaciones del candidato contra las habilidades técnicas requeridas. Este cambio se explica a mayor detalle en \ref{subsec:pipeline-comparacion}.
-    \item \textbf{Detección Automática de Idioma:} Se implementó un paso previo que detecta el idioma de la oferta laboral. Si la oferta está en inglés (aunque no pida Inglés explícitamente), el sistema ahora infiere el requisito. Este cambio se explica a mayor detalle en \ref{subsec:pipeline-jobs}.
-    \item \textbf{Inferencia de Habilidades Blandas:} Se añadió una capa de razonamiento que deduce las habilidades blandas implícitas en las responsabilidades del cargo, evitando que este rubro quede sin evaluar. Este cambio se explica a mayor detalle en \ref{subsec:pipeline-jobs}.
+    \item \textbf{Comparador de certificaciones mejorado:} Se modificó la lógica para que, en ausencia de requisitos de certificación explícitos, el sistema compare las certificaciones del candidato contra las habilidades técnicas requeridas. Este cambio se explica a mayor detalle en \ref{subsec:pipeline-comparacion}.
+    \item \textbf{Detección automática de idioma:} Se implementó un paso previo que detecta el idioma de la oferta laboral. Si la oferta está en inglés (aunque no pida Inglés explícitamente), el sistema ahora infiere el requisito. Este cambio se explica a mayor detalle en \ref{subsec:pipeline-jobs}.
+    \item \textbf{Inferencia de habilidades blandas:} Se añadió una capa de razonamiento que deduce las habilidades blandas implícitas en las responsabilidades del cargo, evitando que este rubro quede sin evaluar. Este cambio se explica a mayor detalle en \ref{subsec:pipeline-jobs}.
 \end{enumerate}

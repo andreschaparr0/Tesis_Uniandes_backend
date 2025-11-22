@@ -5,7 +5,7 @@
 
 La aplicación implementada permite que un profesional de recursos humanos cargue hojas de vida en PDF y descripciones de trabajo en texto, las estructure automáticamente mediante modelos de lenguaje y obtenga, en cuestión de segundos, un score de compatibilidad por candidato acompañado de un desglose explicativo por aspectos clave (experiencia, habilidades, educación, entre otros). Detrás de esta interacción sencilla se articula una arquitectura en capas que separa la interfaz de usuario, la lógica de negocio, el motor de recomendación y la persistencia de datos, lo que facilita la trazabilidad de cada decisión y la evolución independiente de los componentes.
 
-Este capítulo describe cómo se materializó la metodología propuesta, desde el diseño de la arquitectura del sistema hasta los aspectos centrales de su implementación. Se parte de una vista global que muestra cómo el usuario interactúa con la aplicación, cómo el frontend se comunica con la API y cómo esta, a su vez, orquesta servicios, núcleo de recomendación y acceso a datos. A continuación se muestra la figura que resume esta arquitectura por capas y servirá como referencia visual a lo largo del capítulo.
+Este capítulo describe cómo se materializó la metodología propuesta, desde el diseño de la arquitectura del sistema hasta los aspectos centrales de su implementación. Se parte de una vista global que muestra cómo el usuario interactúa con la aplicación, cómo el frontend se comunica con la API y cómo esta, a su vez, orquesta servicios, núcleo de recomendación y acceso a datos. A continuación se muestra la figura \ref{fig:diagram-arquitectura} que resume esta arquitectura por capas y servirá como referencia visual a lo largo del capítulo.
 
 \begin{figure}[H]
     \centering
@@ -18,7 +18,7 @@ Este capítulo describe cómo se materializó la metodología propuesta, desde e
 
 La arquitectura propuesta sigue un patrón cliente–servidor en el que el usuario de recursos humanos interactúa con un frontend web desarrollado en React. Este frontend consume una API REST construida con FastAPI, encargada de recibir las solicitudes (subir HVs, registrar descripciones de trabajo, lanzar análisis y consultar resultados) y delegar la lógica de negocio a una capa de servicios. Los servicios coordinan dos elementos principales del backend: por un lado, el \emph{core} del sistema, donde se ubican la limpieza de texto, la estructuración basada en modelos de lenguaje (LLM) y el motor de recomendación por aspectos; por otro lado, la capa de datos, compuesta por repositorios y una base de datos SQLite que almacena HVs, descripciones y análisis. De esta forma, el flujo típico es: usuario \(\rightarrow\) frontend \(\rightarrow\) API \(\rightarrow\) servicios \(\rightarrow\) core y datos, y de regreso hacia el usuario con un score final y explicaciones asociadas.
 
-La Figura \ref{fig:diagram-arquitectura} se organiza en cuatro componentes principales. En primer lugar, el \textbf{frontend}, que ofrece la interfaz donde se cargan documentos y se consultan análisis. En el backend, se distinguen tres bloques: (i) la \textbf{capa de aplicación}, que agrupa API y servicios y define los flujos de casos de uso; (ii) la \textbf{capa de datos}, compuesta por repositorios y la base de datos responsable de la persistencia; y (iii) el \textbf{core} de la aplicación, donde residen el pipeline de NLP (limpieza y estructuración) y el motor de recomendación con sus comparadores por aspecto. Esta separación permite razonar sobre el sistema tanto desde la perspectiva de arquitectura de software como desde la perspectiva de flujo de información.
+La Figura \ref{fig:diagram-arquitectura} se organiza en cuatro componentes principales. En primer lugar, el frontend, que ofrece la interfaz donde se cargan documentos y se consultan análisis. En el backend, se distinguen tres bloques: (i) la capa de aplicación, que agrupa API y servicios y define los flujos de casos de uso; (ii) la capa de datos, compuesta por repositorios y la base de datos responsable de la persistencia; y (iii) el core de la aplicación, donde residen el pipeline de NLP (limpieza y estructuración) y el motor de recomendación con sus comparadores por aspecto. 
 
 \subsection{Estructura del capítulo}
 
@@ -26,7 +26,7 @@ Para facilitar la lectura, el resto del capítulo se organiza siguiendo la desco
 
 \section{Vista general del backend}
 
-El backend del sistema implementa la lógica de negocio necesaria para transformar documentos en estructuras comparables, ejecutar el motor de recomendación y almacenar de forma persistente los resultados. Está organizado en capas bien definidas que separan el API y la logica de negocio (servicios), el núcleo de procesamiento (limpieza, estructuración y comparación) y el acceso a datos (repositorios y base de datos). Esta separación favorece la mantenibilidad y permite razonar sobre cada responsabilidad de forma aislada, al tiempo que facilita la reutilización de componentes en distintos flujos de la aplicación.
+El backend del sistema implementa la lógica de negocio necesaria para transformar documentos en estructuras comparables, ejecutar el motor de recomendación y almacenar de forma persistente los resultados. Está organizado en capas bien definidas que separan el API y la logica de negocio (servicios), el núcleo de procesamiento (limpieza, estructuración y comparación) y el acceso a datos (repositorios y base de datos). 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{Arquitectura_aplicacion_backend.png}
@@ -69,10 +69,10 @@ Para estructurar la comunicación, los endpoints se agrupan por recurso funciona
     \label{fig:Figura_API}
 \end{figure}
 
-\subsubsection*{Gestión de Hojas de Vida (CVs)}
+\subsubsection*{Gestión de hojas de vida (HVs)}
 El componente \texttt{CV\_Endpoint} agrupa las operaciones para la administración del ciclo de vida de las hojas de vida. Su función principal es la carga de documentos (\texttt{crear\_cv}), donde el sistema recibe un archivo PDF, extrae su contenido y lo procesa. Adicionalmente, expone métodos para listar todos los candidatos (\texttt{listar\_cvs}), consultar el detalle de uno específico (\texttt{obtener\_cv}), buscar por nombre (\texttt{buscar\_cvs}) y eliminar registros (\texttt{eliminar\_cv}). Puede consultar el detalle técnico de estos endpoints en el Apéndice \ref{sec:api-hvs}.
 
-\subsubsection*{Gestión de Descripciones de Trabajo (Jobs)}
+\subsubsection*{Gestión de descripciones de trabajo (Jobs)}
 El componente \texttt{Job\_Endpoint} gestiona las ofertas laborales de manera análoga. Permite registrar nuevas descripciones mediante texto plano (\texttt{crear\_job}), las cuales son procesadas para estructurar requisitos. Las operaciones de consulta (\texttt{listar\_jobs}, \texttt{obtener\_job}, \texttt{buscar\_jobs}) facilitan la recuperación de información, mientras que \texttt{eliminar\_job} permite la gestión del ciclo de vida de la vacante. Puede consultar el detalle técnico de estos endpoints en el Apéndice \ref{sec:api-jobs}.
 
 \subsubsection*{Análisis y Estadísticas}
@@ -103,12 +103,12 @@ El backend se estructura en cuatro servicios principales, cada uno con responsab
   \item \textbf{RecommendationService}: Encapsula la inteligencia del sistema. Su método principal (\texttt{analyze}) orquesta el motor de recomendación (\texttt{RecommendationEngine}) para comparar los datos estructurados de una HV y un Job. Este servicio es responsable de calcular los puntajes de compatibilidad y generar los desgloses explicativos, delegando la persistencia del resultado final al \texttt{AnalysisService}.
 \end{itemize}
 
-Este diseño modular facilita la mantenibilidad y las pruebas unitarias, ya que cada servicio puede aislarse para verificar su lógica de orquestación independientemente de la interfaz HTTP o de la base de datos.
-\section{Capa de Datos y Persistencia}
+
+\section{Capa de datos y persistencia}
 \label{sec:capa-datos}
 
 \subsection{Introducción a la capa de datos}
-Esta sección detalla la capa encargada de garantizar la persistencia y consistencia de la información dentro del sistema. Como se aprecia en la Figura \ref{fig:capa_de_datos_en_backend}, donde se resalta en amarillo el componente de datos, esta capa fundamenta el almacenamiento del sistema. La arquitectura se basa en el patrón \textit{Repository}, el cual actúa como una colección en memoria para objetos del dominio, abstrayendo los detalles de implementación de la base de datos subyacente. En este caso, se emplea SQLite como motor de almacenamiento debido a su ligereza y suficiencia para el alcance del prototipo, gestionado a través de \texttt{SQLAlchemy} como ORM (Object-Relational Mapper). Esta combinación permite manipular los datos utilizando clases y objetos de Python, facilitando la evolución del esquema sin atar la lógica de negocio a consultas SQL específicas.
+Esta sección detalla la capa encargada de garantizar la persistencia y consistencia de la información dentro del sistema. Como se aprecia en la Figura \ref{fig:capa_de_datos_en_backend}, donde se resalta en amarillo el componente de datos, esta capa fundamenta el almacenamiento del sistema. La arquitectura se basa en el patrón \textit{Repository}, el cual actúa como una colección en memoria para objetos del dominio, abstrayendo los detalles de implementación de la base de datos subyacente. En este caso, se emplea SQLite como motor de almacenamiento debido a su ligereza y suficiencia para el alcance del prototipo, gestionado a través de \texttt{SQLAlchemy} como ORM (Object-Relational Mapper). 
 
 
 \begin{figure}[H]
@@ -118,8 +118,7 @@ Esta sección detalla la capa encargada de garantizar la persistencia y consiste
     \label{fig:capa_de_datos_en_backend}
 \end{figure}
 
-\subsection{Implementación de Repositorios y Flujo de Persistencia}
-\subsection{Modelo de Datos e Implementación de Persistencia}
+\subsection{Implementación de repositorios y flujo de persistencia}
 
 El diseño de la capa de datos se fundamenta en un modelo relacional simple pero robusto, representado en la Figura \ref{fig:er-modelo}, que permite almacenar de forma estructurada la información clave del proceso de selección. El esquema consta de tres entidades principales: \textbf{CVS}, que almacena los perfiles de los candidatos; \textbf{JOBS}, que contiene las descripciones de las vacantes; y \textbf{ANALYSES}, una tabla intermedia que materializa la relación muchos a muchos entre candidatos y vacantes, registrando los resultados detallados de cada evaluación de compatibilidad.
 
@@ -136,7 +135,7 @@ La manipulación de estos datos se delega a los repositorios, que actúan como g
 
 \section{Core del sistema}
 \subsection{Introducción al core de la aplicación}
-El \textit{Core} del sistema representa el componente central donde reside la inteligencia de la aplicación, separado lógica y funcionalmente de las capas de servicio y persistencia. Como se aprecia en la Figura \ref{fig:arquitectura_backe_core}, este núcleo agrupa los módulos de procesamiento intensivo en dos grandes motores: el motor de estructuración, encargado de interpretar y estandarizar la información no estructurada de documentos y textos; y el motor de recomendación, que orquesta los algoritmos de comparación para evaluar la compatibilidad entre candidatos y vacantes. Esta disposición permite que el procesamiento cognitivo y el cálculo de similitudes evolucionen de forma independiente a la lógica de control de la API.
+El \textit{Core} del sistema representa el componente central donde reside la inteligencia de la aplicación, separado lógica y funcionalmente de las capas de servicio y persistencia. Como se aprecia en la Figura \ref{fig:arquitectura_backe_core}, este núcleo agrupa los módulos de procesamiento intensivo en dos grandes motores: el motor de estructuración, encargado de interpretar y estandarizar la información no estructurada de documentos y textos; y el motor de recomendación, que orquesta los algoritmos de comparación para evaluar la compatibilidad entre candidatos y vacantes.
 
 \begin{figure}[H]
     \centering
@@ -145,7 +144,7 @@ El \textit{Core} del sistema representa el componente central donde reside la in
     \label{fig:arquitectura_backe_core}
 \end{figure}
 
-\section{Motor de Estructuración }
+\section{Motor de estructuración }
 
 El componente de estructuración es responsable de transformar documentos no estructurados —como hojas de vida en formato PDF y descripciones de trabajo en texto libre— en objetos de datos estandarizados (JSON) que el sistema pueda procesar algorítmicamente. Este módulo actúa como puente entre la entrada de usuario y el motor de recomendación, garantizando que la información heterogénea sea normalizada bajo un esquema común.
 
@@ -160,13 +159,13 @@ Como se ilustra en la Figura \ref{fig:arquitectura_estructuracion}, el flujo de 
     \label{fig:arquitectura_estructuracion}
 \end{figure}
 
-El diseño desacopla la recepción del archivo de su procesamiento cognitivo. Mientras que los servicios gestionan la carga y persistencia preliminar, el núcleo de estructuración se encarga exclusivamente de la extracción de entidades, validación de esquemas y limpieza de datos. Esto permite que, aunque las fuentes de datos sean distintas (.pdf vs .txt), el resultado final sea siempre una estructura coherente y lista para ser consumida por los algoritmos de comparación.
+El diseño desacopla las funciones, mientras que los servicios gestionan la carga y persistencia preliminar, el núcleo de estructuración se encarga exclusivamente de la extracción de entidades, validación de esquemas y limpieza de datos. Esto permite que, aunque las fuentes de datos sean distintas (.pdf vs .txt), el resultado final sea siempre una estructura coherente y lista para ser consumida por los algoritmos de comparación.
 
 \section{Pipeline de procesamiento de hojas de vida}
 
 \label{subsec:pipeline-hv}
 
-El procesamiento de hojas de vida constituye uno de los flujos críticos del sistema, dado que transforma documentos PDF no estructurados en datos procesables. Como se detalla en la Figura \ref{fig:pipeline_hv}, este proceso se orquesta secuencialmente a través de tres fases principales: extracción, estructuración cognitiva y validación.
+El procesamiento de hojas de vida constituye uno de los flujos críticos del sistema, dado que transforma documentos PDF no estructurados en datos procesables. Como se detalla en la Figura \ref{fig:pipeline_hv}, este proceso se orquesta secuencialmente a través de tres fases principales: extracción, estructuración y validación.
 
 \begin{samepage}
 \noindent
@@ -209,10 +208,10 @@ La primera fase del pipeline tiene como objetivo transformar el archivo PDF bina
 Inicialmente, el sistema utiliza \textit{PyMuPDF} para extraer el contenido textual de todas las páginas del documento, concatenándolas en una única cadena de ("Texto Crudo") como se ve en la figura \ref{. Este texto suele contener irregularidades derivadas del formato PDF, como saltos de línea arbitrarios, caracteres de control o problemas de codificación. Para mitigar esto, el texto pasa por una serie de funciones de limpieza secuenciales implementadas en el módulo `limpieza.py`:
 
 \begin{enumerate}
-    \item \textbf{Normalización de caracteres (Quitar Tildes):} Se convierten caracteres acentuados a sus equivalentes ASCII (ej: 'á' $\rightarrow$ 'a') para estandarizar la entrada, reduciendo la variabilidad léxica sin perder el significado semántico esencial.
-    \item \textbf{Filtrado de ruido (Quitar Símbolos Raros):} Se eliminan caracteres no alfanuméricos o símbolos de formato problemáticos (como §, ï, o bullets personalizados) que suelen aparecer al extraer texto de documentos con diseño complejo.
-    \item \textbf{Reconstrucción léxica (Unir Letras Separadas):} Se aplica una heurística basada en expresiones regulares para detectar y corregir palabras que aparecen con espaciado inter-carácter (ej: "T I T U L O" $\rightarrow$ "TITULO"), un artefacto común en encabezados de hojas de vida.
-    \item \textbf{Limpieza final:} Se eliminan caracteres especiales restantes y puntuación excesiva, y se convierte todo el texto a minúsculas para garantizar consistencia en el procesamiento posterior.
+    \item \textbf{Limpieza de tildes:} Se convierten caracteres acentuados a sus equivalentes ASCII (ej: 'á' $\rightarrow$ 'a') para estandarizar la entrada, reduciendo la variabilidad léxica sin perder el significado semántico esencial.
+    \item \textbf{Quitar símbolos raros:} Se eliminan caracteres no alfanuméricos o símbolos de formato problemáticos (como §, ï, o bullets personalizados) que suelen aparecer al extraer texto de documentos con diseño complejo.
+    \item \textbf{Unir letras separadas:} Se aplica una heurística basada en expresiones regulares para detectar y corregir palabras que aparecen con espaciado inter-carácter (ej: "T I T U L O" $\rightarrow$ "TITULO"), algo común en encabezados de hojas de vida.
+    \item \textbf{Normalizacion de texto:} Se convierte todo el texto a minúsculas para garantizar consistencia en el procesamiento posterior.
 \end{enumerate}
 
 A modo de ilustración, el siguiente ejemplo muestra la transformación que sufre un fragmento de texto típico tras pasar por este pipeline:
@@ -228,7 +227,7 @@ El resultado ("Texto Limpio") en la Figura \ref{fig:limpieza_cv} es una represen
 \subsection{Fase 2: Estrategia de prompting y estructuración}
 \label{subsec:fase-estructuracion-ia}
 
-Una vez obtenido el texto limpio, el sistema inicia la fase de estructuración cognitiva. A diferencia de enfoques tradicionales que intentan extraer toda la información en una sola consulta (lo cual suele saturar la ventana de contexto del modelo y generar alucinaciones), esta implementación utiliza una estrategia secuencial y modular basada en la segmentación por tópicos.
+Una vez obtenido el texto limpio, el sistema inicia la fase de estructuración. A diferencia de enfoques tradicionales que intentan extraer toda la información en una sola consulta (lo cual suele saturar la ventana de contexto del modelo y generar alucinaciones), esta implementación utiliza una estrategia secuencial y modular basada en la segmentación por tópicos.
 
 \begin{figure}[H]
     \centering
@@ -240,8 +239,8 @@ Una vez obtenido el texto limpio, el sistema inicia la fase de estructuración c
 Como se ilustra en la Figura \ref{fig:estructuracion_iterativa}, el texto completo del CV se inyecta repetidamente en un ciclo de consultas, donde en cada iteración se utiliza un \textit{prompt} específico diseñado para extraer una única categoría de información (Información Personal, Educación, Experiencia, Habilidades, etc.). Esta metodología combina tres estrategias de \textit{Prompt Engineering} definidas en el marco teórico:
 
 \begin{itemize}
-    \item \textbf{Role Prompting:} Se instruye al modelo explícitamente: \textit{``Eres un experto en extraer información estructurada de hojas de vida''}. Esta técnica, identificada como el patrón de Persona \cite{promptguide2024}, condiciona la atención del modelo a entidades y terminología relevantes del dominio de reclutamiento.
-    \item \textbf{Structured Output Prompting:} Se define un esquema JSON rígido dentro del prompt y se prohíbe la generación de texto conversacional adicional. Esta restricción es fundamental para garantizar la interoperabilidad con el sistema backend \cite{promptguide2024}.
+    \item \textbf{Role Prompting:} Se instruye al modelo explícitamente: \textit{``Eres un experto en extraer información estructurada de hojas de vida''}. Esta técnica, identificada como el patrón de Persona \cite{promptguide2024}, condiciona la atención del modelo al dominio de reclutamiento.
+    \item \textbf{Structured Output Prompting:} Se define un esquema JSON rígido dentro del prompt y se prohíbe la generación de texto conversacional adicional. \cite{promptguide2024}.
     \item \textbf{Zero-Shot Prompting:} No se proveen ejemplos de CVs previos en el contexto; el modelo opera basándose únicamente en las instrucciones semánticas y el esquema objetivo, aprovechando su capacidad de generalización pre-entrenada \cite{promptguide2024}.
 \end{itemize}
 
@@ -286,7 +285,7 @@ El flujo implementado ejecuta las siguientes operaciones:
     \item \textbf{Validación de Schema (Inyección de Defaults):} Se verifica que todas las claves obligatorias existan. Si el modelo omitió algún campo (por ejemplo, no encontró certificaciones), el sistema inyecta automáticamente un valor por defecto (lista vacía o cadena vacía), garantizando que el objeto final cumpla estrictamente con la estructura esperada por el motor de recomendación.
 \subsection{Pipeline de procesamiento de descripciones de trabajo}
 \label{subsec:pipeline-jobs}
-
+\end{enumerate}
 
 
 \begin{samepage}
@@ -334,12 +333,12 @@ En esta fase se materializa la inteligencia del sistema para comprender los requ
     \label{fig:estructuracion_job}
 \end{figure}
 
-Sin embargo, este pipeline introduce dos capacidades cognitivas adicionales que lo diferencian de la extracción literal:
+Sin embargo, este pipeline introduce dos capacidades nuevas:
 
 \begin{itemize}
-    \item \textbf{Deducción de Habilidades Blandas (ver Figura \ref{fig:Flujo_Inferir_Habilidades_Blandas}):} A menudo, las ofertas laborales no listan explícitamente las habilidades blandas requeridas, pero estas se encuentran implícitas en las responsabilidades (p.\,ej., ``liderar equipos ágiles'' implica ``liderazgo'' y ``comunicación''). El sistema primero intenta extraer habilidades blandas explícitas mediante el prompt correspondiente. En caso de que no se encuentren, se activa automáticamente un mecanismo de inferencia que analiza semánticamente las funciones del cargo mediante las responsabilidades extraías por el LLM y deduce las 3-5 habilidades blandas más críticas, enriqueciendo el perfil de la vacante más allá del texto literal. Este flujo se puede observar en el diagrama de flujos mostrado en el indice en la Figura \ref{fig:Flujo_Inferir_Habilidades_Blandas}.
+    \item \textbf{Deducción de habilidades blandas (ver Figura \ref{fig:Flujo_Inferir_Habilidades_Blandas}):} A menudo, las ofertas laborales no listan explícitamente las habilidades blandas requeridas, pero estas se encuentran implícitas en las responsabilidades (p.\,ej., ``liderar equipos ágiles'' implica ``liderazgo'' y ``comunicación''). El sistema primero intenta extraer habilidades blandas explícitas mediante el prompt correspondiente. En caso de que no se encuentren, se activa automáticamente un mecanismo de inferencia que analiza semánticamente las funciones del cargo mediante las responsabilidades extraías por el LLM y deduce las 3-5 habilidades blandas más críticas, enriqueciendo el perfil de la vacante más allá del texto literal. Este flujo se puede observar en el diagrama de flujos mostrado en el indice en la Figura \ref{fig:Flujo_Inferir_Habilidades_Blandas}.
     
-    \item \textbf{Detección de Idioma Contextual (ver Figura \ref{fig:Flujo_Inferir_Lenguaje}):} El sistema prioriza la extracción de requisitos de idioma explícitos mediante el prompt de idiomas estándar. Sin embargo, si la oferta no especifica idiomas (retorna lista vacía), se activa un mecanismo de recuperación que emplea un prompt de clasificación zero-shot para identificar el idioma en el que está redactado el texto completo de la oferta. Si se detecta, por ejemplo, que la oferta está en inglés, el sistema infiere automáticamente un requisito de ``Inglés - Nivel Intermedio'', asegurando que el motor de recomendación filtre candidatos aptos lingüísticamente incluso ante descripciones incompletas. Este flujo se puede observar en el diagrama de flujos mostrado en el indice en la Figura \ref{fig:Flujo_Inferir_Lenguaje}.
+    \item \textbf{Detección de idioma contextual (ver Figura \ref{fig:Flujo_Inferir_Lenguaje}):} El sistema prioriza la extracción de requisitos de idioma explícitos mediante el prompt de idiomas estándar. Sin embargo, si la oferta no especifica idiomas (retorna lista vacía), se activa un mecanismo de recuperación que emplea un prompt de clasificación zero-shot para identificar el idioma en el que está redactado el texto completo de la oferta. Si se detecta, por ejemplo, que la oferta está en inglés, el sistema infiere automáticamente un requisito de ``Inglés - Nivel Intermedio'', asegurando que el motor de recomendación filtre candidatos aptos lingüísticamente incluso ante descripciones incompletas. Este flujo se puede observar en el diagrama de flujos mostrado en el indice en la Figura \ref{fig:Flujo_Inferir_Lenguaje}.
 \end{itemize}
 
 Estas estrategias transforman el proceso de una simple extracción de texto a una comprensión semántica de la necesidad del empleador, generando un perfil de vacante más robusto para el emparejamiento posterior. Los prompts específicos utilizados para estas inferencias se detallan en el Apéndice \ref{tab:prompts-job}, filas ``Inferencia soft skills'' y ``Detección de idioma''.
@@ -348,7 +347,7 @@ Estas estrategias transforman el proceso de una simple extracción de texto a un
 Esta fase es funcionalmente idéntica a la descrita en la Sección \ref{subsec:fase-validacion}. Se ejecutan los mismos procesos de limpieza de markdown, unificación de fragmentos JSON y validación de esquema con inyección de valores por defecto. La única diferencia radica en el esquema objetivo, que en este caso corresponde a la estructura de una oferta laboral (incluyendo campos como rango salarial, modalidad de trabajo y beneficios).
 
 
-\section{Motor de Comparaciones e Inteligencia de Matching}
+\section{Motor de comparaciones e inteligencia de matching}
 \label{sec:motor-comparaciones}
 
 Una vez que tanto las hojas de vida como las ofertas laborales han sido estructuradas en formato JSON, el sistema debe ejecutar la evaluación de compatibilidad entre candidatos y vacantes. Este proceso es orquestado por el \textbf{Motor de Comparaciones}, un componente del core que integra ocho algoritmos especializados de evaluación, cada uno diseñado para analizar una dimensión específica del ajuste candidato-puesto.
@@ -362,7 +361,7 @@ Una vez que tanto las hojas de vida como las ofertas laborales han sido estructu
 
 Como se observa en la Figura \ref{fig:Diagrama_Comparaciones}, el motor recibe como entrada los documentos estructurados (archivos \texttt{.txt} para ofertas de trabajo y \texttt{.pdf} para CVs, previamente procesados por el motor de estructuración) y los canaliza hacia el módulo \texttt{Comparador Main}, implementado en. Este orquestador secuencial invoca a cada uno de los comparadores especializados, que a su vez emplean Azure OpenAI (GPT-4o-mini) para realizar evaluaciones semánticas de alto nivel. Las siguientes subsecciones detallan el pipeline de comparación y la arquitectura de los comparadores individuales.
 
-\subsection{Pipeline de Comparación y Scoring}
+\subsection{Pipeline de comparación y scoring}
 \label{subsec:pipeline-comparacion}
 
 \begin{samepage}
@@ -450,7 +449,7 @@ En la Figura \ref{fig:fase2-comparacion} se puede observar dos casos especiales 
 En \textbf{certificaciones}, cuando la descripción de trabajo no declara certificaciones obligatorias pero sí define habilidades técnicas, se activa una lógica: si el CV tampoco tiene certificaciones o el Job no tiene habilidades técnicas, el aspecto se marca como ignorado; pero si el candidato sí reporta certificaciones y el Job sí define habilidades técnicas, las certificaciones del CV se comparan semánticamente contra esas habilidades técnicas mediante un prompt específico. Este flujo de decisiones se resume en la Figura \ref{fig:flujo-comparacion-certificaciones}, y esta lógica se implementó dado una recomendación del evaluador de RR.HH. del modelo, que se detalla en secciones posteriores.
 
 En \textbf{responsabilidades}, el problema es inverso: la descripción de trabajo sí trae una lista explícita de responsabilidades, pero el esquema estructurado del CV no tiene un campo dedicado a este concepto. Para no perder esta dimensión, se reutiliza la \textit{experiencia laboral} como entrada y la compara con las responsabilidades del puesto usando el prompt descrito en la Tabla \ref{tab:prompts-comp}. Así, el sistema puede estimar hasta qué punto las tareas realizadas por el candidato se alinean con lo que el rol exige, aun cuando dicha alineación no esté modelada como un campo de responsabilidades dentro del JSON del CV.
-\subsubsection{Fase 3: Agregación y Scoring}
+\subsubsection{Fase 3: Agregación y scoring}
 
 \noindent En esta fase, representada en la Figura \ref{fig:fase3-agregacion}, el sistema toma como entrada todos los resultados generados por los comparadores de la fase anterior (scores y justificaciones por experiencia, habilidades, educación, certificaciones, idiomas, ubicación y responsabilidades) y los consolida en un único análisis global. Esta etapa aplica un procedimiento ordenado que primero organiza los scores por aspecto, maneja explícitamente los casos con datos faltantes, calcula un score final de compatibilidad y, finalmente, genera un resumen explicativo que el usuario puede interpretar fácilmente. El resultado de este flujo es un JSON estructurado final que sintetiza el nivel de compatibilidad entre el candidato y la vacante, junto con la trazabilidad de cómo se llegó a ese resultado.
 
@@ -468,7 +467,7 @@ En \textbf{responsabilidades}, el problema es inverso: la descripción de trabaj
     \label{fig:fase3-pesos}
 \end{figure}
 
-\subsubsection{Calculo de Score Final}
+\subsubsection{Calculo de score final}
 \noindent A nivel de cálculo, cada aspecto evaluado \(i\) (experiencia, educación, habilidades, etc.) aporta un \textit{score} \(s_i \in [0,1]\) y cuenta con un peso configurable \(w_i > 0\). Si el usuario define pesos personalizados que no suman 1, el sistema los normaliza mediante
 \[
 \tilde{w}_i = \frac{w_i}{\sum_j w_j},
@@ -512,12 +511,12 @@ S_{\text{final}} =
     \label{fig:frontend-carga}
 \end{figure}
 
-\subsection{Gestión de Hojas de Vida}
+\subsection{Gestión de hojas de vida}
 \noindent La sección de hojas de vida permite cargar nuevos documentos PDF y consultar los que ya han sido procesados. La \textbf{vista de carga de CV} (Figura \ref{fig:ui-subir-cv}) guía al usuario en la selección del archivo y muestra mensajes claros durante el procesamiento. Una vez estructurado el documento, la \textbf{vista de listado de CVs} (Figura \ref{fig:ui-listar-cvs}) presenta cada candidato en forma de tarjeta, con opciones para acceder al detalle o eliminar registros que ya no sean relevantes.
 
 \noindent Al seleccionar un candidato, el sistema muestra un conjunto de \textbf{vistas de detalle} organizadas por pestañas, donde se exponen las entidades extraídas por el motor de estructuración: información personal (Figura \ref{fig:ui-cv-info-personal}), educación (Figura \ref{fig:ui-cv-educacion}), experiencia laboral (Figura \ref{fig:ui-cv-experiencia}), habilidades técnicas (Figura \ref{fig:ui-cv-habilidades}), certificaciones (Figura \ref{fig:ui-cv-certificaciones}) e idiomas (Figura \ref{fig:ui-cv-idiomas}). Además, una vista adicional muestra el historial de análisis asociados a ese CV (Figura \ref{fig:ui-cv-analisis-realizados}), conectando directamente el perfil estructurado del candidato con las evaluaciones realizadas frente a distintas vacantes.
 
-\subsection{Gestión de Descripciones de Trabajo}
+\subsection{Gestión de descripciones de trabajo}
 \noindent De forma análoga, la interfaz ofrece un flujo dedicado para registrar y administrar descripciones de trabajo. La \textbf{vista de creación de oferta} (Figura \ref{fig:ui-crear-job}) permite pegar o escribir el texto libre de la vacante, que luego es enviado al backend para su estructuración. La \textbf{vista de listado de descripciones} (Figura \ref{fig:ui-listar-jobs}) organiza las ofertas existentes y facilita el acceso a su detalle o la eliminación de registros obsoletos.
 
 \noindent En el detalle de cada oferta se muestran las secciones estructuradas relevantes (información general, requisitos, responsabilidades, beneficios, entre otras), como se observa en las Figuras \ref{fig:ui-job-informacion-general} y \ref{fig:placeholder}, y se habilita una pestaña específica de \textbf{``Top candidatos''} donde se visualiza el ranking de candidatos mejor posicionados para ese rol (Figura \ref{fig:ui-ranking}). Esta vista sirve como punto de entrada natural para explorar en profundidad los análisis individuales generados por el motor de comparaciones.
@@ -530,6 +529,5 @@ S_{\text{final}} =
 \noindent Complementariamente, la aplicación incorpora una \textbf{vista de historial de análisis} (Figura \ref{fig:ui-historial-analisis}) donde se listan, en orden cronológico, las evaluaciones realizadas, permitiendo al usuario revisar rápidamente resultados pasados, acceder al detalle de cada uno o eliminarlos si ya no son necesarios.
 
 \noindent Además, dado que el objetivo principal del sistema es facilitar la toma de decisiones en procesos de selección, el frontend refuerza los resultados numéricos con representaciones visuales. La \textbf{vista de gráfica de análisis} (Figura \ref{fig:ui-grafica-score}) muestra, para una oferta concreta, una gráfica de dispersión que relaciona el score obtenido por cada candidato con el porcentaje de criterios efectivamente evaluados, ayudando a identificar casos donde un score alto podría ser engañoso por basarse en poca información.
-
 \section{Conclusión del capítulo}
-\noindent En este capítulo se detalló cómo la arquitectura propuesta se materializa en una implementación concreta que conecta, de forma trazable, la carga de documentos, su estructuración mediante modelos de lenguaje y el cálculo de scores de compatibilidad. Se describieron las capas del backend y su interacción con el \textit{core} de procesamiento, los \textit{pipelines} de NLP para hojas de vida y descripciones de trabajo, así como el motor de comparaciones y su esquema de agregación ponderada de resultados. Finalmente, se mostró cómo el frontend orquesta estos componentes en un flujo de uso coherente y centrado en el usuario, permitiendo que la complejidad algorítmica del sistema se traduzca en interfaces comprensibles que apoyan la toma de decisiones en procesos de selección.
+\noindent En este capítulo se detalló cómo la arquitectura propuesta se materializa en una implementación concreta que conecta, de forma trazable, la carga de documentos, su estructuración mediante modelos de lenguaje y el cálculo de scores de compatibilidad. Se describieron las tres capas del backend: la capa de datos, la capa de aplicación y el core que tienen los \textit{pipelines} de NLP para hojas de vida y descripciones de trabajo, así como el motor de comparaciones y su esquema de agregación ponderada de resultados. Finalmente, se mostró cómo el frontend orquesta estos componentes en un flujo de uso coherente y centrado en el usuario, permitiendo que la complejidad algorítmica del sistema se traduzca en interfaces comprensibles que apoyan la toma de decisiones en procesos de selección.
