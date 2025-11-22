@@ -2,55 +2,64 @@
 \label{chap:introduccion}
 
 % Contexto y motivación
-La gestión eficiente del talento requiere herramientas que permitan relacionar perfiles de candidatos con descripciones de trabajo de forma objetiva, transparente y reproducible. En la práctica, los equipos de reclutamiento enfrentan la revisión manual de grandes volúmenes de hojas de vida (HVs), con formatos heterogéneos (PDFs, imágenes, estilos no estandarizados) y calidad variable de contenido. Este proceso es intensivo en tiempo y recursos, puede introducir sesgos no intencionales en la preselección y dificulta priorizar candidatos óptimos con oportunidad. Este trabajo se enmarca en el nicho de tecnología: el conjunto de HVs utilizado corresponde a perfiles de ingeniería y las descripciones de cargo evaluadas están orientadas a roles de TI y desarrollo de software.
+La gestión eficiente del talento es un desafío crítico en las organizaciones modernas. En los procesos de selección tradicionales, los equipos de recursos humanos se enfrentan a la revisión manual de grandes volúmenes de hojas de vida (HVs), presentadas en formatos heterogéneos y con niveles de detalle variables. Este filtro inicial es intensivo en tiempo y, a menudo, se convierte en un cuello de botella que retrasa la identificación de los candidatos más idóneos \cite{factorhuma2021}.
 
-Esta tesis aborda el diseño, implementación y evaluación de un sistema de recomendación que analiza HVs y descripciones de trabajo empleando técnicas de procesamiento de lenguaje natural (NLP) y un esquema de comparación por aspectos. El sistema está compuesto por un backend que procesa y analiza la información, y un frontend que proporciona una interfaz web intuitiva para la gestión de HVs, ofertas de trabajo y visualización de resultados. El sistema toma como entradas una HV (en formato PDF) y una descripción de puesto, extrae y limpia el texto, estructura la información relevante mediante modelos de lenguaje y calcula un \emph{puntaje de ajuste} por distintos aspectos con pesos configurables para reflejar prioridades de negocio. El objetivo es apoyar una preselección inicial más eficiente, objetiva y escalable.
+En el contexto específico del sector tecnológico, este problema se agudiza debido a la complejidad técnica de los perfiles y la rápida evolución de las habilidades requeridas. La presente tesis aborda esta problemática mediante el diseño, implementación y evaluación de un sistema de recomendación de talento basado en Inteligencia Artificial. A diferencia de los sistemas tradicionales basados en palabras clave \cite{franco2025}, esta propuesta utiliza Grandes Modelos de Lenguaje (LLMs) para interpretar semánticamente tanto las hojas de vida como las descripciones de trabajo, permitiendo una comparación profunda por aspectos clave (experiencia, habilidades, educación, entre otros).
+
+El sistema desarrollado no pretende reemplazar el juicio humano, sino potenciarlo mediante una herramienta. A través de una arquitectura que combina un backend en FastAPI, un frontend en React y servicios de OpenAI, la solución estructura información no estructurada, calcula puntajes de compatibilidad transparentes y ofrece explicaciones detalladas para cada recomendación, facilitando así una toma de decisiones más ágil y fundamentada.
 
 \section{Planteamiento del problema}
+
 \subsection{Situación actual}
-La revisión manual de HVs consume una cantidad significativa de tiempo del equipo de reclutamiento y obstaculiza la identificación rápida de candidatos con alto ajuste al puesto. La heterogeneidad de formatos (incluyendo PDFs no indexables o con bajo nivel de estructuración) y la falta de estándares dificulta la automatización y el análisis a escala. Además, la intervención humana temprana puede introducir variabilidad y sesgos no deseados.
+Actualmente, el primer filtro de reclutamiento depende en gran medida de la revisión manual o de sistemas automatizados básicos que filtran candidatos buscando coincidencias exactas de palabras clave. Este enfoque presenta limitaciones graves: descarta perfiles calificados simplemente por no usar los términos exactos de la vacante y falla al procesar documentos con diseños complejos o formatos no estándar \cite{jobswift2024}. Como resultado, los reclutadores deben invertir una cantidad excesiva de tiempo en validar información que podría haber sido mal interpretada, reduciendo el espacio para una evaluación más profunda y humana del talento \cite{resumemate2025}.
 
 \subsection{Situación deseada}
-Se busca un prototipo funcional que:
-\begin{itemize}
-  \item Procese HVs en PDF, extraiga y limpie el texto de forma robusta.
-  \item Estructure la información de HVs y descripciones.
-  \item Calcule un \emph{puntaje de ajuste} HV--puesto y genere un ranking de candidatos.
-  \item Reduzca el tiempo de revisión manual inicial  y aumente la probabilidad de identificar candidatos adecuados en etapas tempranas.
-\end{itemize}
-
-\subsection{Restricciones y enfoque}
-El desarrollo se realizará con un conjunto de datos inicial de 10 hojas de vida, donde la mayoría corresponden a estudiantes o egresados de la Universidad de los Andes. De estas 10 HVs, 5 pertenecen a estudiantes activos (4 de pregrado y 1 de postgrado). Este conjunto acotado permite adoptar un enfoque iterativo de mejora continua, privilegiando una arquitectura modular, reproducible y auditable que permita refinar comparadores y pesos sin afectar la estabilidad del sistema. La limitación en el tamaño del dataset refleja el alcance inicial del prototipo y permite una evaluación controlada antes de escalar a volúmenes mayores. Adicionalmente, el estudio está acotado al dominio de tecnología; por lo tanto, la generalización de resultados hacia otros sectores (p. ej., salud, finanzas, manufactura) se discute como trabajo futuro y amenaza a la validez externa.
-
-Como refuerzo a la evaluación técnica y para incorporar criterios de negocio propios del dominio, se contó con la participación de un profesional de recursos humanos, Juan Pablo Chaparro (25 años, alrededor de 2 años de experiencia en RR. HH.), quien colaboró en la revisión de resultados y en la interpretación de métricas del sistema. Esta retroalimentación experta contribuyó a contrastar los puntajes generados por el algoritmo con criterios prácticos de selección y a identificar casos límite relevantes para el flujo de reclutamiento.
+Se busca implementar un prototipo funcional capaz de ingerir documentos en formato PDF, extraer y estructurar su información, y realizar un cruce semántico contra los requisitos de una vacante. El sistema debe entregar no solo un ranking de candidatos, sino una justificación desglosada del porqué de cada puntaje, actuando como un asistente inteligente que pre-digiere la información para el reclutador.
 
 \section{Pregunta de investigación}
-¿En qué medida un sistema de evaluación de hojas de vida basado en LLMs logra alinearse con la clasificación de expertos humanos y reducir los tiempos de revisión en procesos de selección del sector tecnológico?
+¿En que medida un sistema de calificación automático de Hojas de Vida mediado por LLMs en el dominio tecnológico se acerca a al ranking dado por un experto humano dada una descripción de trabajo y si este permite reducción de tiempos de revisión?
+
 
 \section{Objetivos}
+
 \subsection{Objetivo general}
-Diseñar, implementar y evaluar un sistema de recomendación de hojas de vida basado en Grandes Modelos de Lenguaje (LLMs), con el fin de mejorar la eficiencia y efectividad del proceso de selección de talento en una empresa.
+Diseñar, implementar y evaluar un sistema de recomendación de hojas de vida basado en procesamiento de lenguaje natural y modelos LLM, que permita estructurar información no estructurada y calcular la compatibilidad candidato-vacante para mejorar la eficiencia del primer filtro de selección.
 
 \subsection{Objetivos específicos}
 \begin{enumerate}
-  \item Desarrollar una metodología y herramientas para la extracción y estructuración de información a partir de HVs en formato PDF no indexable o poco estructurado.
+  \item Desarrollar una metodología y herramientas para la extracción y estructuración de
+información a partir de HVs en formato PDF y ofertas de trabajo en texto plano.
   \item Diseñar e implementar comparadores por aspecto y un esquema de ponderación configurable para calcular el porcentaje de recomendación.
-  \item Evaluar el rendimiento técnico del algoritmo y el impacto potencial del sistema en métricas operacionales de eficiencia y efectividad.
-  \item Proponer lineamientos para la integración del sistema en el flujo de trabajo del equipo de reclutamiento.
+  \item Evaluar el rendimiento técnico del algoritmo y el impacto potencial del sistema en
+métricas operacionales de eficiencia y efectividad.
+  \item Proponer lineamientos para la integración del sistema en el flujo de trabajo del equipo
+de reclutamiento.
+
 \end{enumerate}
 
-% Contribuciones
-\section{Contribuciones}
+\section{Alcance y delimitaciones}
+El desarrollo y la validación del sistema se acotan al dominio de perfiles tecnológicos (desarrolladores, ingenieros de sistemas, científicos de datos). El conjunto de datos experimental consta de 10 hojas de vida reales anonimizadas y 4 descripciones de trabajo de empresas del sector, seleccionadas para desde practicantes hasta perfiles junior.
+
+La validación cualitativa cuenta con la participación de Juan Pablo Chaparro, profesional de Recursos Humanos, quien actúa como evaluador para medir la precisión del modelo. No se contempla el despliegue en producción masiva ni la integración con portales de empleo externos en esta fase de tesis.
+
+\section{Estructura del documento}
+El presente documento se organiza en los siguientes capítulos:
+
 \begin{itemize}
-  \item Una arquitectura en capas (API, servicios, repositorios y base de datos) que soporta ingestión, análisis y persistencia de resultados, basada en \texttt{FastAPI}, \texttt{SQLAlchemy} y \texttt{SQLite}.
-  \item Una interfaz web (frontend) desarrollada en \texttt{React} con \texttt{Vite} y \texttt{TailwindCSS} que permite gestionar HVs, crear ofertas de trabajo, ejecutar análisis de compatibilidad y visualizar resultados mediante gráficos interactivos.
-  \item Un módulo de limpieza y extracción de texto de PDFs, y un módulo de estructuración de HVs y descripciones apoyado en orquestación de prompts utilizando \texttt{GPT-4o-mini} de Azure OpenAI.
-  \item Un motor de comparación por aspectos con desglose explicativo de puntajes y esquema de pesos configurable.
-  \item Un protocolo experimental y un conjunto de métricas para evaluar desempeño técnico y operacional del sistema.
-  \item Un componente de validación experta con participación de un profesional de RR. HH. (Juan Pablo Chaparro), para contrastar resultados y ajustar criterios de interpretación.
+    \item \textbf{Capítulo \ref{chap:marco-teorico}: Marco Teórico.} Presenta los fundamentos conceptuales que abordan la tesis como Modelos de Lenguaje Grandes (LLMs), herramientas tecnológicas base como LangChain y más.
+    
+    \item \textbf{Capítulo \ref{chap:estado-del-arte}: Estado del Arte.} Revisa la literatura existente sobre sistemas de recomendación en reclutamiento, desde enfoques clásicos hasta tendencias modernas con IA, identificando las brechas que este trabajo busca cubrir.
+    
+    \item \textbf{Capítulo \ref{chap:metodologia}: Metodología.} Detalla el diseño de la investigación, la conformación del dataset, los esquemas de datos definidos para CVs y Jobs, y el protocolo de evaluación utilizado.
+    
+    \item \textbf{Capítulo \ref{chap:diseno-implementacion}: Diseño, Arquitectura e Implementación.} Describe la construcción técnica del sistema, explicando la arquitectura por capas del backend, los flujos de los servicios y el diseño de la interfaz de usuario.
+    
+    \item \textbf{Capítulo \ref{chap:evaluaciones}: Experimentos y Resultados.} Presenta los resultados de la evaluación de estructuración y las evaluaciones de procesos de selección, analizando la convergencia entre el modelo y el experto humano en dos fases de experimentación.
+    
+    \item \textbf{Capítulo \ref{chap:discusion}: Discusión y Amenazas a la Validez.} Falta por hacer...
+    
+    \item \textbf{Capítulo \ref{chap:conclusiones}: Conclusiones y Trabajo Futuro.} Sintetiza los logros alcanzados respecto a los objetivos planteados y propone líneas de investigación para la evolución del sistema.
 \end{itemize}
 
-\section{Consideraciones éticas y normativas}
-El manejo de datos personales presentes en HVs exige medidas de seguridad, consentimiento informado y cumplimiento de la normativa de protección de datos aplicable. Asimismo, se abordará la mitigación de sesgos algorítmicos mediante transparencia de criterios, explicación de puntajes por aspecto y validaciones con casos de prueba controlados. Estas consideraciones se retoman en detalle al discutir amenazas a la validez y aspectos éticos del estudio.
-
-
+\section{Consideraciones éticas}
+El uso de sistemas automatizados en selección de personal conlleva responsabilidades éticas significativas. Este proyecto aborda la privacidad mediante el uso de datos autorizados con fines académicos. Asimismo, se prioriza la explicabilidad del algoritmo: el sistema no emite un veredicto de caja negra, sino que expone las razones de cada puntaje, permitiendo que el humano mantenga el control final y pueda auditar posibles sesgos algorítmicos.
