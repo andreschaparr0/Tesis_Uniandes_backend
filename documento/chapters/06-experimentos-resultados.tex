@@ -37,60 +37,29 @@ Esta fase de evaluación tiene como objetivo medir la fidelidad con la que el si
 Se procesaron las 10 hojas de vida y las 4 descripciones de trabajo a través de los pipelines de estructuración descritos en el capítulo anterior. Posteriormente, se realizó una revisión manual ítem por ítem, comparando el contenido del archivo fuente (PDF o texto) contra el resultado estructurado generado por el sistema.
 
 \subsection{Instrumentos y métricas de calidad}
-Para evaluar de forma consistente la calidad de la estructuración, se definieron dos instrumentos: uno para hojas de vida y otro para descripciones de trabajo. Cada campo se califica según dos criterios: un \textit{Score} en porcentaje, que mide qué tan completa y precisa fue la extracción (100\% indica extracción correcta y 0\% un fallo total), y una \textit{Razón}, donde se explica brevemente el motivo del puntaje asignado.
+Para evaluar de forma consistente la calidad de la estructuración, se definieron dos instrumentos análogos, uno para hojas de vida y otro para descripciones de trabajo. En ambos casos, cada campo extraído se somete a una revisión manual donde se asigna un \textit{Score} porcentual (de 0\% a 100\%) que mide la completitud y precisión de la extracción, acompañado de una \textit{Razón} justificativa que explica el motivo del puntaje.
 
-\begin{table}[H]
-    \centering
-    \small
-    \caption{Plantilla de evaluación de estructuración de Hoja de Vida (CV)}
-    \label{tab:plantilla-eval-cv}
-    \begin{tabular}{|l|p{3cm}|p{6cm}|}
-    \hline
-    Aspecto (Campo JSON) & CV\_Score (0\% - 100\%) & CV\_Razón (Justificación) \\ \hline
-    \texttt{personal} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{education} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{experience} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{technical\_skills} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{soft\_skills} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{certifications} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{languages} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \end{tabular}
-\end{table}
-
-De manera análoga, la Tabla \ref{tab:plantilla-eval-job} muestra el instrumento aplicado a las descripciones de trabajo, incluyendo campos específicos de vacantes como beneficios y responsabilidades.
-
-\begin{table}[H]
-    \centering
-    \small
-    \caption{Plantilla de evaluación de estructuración de Descripción de Trabajo (Job)}
-    \label{tab:plantilla-eval-job}
-    \begin{tabular}{|l|p{3cm}|p{6cm}|}
-    \hline
-    Aspecto (Campo JSON) & Job\_Score (0\% - 100\%) & Job\_Razón (Justificación) \\ \hline
-    \texttt{basic\_info} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{responsibilities} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{location} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{education} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{experience} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{technical\_skills} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{soft\_skills} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{certifications} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{languages} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \texttt{benefits} & [0\% - 100\%] & Razón del score asociado \\ \hline
-    \end{tabular}
-\end{table}
+Para las hojas de vida, el instrumento evalúa siete dimensiones clave: información personal, educación, experiencia laboral, habilidades técnicas, habilidades blandas, certificaciones e idiomas. Por su parte, el instrumento para descripciones de trabajo amplía la evaluación a diez dimensiones, incorporando campos específicos de las vacantes como información básica, responsabilidades, ubicación y beneficios, además de los requisitos homólogos a los del CV (educación, experiencia, habilidades y certificaciones).
 
 \subsection{Resultados de estructuración de hojas de vida}
 
 Tras aplicar el instrumento de evaluación sobre las 10 hojas de vida, se obtuvieron un total de 70 resultados (7 rubros por cada uno de los 10 candidatos). El desempeño general del motor de estructuración fue altamente satisfactorio. A continuación, se presenta la distribución de los puntajes obtenidos:
 
-\begin{itemize}
-    \item \textbf{100\%:} 51 veces (Extracción perfecta).
-    \item \textbf{80\% - 99\%:} 12 veces (Errores menores de formato o incompletitud leve).
-    \item \textbf{50\% - 79\%:} 3 veces (Errores parciales o confusión de categorías).
-    \item \textbf{20\% - 49\%:} 1 vez (Error significativo de interpretación).
-    \item \textbf{0\% - 19\%:} 0 veces (Fallo total).
-\end{itemize}
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Distribución de puntajes de estructuración de Hojas de Vida}
+    \label{tab:distribucion-cv}
+    \begin{tabular}{|l|c|l|}
+    \hline
+    \textbf{Rango de Score} & \textbf{Frecuencia} & \textbf{Descripción} \\ \hline
+    100\% & 51 & Extracción perfecta \\ \hline
+    80\% - 99\% & 12 & Errores menores de formato o incompletitud leve \\ \hline
+    50\% - 79\% & 3 & Errores parciales o confusión de categorías \\ \hline
+    20\% - 49\% & 1 & Error significativo de interpretación \\ \hline
+    0\% - 19\% & 0 & Fallo total \\ \hline
+    \end{tabular}
+\end{table}
 
 El análisis cualitativo de estos resultados permite identificar fortalezas claras y áreas de mejora específicas en el pipeline de procesamiento:
 
@@ -154,13 +123,21 @@ En conclusión, el motor de estructuración demostró una alta fiabilidad para l
 \subsection{Resultados de estructuración de descripciones de trabajo}
 La evaluación de la estructuración de las descripciones de trabajo (Jobs) se realizó sobre 4 vacantes distribuidas entre las empresas Pragma y Sezzle. Se obtuvieron un total de 40 puntos de control (10 rubros por vacante). Al igual que con las hojas de vida, los resultados fueron predominantemente positivos, con una alta incidencia de extracciones perfectas.
 
-\begin{itemize}
-    \item \textbf{100\%:} 30 veces.
-    \item \textbf{80\% - 99\%:} 8 veces.
-    \item \textbf{50\% - 79\%:} 0 veces.
-    \item \textbf{20\% - 49\%:} 1 vez.
-    \item \textbf{0\% - 19\%:} 1 vez.
-\end{itemize}
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Distribución de puntajes de estructuración de Descripciones de Trabajo}
+    \label{tab:distribucion-jobs}
+    \begin{tabular}{|l|c|}
+    \hline
+    \textbf{Rango de Score} & \textbf{Frecuencia} \\ \hline
+    100\% & 30 \\ \hline
+    80\% - 99\% & 8 \\ \hline
+    50\% - 79\% & 0 \\ \hline
+    20\% - 49\% & 1 \\ \hline
+    0\% - 19\% & 1 \\ \hline
+    \end{tabular}
+\end{table}
 
 A continuación, la Tabla \ref{tab:resultados-jobs} presenta el detalle de la evaluación.
 
@@ -206,9 +183,9 @@ Los hallazgos principales de esta evaluación indican:
 \subsection{Protocolo de validación experta y métricas comparativas}
 \label{subsec:protocolo-validacion}
 
-Para determinar si el sistema emite juicios de valor alineados con el criterio profesional, se diseñó una evaluación basada en cuatro simulaciones de procesos de selección. Cada simulación consistió en el análisis de una descripción de trabajo específica frente a un subconjunto de cinco hojas de vida seleccionadas del dataset, creando escenarios controlados de competencia por una vacante.
+Para determinar si el sistema emite juicios de valor alineados con el criterio profesional, se diseñó una evaluación basada en cuatro análisis de procesos de selección. Cada análisis consistió en el análisis de una descripción de trabajo específica frente a un subconjunto de cinco hojas de vida seleccionadas del dataset, creando escenarios controlados de competencia por una vacante.
 
-La validación cualitativa fue realizada por Juan Pablo Chaparro, profesional de Recursos Humanos con experiencia en reclutamiento. Su rol consistió en actuar como un juez y, posteriormente, como auditor del sistema. Para cada simulación, el experto analizó los mismos documentos que el algoritmo y generó su propia valoración. Las métricas de éxito se definieron en función de la convergencia entre el criterio humano y el artificial a través de tres dimensiones:
+La validación cualitativa fue realizada por Juan Pablo Chaparro, profesional de Recursos Humanos con experiencia en reclutamiento. Su rol consistió en actuar como un juez y, posteriormente, como auditor del sistema. Para cada análisis, el experto analizó los mismos documentos que el algoritmo y generó su propia valoración. Las métricas de éxito se definieron en función de la convergencia entre el criterio humano y el artificial a través de tres dimensiones:
 
 \begin{itemize}
     \item \textbf{Comparación de rankings:} Se contrasta el orden de idoneidad de los candidatos generado por el modelo frente al ranking construido por el evaluador humano. Esto permite medir si el sistema prioriza correctamente a los mejores perfiles.
@@ -222,15 +199,15 @@ La validación cualitativa fue realizada por Juan Pablo Chaparro, profesional de
 Con el objetivo de asegurar no solo la evaluación sino también la mejora continua del prototipo, el proceso experimental se dividió en dos fases operativas:
 
 \begin{itemize}
-    \item \textbf{Fase 1:} Se ejecutó la primera simulación utilizando la vacante Junior Java Developer de la empresa Pragma. Los resultados de este primer análisis fueron sometidos a una sesión de revisión detallada con el experto de RR.\,HH. Esta etapa permitió identificar divergencias tempranas en la interpretación de ciertos criterios (particularmente en la gestión de certificaciones y habilidades), lo que derivó en ajustes puntuales a la lógica de los comparadores y a los pesos del sistema.
+    \item \textbf{Fase 1:} Se ejecutó el primer análisis utilizando la vacante Junior Java Developer de la empresa Pragma. Los resultados de este primer análisis fueron sometidos a una sesión de revisión detallada con el experto de RR.\,HH. Esta etapa permitió identificar divergencias tempranas en la interpretación de ciertos criterios (particularmente en la gestión de certificaciones y habilidades), lo que derivó en ajustes puntuales a la lógica de los comparadores y a los pesos del sistema.
     
-    \item \textbf{Fase 2:} Tras implementar las correcciones derivadas de la reunión de retroalimentación, se procedió a ejecutar las tres simulaciones restantes. En esta fase se consolidaron los resultados definitivos reportados en este capítulo, permitiendo medir el desempeño del sistema ya calibrado frente a escenarios de distinta complejidad (roles de practicante vs. roles junior).
+    \item \textbf{Fase 2:} Tras implementar las correcciones derivadas de la reunión de retroalimentación, se procedió a ejecutar los tres análisis restantes. En esta fase se consolidaron los resultados definitivos reportados en este capítulo, permitiendo medir el desempeño del sistema ya calibrado frente a escenarios de distinta complejidad (roles de practicante vs. roles junior).
 \end{itemize}
 
 \subsection{Resultados de la fase 1}
 \label{subsec:resultados-fase1}
 
-La primera simulación se realizó utilizando una vacante real de Desarrollador Java Junior para la empresa Pragma. El objetivo de esta fase no fue solo medir la precisión, sino estresar el modelo para identificar comportamientos divergentes respecto al juicio humano.
+El primer análisis se realizó utilizando una vacante real de Desarrollador Java Junior para la empresa Pragma. El objetivo de esta fase no fue solo medir la precisión, sino estresar el modelo para identificar comportamientos divergentes respecto al juicio humano.
 
 \subsubsection*{Análisis de ranking y puntajes}
 
@@ -254,7 +231,7 @@ A nivel de ordenamiento (ranking), el sistema demostró un desempeño sobresalie
 
 \subsubsection*{Hallazgos y discrepancias detectadas}
 
-Posterior a la simulación, se realizó una sesión de retroalimentación con el evaluador para analizar por qué, aunque el ranking coincidía, existían diferencias notables en la evaluación de ciertos rubros específicos. Se identificaron cinco hallazgos críticos:
+Posterior al análisis, se realizó una sesión de retroalimentación con el evaluador para analizar por qué, aunque el ranking coincidía, existían diferencias notables en la evaluación de ciertos rubros específicos. Se identificaron cinco hallazgos críticos:
 
 \begin{itemize}
     \item \textbf{Sesgo por ``Datos No Evaluados'' (-1):} El modelo fue excesivamente literal. Si la descripción del trabajo no tenía una sección explícita de Certificaciones, Idiomas o Habilidades Blandas, el sistema marcaba estos rubros como \texttt{-1} (No Evaluado). El experto, en cambio, siempre evaluaba estos aspectos: intuía el idioma por la redacción de la oferta e infería habilidades blandas del contexto. Esto generó una brecha significativa de cobertura en la evaluación.
@@ -270,7 +247,7 @@ Posterior a la simulación, se realizó una sesión de retroalimentación con el
 
 \subsubsection*{Ajustes implementados para la Fase 2}
 
-A partir de estos \textit{insights}, se realizaron modificaciones estructurales en el \textit{core} del sistema antes de proceder con las siguientes simulaciones:
+A partir de estos \textit{insights}, se realizaron modificaciones estructurales en el \textit{core} del sistema antes de proceder con los siguientes análisis:
 
 \begin{enumerate}
     \item \textbf{Comparador de certificaciones mejorado:} Se modificó la lógica para que, en ausencia de requisitos de certificación explícitos, el sistema compare las certificaciones del candidato contra las habilidades técnicas requeridas. Este cambio se explica a mayor detalle en \ref{subsec:pipeline-comparacion}.
