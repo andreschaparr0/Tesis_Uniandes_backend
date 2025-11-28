@@ -331,7 +331,7 @@ A partir de la revisión cualitativa con el evaluador, se identificaron las caus
 \begin{itemize}
     \item \textbf{Mejora en Skills Técnicos y Blandos:} El evaluador destacó que el modelo realizó un análisis muy preciso de las habilidades técnicas y blandas, así como de las certificaciones. Las razones generadas por la IA fueron coherentes con el juicio experto, identificando correctamente las brechas en tecnologías específicas.
     
-    \item \textbf{Confusión por Modalidad Remota:} El comparador de ubicación falló consistentemente (0\% en los 5 casos). El error se atribuye a que la vacante especificaba la ubicación como "Colombia, Remote". El modelo, al no encontrar una coincidencia exacta de ciudad en las hojas de vida (que listan ciudades específicas como Bogotá), no logró resolver la relación de contención geográfica implícita.
+    \item \textbf{Confusión por Modalidad Remota:} El comparador de ubicación falló consistentemente (0\% en los 5 casos). El error se atribuye a que la vacante especificaba la ubicación como ``Colombia, Remote``. El modelo, al no encontrar una coincidencia exacta de ciudad en las hojas de vida (que listan ciudades específicas como Bogotá), no logró resolver la relación de contención geográfica implícita.
     
     \item \textbf{Penalización de Experiencia en Pasantías:} El experto humano indicó que, para esta vacante de practicante, la experiencia laboral no era un factor crítico, priorizando la educación en curso. El modelo, sin embargo, asignó puntajes medios (alrededor del 50\%) en experiencia, señalando la falta de roles previos similares. Aunque técnicamente correcto, esto redujo el promedio general de los candidatos fuertes frente al criterio humano, que fue más indulgente en este rubro.
 \end{itemize}
@@ -378,7 +378,7 @@ A partir de la revisión cualitativa con el evaluador, se identificaron las caus
 
 \section{Discusión general de resultados}
 
-La ejecución de las dos fases experimentales permite concluir que el sistema propuesto logra un nivel de competencia significativo como herramienta de apoyo a la decisión. En términos de \textbf{ranking}, el modelo demostró una capacidad robusta para identificar a los candidatos más fuertes, coincidiendo con el experto humano en el primer lugar en 2 de los 3 análisis de la Fase 2.
+La ejecución de las dos fases experimentales permite concluir que el sistema propuesto logra un nivel de competencia significativo como herramienta de apoyo a la decisión. En términos de ranking, el modelo demostró una capacidad robusta para identificar a los candidatos más fuertes, coincidiendo con el experto humano en el primer lugar en 2 de los 3 análisis de la Fase 2.
 
 Sin embargo, las discrepancias en los puntajes absolutos revelan que el juicio humano incorpora reglas de negocio tácitas (como la penalización severa por no estar graduado en roles Junior o la devaluación de la experiencia en roles de pasante) que el modelo, en su configuración actual, no pondera con la misma agresividad. Mientras el sistema evalúa la compatibilidad semántica pura, el reclutador evalúa la viabilidad de contratación.
 
