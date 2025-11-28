@@ -58,10 +58,21 @@
 \listoftables
 
 \chapter*{Resumen}
-[Resumen de 200\,--\,300 palabras. Objetivo, método, resultados y conclusiones.]
+
+La gestión eficiente del talento es un desafío crítico, especialmente en el sector tecnológico donde la revisión manual de hojas de vida se convierte en un cuello de botella. Esta tesis presenta el desarrollo y evaluación de un sistema de recomendación de talento basado en Grandes Modelos de Lenguaje (LLMs) diseñado para optimizar el primer filtro de selección. El sistema utiliza técnicas de \textit{prompt engineering} con modelos GPT para estructurar información de hojas de vida en formato PDF y descripciones de trabajo, permitiendo una comparación semántica profunda en ocho aspectos clave, incluyendo experiencia, habilidades técnicas y educación.
+
+La metodología de evaluación consistió en dos fases experimentales utilizando un conjunto de datos controlado de 10 hojas de vida y 4 vacantes reales del sector TI. Primero, se validó la calidad de la estructuración de datos, alcanzando una precisión superior al 90\% en la extracción de información. Posteriormente, se contrastó el desempeño del motor de recomendación frente al criterio de un experto en Recursos Humanos mediante cuatro escenarios de selección simulados.
+
+Los resultados demostraron que el sistema logra identificar correctamente a los candidatos más idóneos, coincidiendo con el experto humano en el primer lugar del ranking en el 75\% de los casos. Si bien se identificaron limitaciones en la interpretación de reglas de negocio implícitas y contextos geográficos complejos, la herramienta redujo significativamente los tiempos de procesamiento, pasando de aproximadamente 30 minutos manuales a menos de 2 minutos para analizar cinco candidatos. Se concluye que la solución es viable como herramienta de apoyo a la decisión, destacando por su capacidad de generar justificaciones explicables que aportan transparencia y agilidad al proceso de reclutamiento.
 
 \chapter*{Abstract}
-[Abstract en inglés.]
+
+Efficient talent management is a critical challenge, especially in the technology sector where manual resume screening becomes a bottleneck. This thesis presents the development and evaluation of a talent recommendation system based on Large Language Models (LLMs) designed to optimize the initial selection filter. The system uses prompt engineering techniques with GPT models to structure information from PDF resumes and job descriptions, enabling deep semantic comparison across eight key aspects, including experience, technical skills, and education.
+
+The evaluation methodology consisted of two experimental phases using a controlled dataset of 10 resumes and 4 real job vacancies from the IT sector. First, data structuring quality was validated, achieving over 90\% accuracy in information extraction. Subsequently, the recommendation engine's performance was contrasted against a Human Resources expert's criteria through four simulated selection scenarios.
+
+Results demonstrated that the system successfully identifies the most suitable candidates, matching the human expert's first-place ranking in 75\% of cases. While limitations were identified in interpreting implicit business rules and complex geographical contexts, the tool significantly reduced processing times, from approximately 30 minutes manually to under 2 minutes for analyzing five candidates. It is concluded that the solution is viable as a decision support tool, standing out for its ability to generate explainable justifications that bring transparency and agility to the recruitment process.
+
 
 \clearpage
 \pagenumbering{arabic}

@@ -2,9 +2,44 @@
 \label{chap:conclusiones}
 
 \section{Conclusiones}
-Resumen de hallazgos y respuesta a preguntas de investigación.
+
+El desarrollo y evaluación de este prototipo ha permitido validar la viabilidad técnica de utilizar Grandes Modelos de Lenguaje (LLMs) como motor central de un sistema de recomendación para reclutamiento. A partir de la experimentación, se derivan las siguientes conclusiones principales:
+
+\begin{enumerate}
+    \item \textbf{Eficacia en la Estructuración de Datos:} Si bien el sistema demostró una alta competencia en la extracción de información con una precisión superior al 90\%, también exhibió tendencias a confundirse en perfiles con información estructurada de forma no estandar al combinar diferentes partes de la hoja de vida como proyectos de portafolio con experiencia.
+
+    \item \textbf{Criterio humano} La herramienta demostró ser un filtro eficaz, coincidiendo frecuentemente con el experto en la identificación de los mejores perfiles y superándolo ocasionalmente en la detección de detalles técnicos específicos. Sin embargo, el modelo carece de la capacidad de ``pensar el problema'' con la visión que tiene el reclutador. Su eficacia es semántica, pero falla al interpretar las dinámicas de negocio como la flexibilidad en la experiencia para practicas o la falta de titulos en vacantes junior.
+
+
+    \item \textbf{La Brecha del Contexto de Negocio:} Se identificó una limitación crítica en la asignación de puntajes absolutos. Mientras el modelo evalúa cada criterio por separado con su peso asignado, los procesos reales de selección humana operan sin pesos costantes para cada criterio (ej. "si no tiene título, no sirve"). Esta discrepancia generó diferencias en los puntajes finales, evidenciando que el modelo necesita ser acotada por reglas de negocio.
+
+    \item \textbf{Valor de la Explicabilidad:} Uno de los mayores aportes percibido por el usuario RR.HH. fue la capacidad del sistema para generar justificaciones textuales. Esta característica transforma la herramienta de una ``caja negra'' a un asistente transparente, permitiendo al reclutador validar rápidamente por qué un candidato fue recomendado y descubriendo coincidencias técnicas que podrían haber pasado desapercibidas en una lectura manual rápida.
+
+    \item \textbf{Eficiencia Operativa:} La implementación del sistema no solo reduce de manera significativa el tiempo de análisis, sino que también redistribuye el esfuerzo del reclutador. En lugar de dedicar tiempo a extraer información manualmente, el analista pasa a validar y ajustar decisiones, fortaleciendo el componente estratégico del proceso de selección.
+
+\end{enumerate}
 
 \section{Trabajo Futuro}
-Extensiones propuestas: nuevos comparadores, datasets ampliados, despliegue y uso en producción.
 
+Basado en las limitaciones identificadas y las oportunidades de mejora, se proponen las siguientes líneas de investigación y desarrollo:
 
+\subsection{Inyección de Reglas de Negocio mediante RAG (Retrieval-Augmented Generation)}
+La principal carencia detectada fue la falta de conocimiento sobre las reglas específicas de cada empresa (políticas de trabajo remoto, requisitos de visado, obligatoriedad de títulos, bandas salariales). Para solucionar esto, se propone implementar una arquitectura RAG.
+\begin{itemize}
+    \item \textbf{Propuesta:} Integrar una base de conocimiento vectorial que contenga los manuales de contratación y políticas internas de la empresa. Antes de realizar el análisis de un candidato, el sistema recuperaría las reglas de negocio relevantes para esa vacante específica y las inyectaría en el contexto del modelo.v Esto permitiría que el modelo penalice o descarte candidatos no solo por falta de habilidades técnicas, sino por incumplimiento de normativas corporativas.
+\end{itemize}
+
+\subsection{Aprendizaje Activo (Human-in-the-Loop Feedback)}
+Actualmente, el sistema es estático: si el reclutador no está de acuerdo con una recomendación, el modelo no aprende de ese error.
+\begin{itemize}
+    \item \textbf{Propuesta:} Implementar un mecanismo de retroalimentación donde las correcciones del reclutador (ej. cambiar un score manualmente o reordenar el ranking) se almacenen y utilicen para afinar futuros análisis. Esto implicaria que el modelo tras diversas iteraciones se puede adaptar al contexto y mejorar sus resultados.
+\end{itemize}
+
+\subsection{Análisis Multimodal de Candidatos}
+El alcance actual se limita al texto. Sin embargo, los procesos de selección modernos incluyen portafolios visuales (GitHub, Behance) y video-entrevistas.
+\begin{itemize}
+    \item \textbf{Propuesta:} Extender la capacidad de extracción para analizar enlaces externos. Por ejemplo, utilizar agentes que naveguen a los repositorios de código del candidato para evaluar la calidad real de sus proyectos, o transcribir y analizar video-presentaciones para inferir habilidades de comunicación con mayor precisión.
+\end{itemize}
+
+\subsection{Validación en Dominios No Tecnológicos}
+El estudio se limitó al nicho de desarrollo de software. Sería valioso replicar el experimento en sectores con habilidades más subjetivas o "blandas", como ventas, diseño gráfico o psicología, para evaluar si la capacidad de inferencia semántica del modelo se mantiene efectiva cuando las competencias no son tan estandarizadas.

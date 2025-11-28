@@ -1,41 +1,63 @@
 \chapter{Discusión y Amenazas a la Validez}
 \label{chap:discusion}
 
+En este capítulo se interpretan los hallazgos presentados en la evaluación experimental, contrastándolos con las observaciones cualitativas del experto en Recursos Humanos. Se analizan las implicaciones de los resultados en el contexto de la adopción de IA en procesos de selección, se discuten las limitaciones del estudio y se plantean las amenazas a la validez interna y externa.
+
 \section{Interpretación de Resultados}
 \label{sec:interpretacion-resultados}
 
-Los hallazgos expuestos en el capítulo anterior ofrecen una perspectiva dual sobre el potencial de los modelos de lenguaje (LLMs) en el reclutamiento: por un lado, confirman su capacidad técnica para procesar y relacionar información semántica compleja; por otro, evidencian las brechas existentes entre la similitud textual y la viabilidad real de contratación. A continuación, se discuten las implicaciones principales de estos resultados.
+Los experimentos realizados revelan una distinción fundamental entre la capacidad de un modelo de lenguaje para comprender semánticamente un perfil y su capacidad para juzgar la viabilidad de contratación bajo reglas de negocio estrictas. La retroalimentación del analista de RR.HH. sugiere que, más que un reemplazo del reclutador, el sistema aporta valor como una herramienta de inteligencia aumentada que modifica el flujo de trabajo tradicional.
 
-\subsection{Eficacia del Ranking Relativo vs. Scoring Absoluto}
+\subsection{Diferencias entre el Ranking y los Puntajes}
 
-Uno de los descubrimientos más consistentes del estudio fue la alta precisión del sistema para ordenar candidatos (\textit{ranking}). En la mayoría de los escenarios, el algoritmo logró replicar la secuencia de preferencia del experto humano, identificando correctamente quién era el mejor y el peor candidato para una vacante dada. Esto sugiere que los LLMs, específicamente GPT-4o-mini, poseen una robusta capacidad para discernir la \textit{calidad relativa} de los perfiles.
+El análisis evidenció una diferencia clara entre la coincidencia en el orden de los candidatos y la variación en sus puntajes. Aunque al sistema le fue mejor adecuadamente el ranking definido por el experto en la mayoría de los casos, los valores numéricos generados por la IA fueron generalmente menos parecidos que los asignados por el analista RR.HH.
 
-Sin embargo, se observó una divergencia sistemática en los puntajes absolutos (\textit{scores}). Mientras el modelo asignaba puntajes basados en la presencia semántica de habilidades y requisitos (por ejemplo, un 50\% porque se tiene la mitad de los skills), el reclutador humano aplicaba criterios de descarte binarios o penalizaciones severas basadas en reglas de negocio tácitas.
+Esta conducta es dada por la naturaleza semántica de los LLMs frente a las decisiones huamanas del reclutamiento. Para el modelo, un candidato que cumple con la mayoria de criterios pero no tiene el título profesional es un candidato bueno ya que sigue cumpliendo la mayoria de criterios. Para el reclutador humano, la falta de título (en vacantes que lo exigen) es un criterio de descarte inmediato, reduciendo la viabilidad a cerca de 0\% independientemente de los otros criterios.
 
-\begin{itemize}
-    \item \textbf{El factor "Deal-Breaker":} Para el humano, la falta de un título profesional en una vacante Junior o la ausencia de residencia en la ciudad requerida son motivos de descarte inmediato (puntaje cercano a 0). El modelo, en cambio, tiende a ser más "suave", promediando estos fallos con otras fortalezas del perfil, lo que a veces infla el puntaje de candidatos inviables.
-    \item \textbf{Implicación práctica:} Esto indica que el sistema es sumamente útil como herramienta de \textit{filtrado y priorización} (ayudando al reclutador a saber qué CV leer primero), pero no debe utilizarse para tomar decisiones automáticas de rechazo basadas únicamente en un umbral numérico, ya que podría descartar falsos negativos o aprobar falsos positivos.
-\end{itemize}
+Estos resultados sugieren que el sistema es altamente fiable para priorizar la lectura de hojas de vida (respondiendo a "¿A quién debería entrevistar primero?"), pero no debe utilizarse para filtrar automáticamente basado en un umbral de puntaje absoluto, ya que su lógica puede enmascarar factores bloqueantes o penalizar levemente factores críticos.
 
-\subsection{Explicabilidad como Valor Agregado}
+\subsection{El Valor Cualitativo: Explicabilidad como ``Segunda Opinión''}
 
-Más allá de los números, la validación cualitativa destacó el valor de la \textbf{explicabilidad}. El experto de RR.HH. valoró positivamente que el sistema no fuera una "caja negra". Las justificaciones textuales generadas ("\textit{El candidato tiene experiencia en X, pero le falta Y}") permitieron entender la lógica detrás de cada calificación.
+El analista de RR.HH. destacó que la mayor utilidad de la herramienta no reside en el número (score), sino en la justificación cualitativa. Durante las pruebas, se evidenció que el sistema actuaba bien como un mecanismo de ``segunda opinión''.
 
-Incluso en los casos donde el puntaje del modelo discrepaba del humano (como en el caso de sobrecalificación), la razón generada por la IA solía ser técnicamente correcta ("\textit{Cumple con todos los requisitos técnicos}"). Esto demuestra que el error no estaba en la comprensión del texto, sino en la falta de contexto estratégico (salario, cultura, proyección). Esta transparencia transforma el sistema en un asistente que "opina" con argumentos, permitiendo que el humano valide o refute esa opinión rápidamente, agilizando el proceso de revisión sin perder el control del criterio.
+Un hallazgo clave mencionado por el experto fue la capacidad del sistema para identificar correspondencias en habilidades técnicas que podrían pasar desapercibidas para un reclutador generalista. Por ejemplo, si una vacante requiere una librería específica de Java y el candidato menciona una tecnología equivalente o el mismo nombre en un contexto diferente, el sistema lograba establecer el vínculo.
 
-\subsection{Inferencia Semántica y Adaptabilidad}
+\begin{quote}
+    \textit{"...el sistema dice: 'ah, sí, mire, esta herramienta es súper útil para la vacante'. (...) Uno como reclutador, como no sabe esos nombres de esas herramientas y sí pueden coincidir con la vacante, entonces, en ese otro sentido también es muy útil."} — Analista de RR.HH.
+\end{quote}
 
-Los experimentos validaron la hipótesis de que los LLMs pueden superar la rigidez de los sistemas tradicionales de palabras clave (\textit{keyword matching}). El sistema logró:
-\begin{itemize}
-    \item Inferir habilidades blandas implícitas en descripciones de responsabilidades.
-    \item Relacionar tecnologías equivalentes o complementarias (aunque con margen de mejora).
-    \item Entender variaciones en títulos de secciones o cargos.
-\end{itemize}
+Esto transforma el rol de la herramienta: deja de ser una ``caja negra'' de clasificación para convertirse en un asistente que reduce la carga cognitiva del reclutador, alertando sobre competencias técnicas específicas y proporcionando argumentos para defender o descartar una candidatura.
 
-No obstante, esta capacidad inferencial tiene límites. El fallo recurrente en la interpretación de la ubicación "Remote" o en la distinción entre "Experiencia laboral" y "Proyecto académico" en perfiles junior señala que el modelo carece de un entendimiento pragmático del mercado laboral. Entiende el lenguaje, pero no necesariamente las dinámicas contractuales o logísticas del trabajo, lo que resalta la necesidad de reglas explícitas o \textit{prompting} más refinado para conceptos de negocio específicos.
+\subsection{Tiempo del Reclutador}
+
+La evaluación de tiempos (Sección \ref{sec:evaluacion-tiempos}) demostró una reducción alta en los tiempos de  procesamiento y analisís. En el flujo manual tradicional, el reclutador invierte la mayor parte de su tiempo en la extracción de información (leer, buscar palabras clave, verificar fechas). Con el sistema propuesto, dado que la estructuración de datos mostró una precisión superior al 90\%, el tiempo del reclutador se libera de la extracción para enfocarse en la verificación estratégica. El sistema le entrega al humano no solo los datos limpios, sino un pre-análisis digerido que el puede usar como herramienta para lograr un mejor análisis.
+
+\subsection{Brechas de Contexto de Negocio (Business Context Gap)}
+
+Las fallas recurrentes identificadas en los experimentos, específicamente la incapacidad para gestionar correctamente la ubicación remota y la interpretación de los requisitos de educación, evidencian lo que se puede denominar una ``brecha de contexto de negocio''.
+
+El modelo entiende el lenguaje (sabe qué es una ciudad y qué es un título), pero carece de las reglas pragmáticas del mercado laboral local (ej. "si es remoto en Colombia, puede vivir en cualquier ciudad de Colombia, pero si la empresa no tiene entidad legal allí, no se puede contratar"). Estas fallas son deficiencias en el prompting, ya que el modelo carece de mayor contexto sobre las reglas de negocio.
+
+Esto refuerza la conclusión de que los LLMs como GPT-4o-mini son excelentes motores semánticos, pero requieren una capa robusta de ingeniería de reglas o chain-of-thought guiado para comportarse como agentes de negocio que entiendan las restricciones legales y contractuales de la contratación.
 
 \section{Limitaciones y Amenazas}
-Interna, externa, de constructo y de conclusión estadística.
+\label{sec:limitaciones-amenazas}
 
-\section{Consideraciones Éticas}
-Sesgos, transparencia y explicabilidad.
+El diseño y ejecución del estudio presenta ciertas limitaciones que condicionan la generalización de los resultados y plantean amenazas a la validez que deben ser consideradas.
+
+\subsection{Limitaciones del Modelo y Sesgos Inherentes}
+
+El sistema se basa en un modelo de lenguaje preentrenado (GPT-4o-mini), lo cual introduce un riesgo latente de sesgo algorítmico. Aunque en las pruebas no se detectaron comportamientos discriminatorios explícitos por género o nombre, existe la posibilidad de que el modelo herede prejuicios históricos presentes en los datos de entrenamiento. Por ejemplo, podría favorecer inconscientemente redacciones más formales o estándar de hojas de vida, penalizando a candidatos con perfiles atípicos o con estilos de escritura no convencionales.
+
+Además, el modelo demostró ser sensible a la cantidad de información disponible. Como se observó en el caso de la candidata María Ramírez (Sección \ref{subsec:analisis-practicante}), la falta de datos en la HV puede llevar a un sesgo de normalización, donde el sistema calcula un score alto basado únicamente en los pocos campos presentes, ignorando que la ausencia de información es, en sí misma, una señal negativa para el reclutador.
+
+\subsection{Amenazas a la Validez Externa}
+
+La generalización de los resultados está acotada por el dominio y la muestra utilizada. El estudio se centró exclusivamente en el sector tecnológico (desarrollo de software), un campo donde las habilidades son altamente estandarizadas y cuantificables. No se puede garantizar que el sistema tenga un desempeño similar en roles creativos, administrativos o directivos, donde los criterios de evaluación son más subjetivos y dependientes del contexto cultural.
+
+Adicionalmente, el tamaño de la muestra (10 hojas de vida y 4 descripciones de trabajo) es suficiente para una validación de concepto cualitativa, pero no permite extraer conclusiones estadísticas significativas a gran escala. La validación se realizó con un único experto de RR.HH., lo que, si bien proporcionó insights profundos, introduce un sesgo personal en el analisís hecho.
+
+\section{Consideraciones Éticas: El Humano en el Bucle}
+\label{sec:consideraciones-eticas}
+
+La adopción de esta tecnología plantea dilemas éticos sobre la delegación de decisiones que afectan la vida profesional de las personas. Un principio fundamental derivado de este trabajo es que el sistema no debe reemplazar al juicio humano, sino complementarlo. Existe un riesgo real donde el reclutador podría confiar ciegamente en el ranking del sistema sin revisar los perfiles descartados. Esto podría perpetuar injusticias si el modelo, por un error de interpretación (como el fallo en la ubicación remota), oculta sistemáticamente a candidatos válidos. La herramienta debe presentarse siempre como un sistema de recomendación y no de decisión final.
