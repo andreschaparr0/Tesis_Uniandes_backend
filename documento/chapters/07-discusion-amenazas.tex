@@ -2,12 +2,40 @@
 \label{chap:discusion}
 
 \section{Interpretación de Resultados}
-Implicaciones prácticas y teóricas.
+\label{sec:interpretacion-resultados}
+
+Los hallazgos expuestos en el capítulo anterior ofrecen una perspectiva dual sobre el potencial de los modelos de lenguaje (LLMs) en el reclutamiento: por un lado, confirman su capacidad técnica para procesar y relacionar información semántica compleja; por otro, evidencian las brechas existentes entre la similitud textual y la viabilidad real de contratación. A continuación, se discuten las implicaciones principales de estos resultados.
+
+\subsection{Eficacia del Ranking Relativo vs. Scoring Absoluto}
+
+Uno de los descubrimientos más consistentes del estudio fue la alta precisión del sistema para ordenar candidatos (\textit{ranking}). En la mayoría de los escenarios, el algoritmo logró replicar la secuencia de preferencia del experto humano, identificando correctamente quién era el mejor y el peor candidato para una vacante dada. Esto sugiere que los LLMs, específicamente GPT-4o-mini, poseen una robusta capacidad para discernir la \textit{calidad relativa} de los perfiles.
+
+Sin embargo, se observó una divergencia sistemática en los puntajes absolutos (\textit{scores}). Mientras el modelo asignaba puntajes basados en la presencia semántica de habilidades y requisitos (por ejemplo, un 50\% porque se tiene la mitad de los skills), el reclutador humano aplicaba criterios de descarte binarios o penalizaciones severas basadas en reglas de negocio tácitas.
+
+\begin{itemize}
+    \item \textbf{El factor "Deal-Breaker":} Para el humano, la falta de un título profesional en una vacante Junior o la ausencia de residencia en la ciudad requerida son motivos de descarte inmediato (puntaje cercano a 0). El modelo, en cambio, tiende a ser más "suave", promediando estos fallos con otras fortalezas del perfil, lo que a veces infla el puntaje de candidatos inviables.
+    \item \textbf{Implicación práctica:} Esto indica que el sistema es sumamente útil como herramienta de \textit{filtrado y priorización} (ayudando al reclutador a saber qué CV leer primero), pero no debe utilizarse para tomar decisiones automáticas de rechazo basadas únicamente en un umbral numérico, ya que podría descartar falsos negativos o aprobar falsos positivos.
+\end{itemize}
+
+\subsection{Explicabilidad como Valor Agregado}
+
+Más allá de los números, la validación cualitativa destacó el valor de la \textbf{explicabilidad}. El experto de RR.HH. valoró positivamente que el sistema no fuera una "caja negra". Las justificaciones textuales generadas ("\textit{El candidato tiene experiencia en X, pero le falta Y}") permitieron entender la lógica detrás de cada calificación.
+
+Incluso en los casos donde el puntaje del modelo discrepaba del humano (como en el caso de sobrecalificación), la razón generada por la IA solía ser técnicamente correcta ("\textit{Cumple con todos los requisitos técnicos}"). Esto demuestra que el error no estaba en la comprensión del texto, sino en la falta de contexto estratégico (salario, cultura, proyección). Esta transparencia transforma el sistema en un asistente que "opina" con argumentos, permitiendo que el humano valide o refute esa opinión rápidamente, agilizando el proceso de revisión sin perder el control del criterio.
+
+\subsection{Inferencia Semántica y Adaptabilidad}
+
+Los experimentos validaron la hipótesis de que los LLMs pueden superar la rigidez de los sistemas tradicionales de palabras clave (\textit{keyword matching}). El sistema logró:
+\begin{itemize}
+    \item Inferir habilidades blandas implícitas en descripciones de responsabilidades.
+    \item Relacionar tecnologías equivalentes o complementarias (aunque con margen de mejora).
+    \item Entender variaciones en títulos de secciones o cargos.
+\end{itemize}
+
+No obstante, esta capacidad inferencial tiene límites. El fallo recurrente en la interpretación de la ubicación "Remote" o en la distinción entre "Experiencia laboral" y "Proyecto académico" en perfiles junior señala que el modelo carece de un entendimiento pragmático del mercado laboral. Entiende el lenguaje, pero no necesariamente las dinámicas contractuales o logísticas del trabajo, lo que resalta la necesidad de reglas explícitas o \textit{prompting} más refinado para conceptos de negocio específicos.
 
 \section{Limitaciones y Amenazas}
 Interna, externa, de constructo y de conclusión estadística.
 
 \section{Consideraciones Éticas}
 Sesgos, transparencia y explicabilidad.
-
-
