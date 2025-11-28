@@ -376,10 +376,28 @@ A partir de la revisión cualitativa con el evaluador, se identificaron las caus
     \item \textbf{Persistencia del error de Ubicación:} Al igual que en el caso anterior, la ubicación "Remote" generó falsos negativos en todos los candidatos, confirmando la necesidad de mejorar la lógica de inferencia geográfica para modalidades de teletrabajo.
 \end{itemize}
 
+\section{Evaluación de tiempos de procesamiento}
+\label{sec:evaluacion-tiempos}
+
+Además de la precisión, un factor crítico para la adopción de herramientas de IA en reclutamiento es la eficiencia temporal. Para cuantificar el impacto del sistema en la productividad, se compararon los tiempos de procesamiento manual reportados por el analista de RR.HH. frente a los tiempos de ejecución automatizada del prototipo.
+
+Según el analista de RR.HH. el análisis de una hoja de vida frente a una vacante compleja puede tomar entre 20 y 30 minutos, dependiendo de la dificultad del perfil. Para un proceso de selección con 5 candidatos, esto representa una inversión de tiempo aproximada de 2.5 horas (150 minutos). El analista señala que, aunque descartar perfiles por criterios básicos (idioma, ubicación) puede tomar solo 5 minutos, el análisis integral de habilidades y experiencia es el cuello de botella.
+
+En contraste, el sistema propuesto opera en tiempos de magnitud significativamente menor. Las métricas de rendimiento promedio registradas durante las pruebas fueron:
+\begin{itemize}
+    \item \textbf{Estructuración de 1 CV:} $\sim$10 segundos.
+    \item \textbf{Estructuración de 1 Job:} $\sim$10 segundos.
+    \item \textbf{Ejecución de 1 Análisis (CV vs Job):} $\sim$10 segundos.
+\end{itemize}
+
+Considerando que la estructuración es un proceso que se realiza una única vez (los datos se persisten en base de datos), el tiempo marginal para analizar 5 candidatos contra una nueva vacante es de aproximadamente 50 segundos (10 segundos $\times$ 5 análisis). Incluso sumando los tiempos de carga inicial (50 segundos para estructurar 5 CVs + 10 segundos para el Job), el tiempo total del sistema es de 110 segundos ($\sim$2 minutos). Esto implica una reducción en el tiempo significativamente alta frente al escenario manual en la primera fase de selección.
+
+
+
 \section{Discusión general de resultados}
 
-La ejecución de las dos fases experimentales permite concluir que el sistema propuesto logra un nivel de competencia significativo como herramienta de apoyo a la decisión. En términos de ranking, el modelo demostró una capacidad robusta para identificar a los candidatos más fuertes, coincidiendo con el experto humano en el primer lugar en 2 de los 3 análisis de la Fase 2.
+La ejecución de las dos fases experimentales permite concluir que el sistema propuesto, aunque no está exento de limitaciones, logra un nivel de competencia significativo como herramienta de apoyo a la decisión. En términos de ranking, el modelo demostró una capacidad robusta para identificar a los candidatos más fuertes, coincidiendo con el experto humano en el primer lugar en 3 de los 4 análisis. Sin embargo, las discrepancias en los puntajes absolutos revelan que el juicio humano incorpora reglas de negocio tácitas como la penalización severa por no estar graduado en roles Junior, la ubicación física estricta o la devaluación de la experiencia en roles de practicantes. Mientras el sistema evalúa la compatibilidad semántica pura, el reclutador evalúa la viabilidad de contratación.
 
-Sin embargo, las discrepancias en los puntajes absolutos revelan que el juicio humano incorpora reglas de negocio tácitas (como la penalización severa por no estar graduado en roles Junior o la devaluación de la experiencia en roles de pasante) que el modelo, en su configuración actual, no pondera con la misma agresividad. Mientras el sistema evalúa la compatibilidad semántica pura, el reclutador evalúa la viabilidad de contratación.
+A pesar de estas fallas puntuales en la cuantificación, la validación experta confirmó que el valor real de la herramienta reside en su aspecto cualitativo y en la fiabilidad de la extracción de datos. La alta calidad observada en la estructuración con una precisión superior al 90\% en la mayoría de campos.
 
-A pesar de estas diferencias, la validación experta confirmó que los desgloses explicativos (razones) generados por la IA son coherentes y útiles, ofreciendo una transparencia que facilita al reclutador entender por qué un candidato obtuvo cierto puntaje, permitiéndole ajustar la decisión final con su propio criterio estratégico.
+Los desgloses explicativos (razones) generados por la IA fueron calificados como coherentes y útiles, en la mayoria de casos,  ofreciendo una transparencia que facilita al reclutador entender por qué un candidato obtuvo cierto puntaje. El experto de RR.HH. concluyó que la herramienta funciona eficazmente como una ``segunda opinión`` o un filtro de validación que permite descubrir detalles técnicos que al ojo humano podrían pasarse por alto (como nombres específicos de software en las habilidades tecnicas), agilizando la toma de decisiones al confirmar intuiciones o alertar sobre competencias específicas.
