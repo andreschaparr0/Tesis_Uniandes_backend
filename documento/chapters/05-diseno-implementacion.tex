@@ -432,7 +432,7 @@ La imagen muestra la primera fase del proceso, que consiste en cargar los datos 
 
 Sobre esta base, la implementación reutiliza las mismas estrategias de \textit{Prompt Engineering} descritas en la Sección \ref{subsec:fase-estructuracion-ia} (rol, salida estructurada y enfoque zero-shot), pero ahora orientadas a la comparación entre dos objetos ya estructurados. Para cada fila de la Figura \ref{fig:fase2-comparacion}, el sistema construye un texto resumen a partir del JSON del CV y del Job (por ejemplo, las listas de habilidades, la experiencia o las certificaciones) y lo inyecta en un prompt especializado documentado en la Tabla \ref{tab:prompts-comp}. El modelo devuelve siempre un JSON con al menos un campo \texttt{score} en el rango \([0,1]\) (y, en algunos casos, banderas adicionales como \texttt{compatible}) y un campo \texttt{reason} con la justificación en lenguaje natural.
 
-Como ejemplo ilustrativo y conciso, el comparador de \textbf{idiomas} construye un prompt que verifica si el nivel reportado en el CV cumple o supera el requerido en la oferta. Simplificado, su estructura es la siguiente:
+Como ejemplo ilustrativo y conciso, el comparador de idiomas construye un prompt que verifica si el nivel reportado en el CV cumple o supera el requerido en la oferta. Simplificado, su estructura es la siguiente:
 
 \begin{quotation}
     \small
